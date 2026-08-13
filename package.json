@@ -1,0 +1,13 @@
+{
+  "name": "aarambham2026-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:registration": "cd REGISTRATION/forms && npm run build",
+    "build:admin": "cd ADMIN_PORTAL && npm run build"
+  },
+  "workspaces": [
+    "REGISTRATION/forms",
+    "ADMIN_PORTAL"
+  ]
+}
