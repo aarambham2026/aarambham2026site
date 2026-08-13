@@ -1,0 +1,31 @@
+/* Amrita Mahabali Theme Global Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #1b1226 0%, #4a1222 25%, #8c1827 50%, #c42d2a 75%, #e07a68 100%);
+  color: #fff5ec;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* Hide Dev Indicators, Next.js 'N' Badge and Overlays */
+nextjs-portal,
+[data-nextjs-dialog-overlay],
+[data-nextjs-toast],
+[data-next-badge],
+[data-nextjs-dev-overlay],
+div[class*="nextjs-dev-overlay"],
+button[aria-label*="Next.js"],
+#vite-plugin-checker-error-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #161022;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1b1226" />
+  <title>Amrita Vishwa Vidyapeetham — Onam Cultural Event Registration & E-Ticket</title>
+  
+  <!-- Google Fonts for Make A Ton Onam Theme -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./preloader.css">
+  <link rel="stylesheet" href="./cursor.css">
+
+  <style>
+    :root {
+      --bg-dark: #1b1226;
+      --gold-primary: #f5b942;
+      --gold-glow: rgba(245, 185, 66, 0.4);
+      --text-muted: #c9a7b3;
+      --border-gold: rgba(245, 185, 66, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* GLOBAL TOP NAVBAR */
+    .top-global-navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 2.5rem;
+      background: rgba(15, 3, 8, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-gold);
+      height: 65px;
+      position: relative;
+      z-index: 9999;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .nav-brand-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--gold-primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--gold-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--gold-primary);
+      text-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    /* IFRAME WRAPPER */
+    .app-viewport {
+      width: 100%;
+      height: calc(100vh - 65px);
+      border: none;
+      display: block;
+      background: #1b1226;
+    }
+
+    @media (max-width: 768px) {
+      .top-global-navbar {
+        padding: 0.6rem 1rem;
+        height: auto;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .nav-links {
+        gap: 0.8rem;
+        font-size: 0.8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .app-viewport {
+        height: calc(100vh - 100px);
+      }
+    }
+  </style>
+</head>
+<body style="background-color: #161022;">
+
+  <!-- UNIFIED THEYAM PRELOADER (NO SKIP OPTION) -->
+  <div id="loading-screen" class="unified-preloader" role="status" aria-label="Loading Onam Cultural Fest Portal">
+    <div class="loader-container">
+      <div class="loader-art-card">
+        <img src="Theyyam stick.gif" alt="Onam Cultural Fest Mascot" class="loader-art-img" />
+      </div>
+      <div class="loader-university-title">AMRITA VISHWA VIDYAPEETHAM</div>
+      <div class="loader-status-wrap">
+        <span class="loader-spinner"></span>
+        <span class="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+      </div>
+      <div class="loader-progress-bar">
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL UNIFIED NAVBAR -->
+  <header class="top-global-navbar">
+    <a href="../HOME%20PAGE/index.html" class="nav-brand">
+      <div class="nav-brand-dot"></div>
+      ONAM 2026
+    </a>
+    <ul class="nav-links">
+      <li><a href="../HOME%20PAGE/index.html">Home</a></li>
+      <li><a href="../UPCOMIG%20EVENTS/index.html">Upcoming Events</a></li>
+      <li><a href="#" class="active">Registration</a></li>
+      <li><a href="../MEET%20THE%20CORRDINATES/index.html">Meet the Coordinators</a></li>
+    </ul>
+  </header>
+
+  <!-- LIVE NEXT.JS REGISTRATION APP IFRAME -->
+  <iframe 
+    id="reg-app-frame" 
+    src="http://localhost:3001/" 
+    class="app-viewport"
+    title="Amrita Vishwa Vidyapeetham Onam Cultural Event Registration & E-Ticket"
+  ></iframe>
+
+  <script>
+    // Fallback script if port 3001 ever switches to 3000
+    const frame = document.getElementById('reg-app-frame');
+    fetch('http://localhost:3001/', { mode: 'no-cors' }).catch(() => {
+      frame.src = 'http://localhost:3000/';
+    });
+  </script>
+
+  <script src="./preloader.js"></script>
+  <script src="./cursor.js"></script>
+</body>
+</html>

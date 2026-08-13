@@ -1,0 +1,1110 @@
+/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./src/components/Registration/registration.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************/
+/* ==========================================================================
+   ONAM EVENT REGISTRATION MODULE - AMRITA MAHABALI COLOR THEME (.onam-reg-*)
+   ========================================================================== */
+
+/* Design Tokens & Variables scoped to the module container */
+.onam-reg-container {
+  --onam-purple-dark: #1b1226;
+  --onam-purple-mid: #2b1636;
+  --onam-ruby-dark: #4a1222;
+  --onam-crimson-red: #8c1827;
+  --onam-bright-red: #c42d2a;
+  --onam-vermilion: #d83f34;
+  --onam-coral-peach: #e07a68;
+  --onam-soft-peach: #f5d3c5;
+  --onam-cream-white: #fff5ec;
+  --onam-gold-warm: #F2C94C;
+  --onam-gold-kasavu: #D4AF37;
+  
+  /* Vertical Multistage Amrita Mahabali Gradient */
+  --onam-amrita-gradient: linear-gradient(180deg, #1b1226 0%, #4a1222 25%, #8c1827 50%, #c42d2a 75%, #e07a68 100%);
+  --onam-card-gradient: linear-gradient(160deg, rgba(35, 23, 51, 0.92) 0%, rgba(74, 18, 34, 0.92) 50%, rgba(140, 24, 39, 0.95) 100%);
+  --onam-modal-gradient: linear-gradient(170deg, rgba(27, 18, 38, 0.98) 0%, rgba(74, 18, 34, 0.98) 50%, rgba(140, 24, 39, 0.98) 100%);
+  --onam-pill-gradient: linear-gradient(135deg, #fff5ec 0%, #f5d3c5 50%, #e07a68 100%);
+  
+  --onam-gold-border: 1px solid rgba(242, 201, 76, 0.45);
+  --onam-radius-sm: 8px;
+  --onam-radius-md: 16px;
+  --onam-radius-lg: 24px;
+  --onam-font-title: 'Cinzel', 'Playfair Display', serif;
+  --onam-font-heading: 'Outfit', sans-serif;
+  --onam-font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  position: relative;
+  width: 100%;
+  padding: 5rem 1.5rem;
+  background: var(--onam-amrita-gradient);
+  color: var(--onam-cream-white);
+  font-family: var(--onam-font-body);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.onam-reg-container * {
+  box-sizing: border-box;
+}
+
+/* Background Radial Glow Overlay */
+.onam-reg-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 50% 15%, rgba(242, 201, 76, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 15% 50%, rgba(140, 24, 39, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(224, 122, 104, 0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Gold Wireframe Accent Line */
+.onam-reg-wireframe-line {
+  height: 2px;
+  width: 100%;
+  max-width: 550px;
+  margin: 1.4rem auto;
+  background: linear-gradient(90deg, transparent 0%, rgba(242, 201, 76, 0.7) 50%, transparent 100%);
+}
+
+/* Header Section */
+.onam-reg-header {
+  text-align: center;
+  max-width: 850px;
+  margin: 0 auto 4.2rem auto;
+  position: relative;
+  z-index: 2;
+}
+
+.onam-reg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  background: rgba(255, 245, 236, 0.12);
+  border: 1px solid rgba(242, 201, 76, 0.45);
+  color: var(--onam-cream-white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.onam-reg-title {
+  font-family: var(--onam-font-title);
+  font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  color: #FFFFFF;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(242, 201, 76, 0.35);
+  letter-spacing: 0.1em;
+}
+
+.onam-reg-subtitle {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: rgba(255, 245, 236, 0.88);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 680px;
+}
+
+/* Grid Layout for Event Cards */
+.onam-reg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 992px) {
+  .onam-reg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .onam-reg-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+  }
+}
+
+/* ==========================================================================
+   EVENT CARD & 3D TILT EFFECT (AMRITA MAHABALI THEME)
+   ========================================================================== */
+
+.onam-reg-card-wrapper {
+  perspective: 1000px;
+  height: 100%;
+}
+
+.onam-reg-card {
+  position: relative;
+  min-height: 490px;
+  border-radius: var(--onam-radius-lg);
+  background: var(--onam-card-gradient);
+  border: 1px solid rgba(242, 201, 76, 0.4);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 245, 236, 0.25);
+  padding: 2.2rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, border-color 0.4s ease, box-shadow 0.4s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.onam-reg-card:hover {
+  border-color: var(--onam-gold-warm);
+  box-shadow: 0 30px 65px rgba(0, 0, 0, 0.75), 0 0 35px rgba(140, 24, 39, 0.7), 0 0 20px rgba(242, 201, 76, 0.5);
+}
+
+/* Dynamic Spotlight Glow following cursor */
+.onam-reg-card-spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 260px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(242, 201, 76, 0.25), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.onam-reg-card:hover .onam-reg-card-spotlight {
+  opacity: 1;
+}
+
+.onam-reg-card-content {
+  position: relative;
+  z-index: 3;
+  transform: translateZ(30px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* CENTRALIZED ART / PICTURE CONTAINER IN THE MIDDLE */
+.onam-reg-central-art-frame {
+  position: relative;
+  width: 155px;
+  height: 155px;
+  margin: 0.5rem auto 1.5rem auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 211, 197, 0.2) 0%, rgba(74, 18, 34, 0.6) 100%);
+  border: 2px solid rgba(242, 201, 76, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(242, 201, 76, 0.25);
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.onam-reg-card:hover .onam-reg-central-art-frame {
+  transform: scale(1.08) translateZ(15px);
+  border-color: var(--onam-gold-warm);
+  box-shadow: 0 15px 45px rgba(140, 24, 39, 0.7), 0 0 30px rgba(242, 201, 76, 0.6);
+}
+
+/* ==========================================================================
+   EVENT LOGO ANIMATIONS (MUSIC, DANCE, GAMES)
+   ========================================================================== */
+
+.onam-reg-animated-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* MUSIC LOGO ANIMATION: Equalizer Pulse & Ripple Ring */
+.music-logo-anim svg {
+  animation: musicLogoBeat 1.4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  filter: drop-shadow(0 0 14px rgba(242, 201, 76, 0.7));
+}
+
+.onam-reg-card:hover .music-logo-anim svg {
+  animation-duration: 0.8s;
+}
+
+.music-pulse-ring {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid rgba(242, 201, 76, 0.6);
+  animation: musicRingWave 2s infinite ease-out;
+}
+
+@keyframes musicLogoBeat {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.14) rotate(-3deg); }
+  60% { transform: scale(0.96) rotate(3deg); }
+}
+
+@keyframes musicRingWave {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* DANCE LOGO ANIMATION: Fluid Sway & Aura Shimmer */
+.dance-logo-anim svg {
+  animation: danceFluidSway 3s infinite ease-in-out;
+  filter: drop-shadow(0 0 14px rgba(242, 201, 76, 0.8));
+}
+
+.onam-reg-card:hover .dance-logo-anim svg {
+  animation: danceFluidSpin 2.5s infinite ease-in-out;
+}
+
+.dance-aura-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 201, 76, 0.4) 0%, transparent 70%);
+  animation: danceAuraPulse 2.5s infinite ease-in-out alternate;
+}
+
+@keyframes danceFluidSway {
+  0%, 100% { transform: translateY(0) rotate(-4deg) scale(1); }
+  50% { transform: translateY(-8px) rotate(4deg) scale(1.08); }
+}
+
+@keyframes danceFluidSpin {
+  0% { transform: translateY(-4px) rotate(0deg) scale(1.05); }
+  50% { transform: translateY(4px) rotate(12deg) scale(1.12); }
+  100% { transform: translateY(-4px) rotate(0deg) scale(1.05); }
+}
+
+@keyframes danceAuraPulse {
+  0% { opacity: 0.3; transform: scale(0.9); }
+  100% { opacity: 0.95; transform: scale(1.2); }
+}
+
+/* GAMES LOGO ANIMATION: Playful 3D Bounce & Token Orbit */
+.games-logo-anim svg {
+  animation: gamesPlayfulBounce 2.2s infinite cubic-bezier(0.36, 0, 0.66, -0.56);
+  filter: drop-shadow(0 0 14px rgba(242, 201, 76, 0.7));
+}
+
+.onam-reg-card:hover .games-logo-anim svg {
+  animation: gamesPlayfulTilt 1.2s infinite ease-in-out alternate;
+}
+
+.games-bounce-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px dashed rgba(242, 201, 76, 0.6);
+  animation: spinGamesRing 6s linear infinite;
+}
+
+@keyframes gamesPlayfulBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.1) rotate(5deg); }
+}
+
+@keyframes gamesPlayfulTilt {
+  0% { transform: translateY(-4px) rotate(-8deg) scale(1.08); }
+  100% { transform: translateY(4px) rotate(8deg) scale(1.08); }
+}
+
+@keyframes spinGamesRing {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* CENTRALIZED HEADING & SUBHEADING WRITTEN BELOW THE PICTURE */
+.onam-reg-card-title {
+  font-family: var(--onam-font-title);
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 0.2rem 0;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.onam-reg-card-script-sub {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.45rem;
+  color: var(--onam-gold-warm);
+  margin: 0 0 0.5rem 0;
+}
+
+.onam-reg-card-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 245, 236, 0.75);
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.onam-reg-card-desc {
+  font-size: 0.88rem;
+  color: rgba(255, 245, 236, 0.88);
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Pill Button (Amrita Mahabali Theme) */
+.onam-reg-card-pill-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.9rem;
+  border-radius: 50px;
+  background: var(--onam-pill-gradient);
+  color: var(--onam-ruby-dark);
+  font-family: var(--onam-font-title);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  border: 2px solid rgba(74, 18, 34, 0.3);
+  box-shadow: 0 8px 25px rgba(74, 18, 34, 0.45), 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.onam-reg-card:hover .onam-reg-card-pill-btn {
+  transform: translateY(-3px) scale(1.04);
+  background: linear-gradient(135deg, #ffffff 0%, #f5d3c5 100%);
+  box-shadow: 0 12px 35px rgba(140, 24, 39, 0.6), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* ==========================================================================
+   EVENT SPECIFIC VISUALIZER ANIMATIONS
+   ========================================================================== */
+
+.onam-reg-visualizer-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit;
+}
+
+/* MUSIC VISUALIZER: Equalizer Bars */
+.onam-reg-eq-bars {
+  position: absolute;
+  bottom: 90px;
+  right: 25px;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 60px;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.onam-reg-card:hover .onam-reg-eq-bars {
+  opacity: 0.95;
+}
+
+.onam-reg-eq-bar {
+  width: 5px;
+  background: linear-gradient(180deg, #F2C94C 0%, #D4AF37 100%);
+  border-radius: 3px;
+  animation: eqPulse 1.2s infinite ease-in-out alternate;
+}
+
+.onam-reg-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.onam-reg-eq-bar:nth-child(2) { height: 75%; animation-delay: 0.4s; }
+.onam-reg-eq-bar:nth-child(3) { height: 100%; animation-delay: 0.2s; }
+.onam-reg-eq-bar:nth-child(4) { height: 50%; animation-delay: 0.6s; }
+.onam-reg-eq-bar:nth-child(5) { height: 85%; animation-delay: 0.3s; }
+
+@keyframes eqPulse {
+  0% { transform: scaleY(0.2); }
+  100% { transform: scaleY(1); }
+}
+
+/* DANCE VISUALIZER: Flowing Motion Trails */
+.onam-reg-flow-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--onam-gold-warm);
+  filter: blur(1px);
+  opacity: 0;
+}
+
+.onam-reg-card:hover .onam-reg-flow-particle {
+  animation: flowParticleMotion 2.5s infinite ease-out;
+}
+
+.onam-reg-flow-particle:nth-child(1) { top: 70%; left: 20%; animation-delay: 0.2s; }
+.onam-reg-flow-particle:nth-child(2) { top: 60%; left: 50%; animation-delay: 0.7s; }
+.onam-reg-flow-particle:nth-child(3) { top: 80%; left: 70%; animation-delay: 1.2s; }
+
+@keyframes flowParticleMotion {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  50% { opacity: 0.85; transform: translate(20px, -30px) scale(1.3); }
+  100% { transform: translate(50px, -60px) scale(0.2); opacity: 0; }
+}
+
+/* GAMES VISUALIZER: Orbiting Tokens */
+.onam-reg-games-orbit {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  width: 140px;
+  height: 140px;
+  border: 1px dashed rgba(242, 201, 76, 0.35);
+  border-radius: 50%;
+  animation: spinOrbit 8s linear infinite;
+}
+
+.onam-reg-orbit-token {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  background: var(--onam-pill-gradient);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(242, 201, 76, 0.85);
+}
+
+@keyframes spinOrbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   MODAL & BACKDROP BLUR
+   ========================================================================== */
+
+.onam-reg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(27, 18, 38, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: backdropFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.onam-reg-modal {
+  position: relative;
+  width: 100%;
+  max-width: 880px;
+  max-height: 90vh;
+  background: var(--onam-modal-gradient);
+  border: 1px solid rgba(242, 201, 76, 0.45);
+  border-radius: var(--onam-radius-lg);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 50px rgba(140, 24, 39, 0.6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: modalSpringIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
+  scrollbar-width: thin;
+  scrollbar-color: var(--onam-gold-warm) transparent;
+}
+
+.onam-reg-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.onam-reg-modal::-webkit-scrollbar-thumb {
+  background: var(--onam-gold-warm);
+  border-radius: 10px;
+}
+
+@keyframes modalSpringIn {
+  0% { transform: scale(0.85) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Close Button */
+.onam-reg-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 245, 236, 0.12);
+  border: 1px solid rgba(242, 201, 76, 0.35);
+  color: var(--onam-cream-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 10;
+}
+
+.onam-reg-modal-close:hover {
+  background: rgba(140, 24, 39, 0.9);
+  border-color: var(--onam-gold-warm);
+  transform: rotate(90deg);
+  box-shadow: 0 0 15px rgba(140, 24, 39, 0.8);
+}
+
+.onam-reg-modal-body {
+  padding: 2.5rem;
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .onam-reg-modal-body {
+    padding: 1.4rem;
+  }
+}
+
+/* ==========================================================================
+   FORMAT SELECTOR (SOLO / DUO / GROUP)
+   ========================================================================== */
+
+.onam-reg-format-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+  transition: all 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .onam-reg-format-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onam-reg-format-card {
+  position: relative;
+  padding: 2.2rem 1.5rem;
+  background: rgba(43, 22, 54, 0.55);
+  border: 1px solid rgba(242, 201, 76, 0.35);
+  border-radius: var(--onam-radius-md);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.onam-reg-format-card:hover {
+  background: rgba(140, 24, 39, 0.7);
+  border-color: var(--onam-gold-warm);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(242, 201, 76, 0.35);
+}
+
+.onam-reg-solo-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 201, 76, 0.35), transparent 70%);
+  pointer-events: none;
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  opacity: 0;
+}
+
+.onam-reg-format-card[data-format="solo"]:hover .onam-reg-solo-ripple {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 1;
+}
+
+.onam-reg-duo-twin-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 1rem;
+  transition: gap 0.4s ease;
+}
+
+.onam-reg-format-card[data-format="duo"]:hover .onam-reg-duo-twin-container {
+  gap: 10px;
+}
+
+.onam-reg-group-orbit-ring {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem auto;
+  border: 1px dashed rgba(242, 201, 76, 0.45);
+  border-radius: 50%;
+  transition: transform 0.4s ease;
+}
+
+.onam-reg-format-card[data-format="group"]:hover .onam-reg-group-orbit-ring {
+  animation: spinGroupOrbit 4s linear infinite;
+  border-color: var(--onam-gold-warm);
+}
+
+@keyframes spinGroupOrbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.onam-reg-format-card.animating-away {
+  opacity: 0 !important;
+  transform: scale(0.85) translateY(20px) !important;
+  filter: blur(8px) !important;
+  pointer-events: none;
+}
+
+.onam-reg-format-card.selected-expanding {
+  transform: scale(1.05) !important;
+  border-color: var(--onam-gold-warm) !important;
+  box-shadow: 0 0 40px rgba(242, 201, 76, 0.5) !important;
+}
+
+/* ==========================================================================
+   FORM CONTROLS & INPUTS
+   ========================================================================== */
+
+.onam-reg-form-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.onam-reg-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 245, 236, 0.1);
+  border: 1px solid rgba(242, 201, 76, 0.35);
+  color: var(--onam-cream-white);
+  padding: 0.55rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.onam-reg-back-btn:hover {
+  background: rgba(140, 24, 39, 0.6);
+  border-color: var(--onam-gold-warm);
+  color: #FFFFFF;
+  transform: translateX(-3px);
+}
+
+.onam-reg-form-section {
+  background: rgba(27, 18, 38, 0.6);
+  border: 1px solid rgba(242, 201, 76, 0.25);
+  border-radius: var(--onam-radius-md);
+  padding: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.onam-reg-section-title {
+  font-family: var(--onam-font-title);
+  font-size: 1.3rem;
+  color: var(--onam-gold-warm);
+  margin: 0 0 1.2rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid rgba(242, 201, 76, 0.2);
+  padding-bottom: 0.6rem;
+}
+
+.onam-reg-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .onam-reg-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onam-reg-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+}
+
+.onam-reg-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.onam-reg-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 245, 236, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.onam-reg-required {
+  color: #FF5A5A;
+  font-weight: 700;
+}
+
+.onam-reg-input,
+.onam-reg-select,
+.onam-reg-textarea {
+  width: 100%;
+  background: rgba(43, 22, 54, 0.6);
+  border: 1px solid rgba(242, 201, 76, 0.35);
+  border-radius: var(--onam-radius-sm);
+  padding: 0.8rem 1rem;
+  color: var(--onam-cream-white);
+  font-family: var(--onam-font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.onam-reg-input::-moz-placeholder, .onam-reg-textarea::-moz-placeholder {
+  color: rgba(255, 245, 236, 0.35);
+}
+
+.onam-reg-input::placeholder,
+.onam-reg-textarea::placeholder {
+  color: rgba(255, 245, 236, 0.35);
+}
+
+.onam-reg-input:focus,
+.onam-reg-select:focus,
+.onam-reg-textarea:focus {
+  background: rgba(140, 24, 39, 0.7);
+  border-color: var(--onam-gold-warm);
+  box-shadow: 0 0 15px rgba(242, 201, 76, 0.35);
+}
+
+.onam-reg-select option {
+  background: #2b1636;
+  color: #fff5ec;
+}
+
+.onam-reg-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* Error Shake Animation & Error Message */
+.onam-reg-form-group.has-error .onam-reg-input,
+.onam-reg-form-group.has-error .onam-reg-select,
+.onam-reg-form-group.has-error .onam-reg-textarea {
+  border-color: #FF5A5A;
+  background: rgba(140, 24, 39, 0.4);
+  animation: shakeError 0.4s ease-in-out;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.onam-reg-error-msg {
+  font-size: 0.78rem;
+  color: #FF7B7B;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+
+/* ==========================================================================
+   DYNAMIC GROUP MEMBERS SYSTEM
+   ========================================================================== */
+
+.onam-reg-members-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.onam-reg-members-counter {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.35rem 0.9rem;
+  background: rgba(242, 201, 76, 0.18);
+  border: 1px solid rgba(242, 201, 76, 0.45);
+  border-radius: 20px;
+  color: var(--onam-gold-warm);
+}
+
+.onam-reg-member-card {
+  position: relative;
+  background: rgba(27, 18, 38, 0.75);
+  border: 1px dashed rgba(242, 201, 76, 0.35);
+  border-radius: var(--onam-radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.8rem;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.onam-reg-member-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.onam-reg-member-name-tag {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--onam-gold-warm);
+}
+
+.onam-reg-remove-member-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 123, 123, 0.75);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.onam-reg-remove-member-btn:hover {
+  background: rgba(140, 24, 39, 0.6);
+  color: #FF5A5A;
+}
+
+.onam-reg-add-member-btn {
+  width: 100%;
+  padding: 0.85rem;
+  background: rgba(242, 201, 76, 0.12);
+  border: 1px dashed rgba(242, 201, 76, 0.5);
+  border-radius: var(--onam-radius-sm);
+  color: var(--onam-gold-warm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.onam-reg-add-member-btn:hover:not(:disabled) {
+  background: rgba(242, 201, 76, 0.28);
+  border-color: var(--onam-gold-warm);
+  color: #FFFFFF;
+  box-shadow: 0 0 20px rgba(242, 201, 76, 0.25);
+}
+
+.onam-reg-add-member-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   AUDIO UPLOADER COMPONENT
+   ========================================================================== */
+
+.onam-reg-uploader {
+  border: 2px dashed rgba(242, 201, 76, 0.4);
+  border-radius: var(--onam-radius-md);
+  padding: 1.8rem;
+  text-align: center;
+  background: rgba(43, 22, 54, 0.4);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.onam-reg-uploader:hover,
+.onam-reg-uploader.is-dragging {
+  border-color: var(--onam-gold-warm);
+  background: rgba(140, 24, 39, 0.5);
+  box-shadow: inset 0 0 20px rgba(242, 201, 76, 0.2);
+}
+
+.onam-reg-upload-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(242, 201, 76, 0.18);
+  color: var(--onam-gold-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.8rem auto;
+}
+
+.onam-reg-uploader-file-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(27, 18, 38, 0.85);
+  border: 1px solid rgba(242, 201, 76, 0.35);
+  padding: 0.85rem 1.2rem;
+  border-radius: var(--onam-radius-sm);
+}
+
+/* ==========================================================================
+   SUBMIT BUTTON (AMRITA MAHABALI PILL STYLE)
+   ========================================================================== */
+
+.onam-reg-submit-btn {
+  width: 100%;
+  padding: 1.15rem 2rem;
+  border-radius: 50px;
+  background: var(--onam-pill-gradient);
+  border: 2px solid rgba(74, 18, 34, 0.3);
+  color: var(--onam-ruby-dark);
+  font-family: var(--onam-font-title);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 30px rgba(74, 18, 34, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-top: 1rem;
+}
+
+.onam-reg-submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(140, 24, 39, 0.75), inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: linear-gradient(135deg, #ffffff 0%, #f5d3c5 100%);
+}
+
+.onam-reg-submit-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.onam-reg-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.onam-reg-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(74, 18, 34, 0.3);
+  border-top-color: #4a1222;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   SUCCESS SCREEN
+   ========================================================================== */
+
+.onam-reg-success-container {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.onam-reg-success-ring {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.8rem auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onam-reg-success-ring svg.checkmark {
+  width: 55px;
+  height: 55px;
+  stroke: var(--onam-gold-warm);
+  stroke-width: 3.5;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 0.8s ease-out 0.3s forwards;
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+.onam-reg-success-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--onam-gold-kasavu);
+  border-radius: 50%;
+  animation: ringExpand 0.6s ease-out forwards;
+  box-shadow: 0 0 30px rgba(242, 201, 76, 0.5);
+}
+
+@keyframes ringExpand {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.onam-reg-id-badge {
+  display: inline-block;
+  background: rgba(27, 18, 38, 0.85);
+  border: 1px solid var(--onam-gold-kasavu);
+  padding: 0.8rem 2rem;
+  border-radius: var(--onam-radius-md);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--onam-gold-warm);
+  margin: 1.5rem 0;
+  box-shadow: 0 0 25px rgba(242, 201, 76, 0.35);
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .onam-reg-card,
+  .onam-reg-modal,
+  .onam-reg-format-card,
+  .onam-reg-member-card,
+  .onam-reg-eq-bar,
+  .onam-reg-animated-logo svg,
+  .music-pulse-ring,
+  .dance-aura-glow,
+  .games-bounce-ring,
+  .onam-reg-spinner {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+}
+

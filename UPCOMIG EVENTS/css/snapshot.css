@@ -1,0 +1,255 @@
+/* ============================================================
+   ONAM FEST — SNAPSHOT / FILM ROLL SECTION
+   ============================================================ */
+
+#snapshot {
+  position: relative;
+  padding: var(--space-2xl) 0;
+  background: linear-gradient(180deg, var(--near-black) 0%, #060d0a 100%);
+  overflow: hidden;
+}
+
+/* Background texture */
+#snapshot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(31, 92, 66, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Top/bottom fades that blend the film rolls in */
+#snapshot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--near-black) 0%, transparent 8%, transparent 92%, var(--near-black) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.snapshot-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Section header */
+.snapshot-header {
+  text-align: center;
+  padding: 0 2rem;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 6;
+}
+.snapshot-header .section-label { display: block; margin-bottom: 0.75rem; }
+.snapshot-header .section-title { margin-bottom: 0.75rem; }
+.snapshot-header p {
+  font-size: 0.85rem;
+  color: rgba(255, 248, 231, 0.45);
+  letter-spacing: 0.05em;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ── FILM ROLLS CONTAINER ─────────────────────────────────── */
+.film-rolls-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  height: clamp(500px, 70vh, 750px);
+  overflow: hidden;
+  position: relative;
+  padding: 0 clamp(1rem, 3vw, 3rem);
+}
+
+/* ── FILM STRIP COLUMN ────────────────────────────────────── */
+.film-strip {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0a0a0a;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+
+/* Sprocket holes — left edge */
+.film-strip::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 22px;
+  z-index: 4;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 12px,
+      #0a0a0a 12px,
+      #0a0a0a 14px,
+      transparent 14px,
+      transparent 24px
+    );
+  background-size: 100% 40px;
+}
+
+/* Sprocket holes — right edge */
+.film-strip::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 22px;
+  z-index: 4;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 12px,
+      #0a0a0a 12px,
+      #0a0a0a 14px,
+      transparent 14px,
+      transparent 24px
+    );
+  background-size: 100% 40px;
+}
+
+/* Edge darker border strips */
+.film-edge-left,
+.film-edge-right {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 22px;
+  z-index: 3;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px 0;
+  overflow: hidden;
+}
+.film-edge-left { left: 0; }
+.film-edge-right { right: 0; }
+
+.sprocket {
+  width: 10px;
+  height: 14px;
+  background: #000;
+  border-radius: 2px;
+  margin: 0 auto;
+  box-shadow: inset 0 0 3px rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+
+/* ── SCROLL TRACKS ────────────────────────────────────────── */
+.film-track {
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  will-change: transform;
+}
+
+/* Down direction (col 1 & 3) */
+.film-track.scroll-down {
+  animation: scrollDown var(--scroll-duration, 28s) linear infinite;
+}
+/* Up direction (col 2) */
+.film-track.scroll-up {
+  animation: scrollUp var(--scroll-duration, 24s) linear infinite;
+}
+
+@keyframes scrollDown {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -50%, 0); }
+}
+@keyframes scrollUp {
+  from { transform: translate3d(0, -50%, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+/* Pause on hover */
+.film-strip:hover .film-track { animation-play-state: paused; }
+
+/* ── PHOTO FRAMES ─────────────────────────────────────────── */
+.film-frame {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #111;
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s;
+  flex-shrink: 0;
+}
+
+.film-frame:hover {
+  transform: scale(1.04) translateZ(8px);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.8),
+    0 0 0 1.5px var(--kasavu-gold);
+  z-index: 2;
+}
+
+.film-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.35s, brightness 0.35s;
+  filter: saturate(0.85) brightness(0.9);
+}
+.film-frame:hover img {
+  filter: saturate(1.05) brightness(1.08);
+}
+
+/* Photo placeholder tiles */
+.film-frame-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,248,231,0.2);
+  background: var(--placeholder-color, #1a2e22);
+}
+.film-frame-placeholder svg {
+  width: 28px;
+  height: 28px;
+  opacity: 0.3;
+}
+
+/* Frame overlay shimmer */
+.film-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .film-rolls-container {
+    gap: 6px;
+    height: clamp(380px, 60vh, 580px);
+    padding: 0 0.75rem;
+  }
+}
+@media (max-width: 480px) {
+  .film-rolls-container {
+    gap: 4px;
+    padding: 0 0.5rem;
+  }
+  .film-edge-left, .film-edge-right { width: 16px; }
+  .film-track { left: 16px; right: 16px; }
+}

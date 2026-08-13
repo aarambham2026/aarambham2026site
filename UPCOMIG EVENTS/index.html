@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #161022;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ONAM '26 — 3D Interactive Events & Porsche Showcase</title>
+  <meta name="description" content="Immersive 3D microsite for University Onam 2026. Explore traditional Kerala events and transition into the Porsche Car Show experience." />
+  <meta name="theme-color" content="#1b1226" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Outfit:wght@300;400;600;700&family=Syncopate:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Three.js (r128) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Custom Design System Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/cursor.css" />
+  <link rel="stylesheet" href="css/preloader.css" />
+</head>
+<body style="background-color: #161022;">
+
+  <!-- UNIFIED THEYAM PRELOADER (NO SKIP OPTION) -->
+  <div id="loading-screen" class="unified-preloader" role="status" aria-label="Loading Onam Cultural Fest Portal">
+    <div class="loader-container">
+      <div class="loader-art-card">
+        <img src="Theyyam stick.gif" alt="Onam Cultural Fest Mascot" class="loader-art-img" />
+      </div>
+      <div class="loader-university-title">AMRITA VISHWA VIDYAPEETHAM</div>
+      <div class="loader-status-wrap">
+        <span class="loader-spinner"></span>
+        <span class="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+      </div>
+      <div class="loader-progress-bar">
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D WEBGL CANVAS BACKGROUND -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="../HOME%20PAGE/index.html" class="nav-brand">
+      <div class="nav-brand-dot"></div>
+      ONAM '26
+    </a>
+    <nav class="nav-links-wrap">
+      <a href="../HOME%20PAGE/index.html">Home</a>
+      <a href="#" class="active">Upcoming Events</a>
+      <a href="../REGISTRATION/index.html">Registration</a>
+      <a href="../MEET%20THE%20CORRDINATES/index.html">Meet the Coordinators</a>
+    </nav>
+  </header>
+
+  <!-- SPLIT PORTAL CONTAINER -->
+  <div class="portal-container">
+
+    <!-- DRAGGABLE SPLIT SLIDER HANDLE -->
+    <div class="portal-slider-bar" id="portal-slider-bar">
+      <div class="portal-slider-handle" id="portal-slider-handle">
+        ⤞ ⤝
+      </div>
+      <div class="slider-mode-tags">
+        <span class="tag-left">◀ ONAM FEST</span>
+        <span class="tag-right">PORSCHE WORLD ▶</span>
+      </div>
+    </div>
+
+    <!-- WORLD 1: ONAM FESTIVAL (Left Side of Split) -->
+    <section class="world-layer onam-world" id="onam-world">
+      <div class="onam-viewport">
+        <p class="onam-hero-tag">Amrita Vishwa Vidyapeetham · Cultural Festival 2026</p>
+        <h1 class="onam-hero-title">ONAM '26</h1>
+        <p class="onam-hero-desc">
+          The grand festival of tradition, rhythm & celebration. Experience the traditional lineup of dance, music fusion, Onam games, and floral art championships.
+        </p>
+
+        <h2 class="section-divider">FEATURED EVENT LINEUP</h2>
+        <div class="events-grid" id="events-grid">
+          <!-- Populated by js/events.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- WORLD 2: PORSCHE EXPERIENCE (Right Side of Split) -->
+    <section class="world-layer porsche-world" id="porsche-world">
+      <div class="porsche-viewport">
+        <div class="upside-down-badge">Ignite Onam with 911 👀</div>
+        <h1 class="porsche-main-title">PORSCHE</h1>
+        <p class="porsche-tagline">ONAM MEETS PERFORMANCE — EXPERIENCE THE MACHINE.</p>
+
+        <!-- CAR ANIMATION HERO DISPLAY & IGNITE BUTTON -->
+        <div class="car-display-container">
+          <div class="car-media-wrap">
+            <canvas id="car-poster-canvas" class="car-poster-canvas"></canvas>
+            <img
+              id="car-gif"
+              class="car-gif-img"
+              alt="Porsche GT3 Performance Animation"
+              style="display: none;"
+            />
+          </div>
+          <div class="car-display-overlay">
+            <button class="ignite-engine-btn" id="ignite-engine-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              IGNITE THE ENGINE
+            </button>
+            <p class="engine-status-text" id="engine-status-text">
+              STATUS: STANDBY · PRESS BUTTON TO START ANIMATION & ENGINE
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="event-modal-overlay">
+    <div class="modal-card" id="event-modal-card">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/audio.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/slider.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/porsche-experience.js"></script>
+  <script src="js/preloader.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize Ambient WebGL Scene
+      const scene3D = new DualWorldScene('webgl-canvas');
+
+      // 2. Initialize Portal Split Slider
+      const slider = new ExperienceSlider((splitVal) => {
+        scene3D.setProgress(splitVal);
+      });
+
+      // 3. Initialize Events System
+      const eventSys = new EventSystem();
+
+      // 4. Initialize Porsche System
+      const porscheSys = new PorscheExperience(scene3D);
+
+      // 5. Initialize Preloader
+      const preloader = new PreloaderController();
+    });
+  </script>
+  <script src="js/cursor.js"></script>
+  <script src="js/preloader.js"></script>
+</body>
+</html>

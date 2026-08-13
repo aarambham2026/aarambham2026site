@@ -1,0 +1,353 @@
+/* ============================================================
+   ONAM FEST — HERO, COUNTDOWN & FLOATING ELEMENTS
+   ============================================================ */
+
+/* ── HERO SECTION ─────────────────────────────────────────── */
+#home {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Background */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--deep-green);
+  background-image: url('../assets/hero/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Very subtle overlay — preserves artwork */
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 15, 9, 0.25) 0%,
+    rgba(8, 15, 9, 0.05) 40%,
+    rgba(8, 15, 9, 0.35) 100%
+  );
+}
+
+/* Placeholder shown when no hero-bg.jpg */
+.hero-bg-placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(31, 92, 66, 0.7) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+    linear-gradient(160deg, #080f09 0%, #12372A 40%, #0d2218 100%);
+}
+
+/* Decorative Pookalam pattern overlay */
+.hero-pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3Ccircle cx='60' cy='0' r='2'/%3E%3Ccircle cx='0' cy='60' r='2'/%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Hero content wrapper */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  padding: 8rem 2rem 5rem;
+  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Festival label */
+.hero-label {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--kasavu-gold);
+  opacity: 0;
+  animation: heroFadeUp 0.8s ease 0.4s forwards;
+}
+
+/* ── HEADING VIDEO / IMAGE ────────────────────────────────── */
+.hero-heading-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: heroFadeUp 0.9s ease 0.6s forwards;
+}
+
+/* Heading video */
+#heading-video {
+  width: min(800px, 90vw);
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.25));
+  mix-blend-mode: lighten;
+}
+
+/* Fallback heading text (shown if no video) */
+.hero-heading-fallback {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--cream) 30%, var(--kasavu-gold) 70%, var(--warm-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.3));
+}
+
+/* Heading video glow halo */
+.hero-heading-wrap::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 250px;
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  animation: haloPulse 3s ease-in-out infinite;
+}
+
+@keyframes haloPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Hero sub-info */
+.hero-sub {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: heroFadeUp 0.8s ease 0.85s forwards;
+}
+.hero-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 248, 231, 0.65);
+  text-transform: uppercase;
+}
+.hero-sub-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--kasavu-gold);
+  opacity: 0.6;
+}
+
+/* ── FLOATING ELEMENTS ────────────────────────────────────── */
+.floating-element {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Element 1 — LEFT to RIGHT */
+.float-elem-1 {
+  width: clamp(100px, 15vw, 180px);
+  bottom: 18%;
+  animation: floatLR 18s ease-in-out infinite;
+}
+
+/* Element 2 — RIGHT to LEFT */
+.float-elem-2 {
+  width: clamp(90px, 12vw, 160px);
+  top: 20%;
+  animation: floatRL 22s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
+/* Placeholder SVG elements for floating (used when no assets provided) */
+.float-svg-lamp {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
+}
+
+@keyframes floatLR {
+  0%   { transform: translate3d(-5vw, 0px,  0) rotate(-3deg); }
+  25%  { transform: translate3d(0vw, -18px, 0) rotate(0deg); }
+  50%  { transform: translate3d(5vw,  6px,  0) rotate(3deg); }
+  75%  { transform: translate3d(0vw, -10px, 0) rotate(0deg); }
+  100% { transform: translate3d(-5vw, 0px,  0) rotate(-3deg); }
+}
+
+@keyframes floatRL {
+  0%   { transform: translate3d(5vw,  0px,  0) rotate(2deg); }
+  25%  { transform: translate3d(0vw, -14px, 0) rotate(-1deg); }
+  50%  { transform: translate3d(-5vw, 8px,  0) rotate(-3deg); }
+  75%  { transform: translate3d(0vw, -6px,  0) rotate(0deg); }
+  100% { transform: translate3d(5vw,  0px,  0) rotate(2deg); }
+}
+
+/* Hero scroll indicator */
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: heroFadeUp 0.8s ease 1.4s forwards;
+}
+.hero-scroll-hint span {
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: rgba(255, 248, 231, 0.35);
+  text-transform: uppercase;
+}
+.scroll-arrow {
+  width: 24px;
+  height: 24px;
+  border-right: 1.5px solid rgba(212, 175, 55, 0.5);
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.5);
+  transform: rotate(45deg);
+  animation: scrollBounce 1.8s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50%       { transform: rotate(45deg) translateY(5px); }
+}
+
+/* Entry animations */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── COUNTDOWN ────────────────────────────────────────────── */
+.countdown-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.6rem, 2vw, 1.2rem);
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: heroFadeUp 0.8s ease 1.1s forwards;
+}
+
+.countdown-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(70px, 12vw, 120px);
+  padding: clamp(0.8rem, 2.5vw, 1.4rem) clamp(0.6rem, 2vw, 1.2rem);
+  background: rgba(212, 175, 55, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(212, 175, 55, 0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.countdown-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+}
+
+.countdown-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+.countdown-number {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cream);
+  letter-spacing: -0.02em;
+  transition: transform 0.15s ease;
+}
+
+.countdown-number.flip {
+  animation: numFlip 0.25s ease;
+}
+@keyframes numFlip {
+  0%  { transform: translateY(-4px); opacity: 0.6; }
+  100%{ transform: translateY(0);    opacity: 1; }
+}
+
+.countdown-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.5rem, 1.2vw, 0.62rem);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--kasavu-gold);
+  margin-top: 0.4rem;
+  opacity: 0.85;
+}
+
+.countdown-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kasavu-gold);
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  opacity: 0.5;
+  padding-bottom: 1.2rem;
+  animation: sepBlink 1s ease-in-out infinite;
+}
+@keyframes sepBlink {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.15; }
+}
+
+/* "The Wait is Over" state */
+.countdown-over {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--kasavu-gold);
+  text-align: center;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 10px rgba(212,175,55,0.4); }
+  50%       { text-shadow: 0 0 30px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.4); }
+}
