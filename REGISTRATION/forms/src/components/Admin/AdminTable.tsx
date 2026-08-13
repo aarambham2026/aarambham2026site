@@ -90,21 +90,6 @@ export default function AdminTable({
 
   return (
     <div className="bg-zinc-950/90 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
-      {/* Title & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-4 gap-2">
-        <div>
-          <h2 className="text-xl font-extrabold text-white font-serif tracking-tight flex items-center gap-2">
-            <span>🎓</span> COMPLETED STUDENT REGISTRATIONS RECORD
-          </h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            Official record of all students who have completed registration for Onam 2026 events.
-          </p>
-        </div>
-        <div className="self-start sm:self-auto text-xs font-mono bg-amber-950/80 border border-amber-800/60 text-amber-300 px-3.5 py-1.5 rounded-xl font-bold">
-          {data.length} Completed Registrations
-        </div>
-      </div>
-
       {/* Search & Filter Controls */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         {/* Search */}
@@ -114,7 +99,7 @@ export default function AdminTable({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Student Name or Reg ID (e.g. EVT-0001)..."
+            placeholder="Search by Team Leader or Reg ID (e.g. EVT-0001)..."
             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
           />
         </div>
@@ -178,7 +163,7 @@ export default function AdminTable({
             <tr>
               <th className="px-4 py-3.5">Queue #</th>
               <th className="px-4 py-3.5">Reg ID</th>
-              <th className="px-4 py-3.5">Student Name</th>
+              <th className="px-4 py-3.5">Team Leader</th>
               <th className="px-4 py-3.5">Members</th>
               <th className="px-4 py-3.5">Category</th>
               <th className="px-4 py-3.5">Allocated Slot</th>
@@ -192,7 +177,7 @@ export default function AdminTable({
             {data.length === 0 ? (
               <tr>
                 <td colSpan={9} className="px-4 py-8 text-center text-zinc-500">
-                  No completed student registrations found matching your filter criteria.
+                  No registrations found matching your filter criteria.
                 </td>
               </tr>
             ) : (
