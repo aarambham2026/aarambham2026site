@@ -17,6 +17,7 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           { key: 'Content-Security-Policy', value: "frame-ancestors 'self' *" },
+          { key: 'X-Content-Type-Options', value: 'nosniff' }
         ],
       },
     ];

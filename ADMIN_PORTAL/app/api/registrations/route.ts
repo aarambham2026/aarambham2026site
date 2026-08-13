@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { verifyAdminToken } from '@/lib/security';
 
 export async function GET(req: Request) {
   const cookieStore = await cookies();
-  const session = cookieStore.get('aarambham_admin_session');
+  const sessionToken = cookieStore.get('aarambham_admin_session')?.value;
 
-  if (!session || session.value !== 'authenticated') {
+  if (!verifyAdminToken(sessionToken)) {
     return NextResponse.json(
       { success: false, error: 'Unauthorized admin access' },
       { status: 401 }

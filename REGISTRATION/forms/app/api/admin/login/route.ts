@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createAdminToken, timingSafeCompare } from '@/lib/security';
 
 export async function POST(req: Request) {
   try {
@@ -7,18 +8,22 @@ export async function POST(req: Request) {
     const validUsername = process.env.ADMIN_USERNAME || 'admin';
     const validPassword = process.env.ADMIN_PASSWORD || 'aarambham2026';
 
-    if (username === validUsername && password === validPassword) {
+    const isUserValid = timingSafeCompare(String(username || ''), validUsername);
+    const isPassValid = timingSafeCompare(String(password || ''), validPassword);
+
+    if (isUserValid && isPassValid) {
       const response = NextResponse.json({
         success: true,
-        message: 'Admin login successful'
+        message: 'Admin authentication successful'
       });
 
-      // Set secure HTTP-only session cookie valid for 24 hours
-      response.cookies.set('admin_session', 'authenticated', {
+      const secureToken = createAdminToken();
+
+      response.cookies.set('admin_session', secureToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24, // 1 day
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24, // 24 hours
         path: '/'
       });
 
@@ -31,7 +36,7 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: error.message || 'Login error' },
+      { success: false, error: error.message || 'Authentication error' },
       { status: 500 }
     );
   }
