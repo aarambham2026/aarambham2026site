@@ -70,8 +70,12 @@ export function parseTimeToMinutes(timeStr: string): number {
 
   const trimmed = timeStr.trim();
   
+  // If timeStr is a range like "2:38 PM – 2:43 PM", extract the end time "2:43 PM"
+  const parts = trimmed.split(/[-–—]/);
+  const target = parts[parts.length - 1].trim();
+
   // Handles 12-hour format e.g. "2:10 PM" or "02:10 PM"
-  const twelveHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  const twelveHourMatch = target.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
   if (twelveHourMatch) {
     let hours = parseInt(twelveHourMatch[1], 10);
     const minutes = parseInt(twelveHourMatch[2], 10);
@@ -82,7 +86,7 @@ export function parseTimeToMinutes(timeStr: string): number {
   }
 
   // Handles 24-hour format e.g. "14:00"
-  const twentyFourMatch = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+  const twentyFourMatch = target.match(/^(\d{1,2}):(\d{2})$/);
   if (twentyFourMatch) {
     const hours = parseInt(twentyFourMatch[1], 10);
     const minutes = parseInt(twentyFourMatch[2], 10);
