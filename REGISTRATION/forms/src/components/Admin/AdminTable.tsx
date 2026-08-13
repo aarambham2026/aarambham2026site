@@ -7,10 +7,17 @@ export interface RegistrationRecord {
   id: string;
   registrationId: string;
   teamLeaderName: string;
+  rollNo?: string;
+  department?: string;
+  year?: string;
+  format?: string;
   numberOfMembers: number;
   eventCategory: string;
+  performanceName?: string;
+  performanceDuration: number;
   email: string;
   phone: string;
+  membersList?: string;
   queuePosition: number;
   slotStartTime: string;
   slotEndTime: string;
@@ -99,7 +106,7 @@ export default function AdminTable({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Team Leader or Reg ID (e.g. EVT-0001)..."
+            placeholder="Search by Team Leader, Roll No, Reg ID (e.g. EVT-0001)..."
             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
           />
         </div>
@@ -114,6 +121,7 @@ export default function AdminTable({
             <option value="ALL">All Categories</option>
             <option value="MUSIC">Music</option>
             <option value="DANCE">Dance</option>
+            <option value="OTHERS">Others</option>
           </select>
 
           <select
@@ -130,7 +138,7 @@ export default function AdminTable({
             href={`/api/registrations/export?category=${categoryFilter}&status=${statusFilter}`}
             download
             className="flex items-center gap-1.5 px-3.5 py-2.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 rounded-xl text-xs font-bold transition-all shadow-md"
-            title="Download Registrations Table as Excel (.xlsx)"
+            title="Download Full Registrations Table as Excel (.xlsx)"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
             <span>Download XLSX</span>
@@ -159,24 +167,24 @@ export default function AdminTable({
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-zinc-800/80">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/90 text-zinc-400 font-semibold uppercase tracking-wider border-b border-zinc-800">
+          <thead className="bg-zinc-900/90 text-amber-400 font-mono text-[11px] uppercase tracking-wider border-b border-zinc-800">
             <tr>
-              <th className="px-4 py-3.5">Queue #</th>
-              <th className="px-4 py-3.5">Reg ID</th>
-              <th className="px-4 py-3.5">Team Leader</th>
-              <th className="px-4 py-3.5">Members</th>
-              <th className="px-4 py-3.5">Category</th>
-              <th className="px-4 py-3.5">Allocated Slot</th>
-              <th className="px-4 py-3.5">Registration Date & Time</th>
-              <th className="px-4 py-3.5">Status</th>
-              <th className="px-4 py-3.5 text-right">Actions</th>
+              <th className="px-4 py-3.5 font-bold">Reg ID</th>
+              <th className="px-4 py-3.5 font-bold">Team Leader Details</th>
+              <th className="px-4 py-3.5 font-bold">Dept & Year</th>
+              <th className="px-4 py-3.5 font-bold">Category & Title</th>
+              <th className="px-4 py-3.5 font-bold">Format & Members</th>
+              <th className="px-4 py-3.5 font-bold">Allocated Stage Slot</th>
+              <th className="px-4 py-3.5 font-bold">Contact Info</th>
+              <th className="px-4 py-3.5 font-bold">Status</th>
+              <th className="px-4 py-3.5 text-right font-bold">Actions</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-zinc-800/60 text-zinc-300 font-medium">
             {data.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-zinc-500">
+                <td colSpan={9} className="px-4 py-8 text-center text-zinc-500 font-mono">
                   No registrations found matching your filter criteria.
                 </td>
               </tr>
@@ -184,37 +192,44 @@ export default function AdminTable({
               data.map((reg) => (
                 <tr key={reg.id} className="hover:bg-zinc-900/50 transition-colors">
                   <td className="px-4 py-4 font-mono font-bold text-amber-400">
-                    #{reg.queuePosition}
-                  </td>
-                  <td className="px-4 py-4 font-mono text-orange-400 font-bold">
                     {reg.registrationId}
+                    <div className="text-[10px] text-zinc-500 font-normal">#{reg.queuePosition}</div>
                   </td>
                   <td className="px-4 py-4 text-white font-semibold">
                     {reg.teamLeaderName}
-                    <div className="text-[10px] text-zinc-500 font-normal">{reg.email}</div>
+                    <div className="text-[10px] text-amber-400 font-mono font-normal">Roll: {reg.rollNo || 'N/A'}</div>
                   </td>
-                  <td className="px-4 py-4 text-zinc-400">
-                    {reg.numberOfMembers}
+                  <td className="px-4 py-4 font-mono text-zinc-300">
+                    <div>{reg.department || 'N/A'}</div>
+                    <div className="text-[10px] text-zinc-500">{reg.year || 'N/A'}</div>
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase ${
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase ${
                       reg.eventCategory === 'MUSIC'
                         ? 'bg-amber-950/80 border border-amber-800/60 text-amber-300'
                         : 'bg-rose-950/80 border border-rose-800/60 text-rose-300'
                     }`}>
                       {reg.eventCategory}
                     </span>
+                    {reg.performanceName && (
+                      <div className="text-[11px] text-zinc-300 font-normal mt-0.5">{reg.performanceName}</div>
+                    )}
                   </td>
-                  <td className="px-4 py-4 font-bold text-zinc-200">
-                    {reg.slotStartTime} - {reg.slotEndTime}
+                  <td className="px-4 py-4 font-mono">
+                    <span className="text-amber-300 font-bold">{reg.format || 'SOLO'}</span> ({reg.numberOfMembers} member{reg.numberOfMembers > 1 ? 's' : ''})
+                    {reg.membersList && (
+                      <div className="text-[10px] text-zinc-400 font-normal max-w-xs truncate" title={reg.membersList}>
+                        {reg.membersList}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-4 py-4 text-[11px] text-zinc-400">
-                    <div className="font-semibold text-zinc-300">
-                      {new Date(reg.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
-                    </div>
-                    <div className="text-[10px] text-zinc-500 font-mono">
-                      {new Date(reg.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                    </div>
+                  <td className="px-4 py-4 font-mono font-bold text-emerald-300">
+                    {reg.slotStartTime} – {reg.slotEndTime}
+                    <div className="text-[10px] text-zinc-500 font-normal">{reg.performanceDuration} mins</div>
+                  </td>
+                  <td className="px-4 py-4 font-mono text-zinc-400">
+                    <div>{reg.phone}</div>
+                    <div className="text-[10px] text-zinc-500">{reg.email}</div>
                   </td>
                   <td className="px-4 py-4">
                     {reg.status === 'REGISTERED' ? (

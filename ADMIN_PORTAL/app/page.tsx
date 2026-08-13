@@ -8,12 +8,17 @@ export interface RegistrationRecord {
   id: string;
   registrationId: string;
   teamLeaderName: string;
+  rollNo?: string;
+  department?: string;
+  year?: string;
+  format?: string;
   numberOfMembers: number;
   eventCategory: string;
   performanceName?: string;
   performanceDuration: number;
   email: string;
   phone: string;
+  membersList?: string;
   queuePosition: number;
   slotStartTime: string;
   slotEndTime: string;
@@ -104,19 +109,24 @@ export default function StandaloneAdminPage() {
     if (!data || data.length === 0) return;
 
     const exportRows = data.map((item) => ({
-      'Registration ID': item.registrationId,
-      'Queue Position': item.queuePosition,
-      'Team Leader Name': item.teamLeaderName,
-      'Members Count': item.numberOfMembers,
-      'Event Category': item.eventCategory,
-      'Performance Name': item.performanceName || 'N/A',
-      'Duration (Mins)': item.performanceDuration,
-      'Slot Start Time': item.slotStartTime,
-      'Slot End Time': item.slotEndTime,
-      'Email Address': item.email,
-      'Phone Number': item.phone,
-      'Status': item.status,
-      'Registered At': new Date(item.createdAt).toLocaleString()
+      'Queue #': item.queuePosition || 0,
+      'Registration ID': item.registrationId || 'N/A',
+      'Team Leader Name': item.teamLeaderName || 'N/A',
+      'Roll Number': item.rollNo || 'N/A',
+      'Department': item.department || 'N/A',
+      'Year / Semester': item.year || 'N/A',
+      'Performance Format': item.format || 'SOLO',
+      'Member Count': item.numberOfMembers || 1,
+      'Event Category': item.eventCategory || 'N/A',
+      'Performance Title': item.performanceName || 'N/A',
+      'Performance Duration (mins)': item.performanceDuration || 10,
+      'Stage Slot Start': item.slotStartTime || 'N/A',
+      'Stage Slot End': item.slotEndTime || 'N/A',
+      'Email Address': item.email || 'N/A',
+      'Phone Number': item.phone || 'N/A',
+      'Team Roster': item.membersList || 'N/A',
+      'Registration Status': item.status || 'REGISTERED',
+      'Registered At': new Date(item.createdAt || Date.now()).toLocaleString()
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
@@ -231,7 +241,7 @@ export default function StandaloneAdminPage() {
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold tracking-wider text-emerald-300 hover:text-white bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 rounded-full transition-all shadow-md"
             >
               <Download className="w-4 h-4" />
-              EXPORT EXCEL
+              EXPORT EXCEL (.XLSX)
             </button>
 
             <button
@@ -289,7 +299,7 @@ export default function StandaloneAdminPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by ID (EVT-0001), Leader Name, Email..."
+              placeholder="Search by ID (EVT-0001), Leader Name, Roll No, Email..."
               className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
             />
           </div>
@@ -326,12 +336,12 @@ export default function StandaloneAdminPage() {
               <thead className="bg-zinc-900/90 text-amber-400 font-mono text-[11px] uppercase tracking-wider border-b border-amber-500/20">
                 <tr>
                   <th className="py-3.5 px-4 font-bold">Reg ID</th>
-                  <th className="py-3.5 px-4 font-bold">Team Leader</th>
-                  <th className="py-3.5 px-4 font-bold">Category</th>
-                  <th className="py-3.5 px-4 font-bold">Members</th>
-                  <th className="py-3.5 px-4 font-bold">Allocated Slot</th>
-                  <th className="py-3.5 px-4 font-bold">Duration</th>
-                  <th className="py-3.5 px-4 font-bold">Contact Phone</th>
+                  <th className="py-3.5 px-4 font-bold">Team Leader Details</th>
+                  <th className="py-3.5 px-4 font-bold">Dept & Year</th>
+                  <th className="py-3.5 px-4 font-bold">Category & Title</th>
+                  <th className="py-3.5 px-4 font-bold">Format & Members</th>
+                  <th className="py-3.5 px-4 font-bold">Allocated Stage Slot</th>
+                  <th className="py-3.5 px-4 font-bold">Contact Info</th>
                   <th className="py-3.5 px-4 font-bold">Status</th>
                 </tr>
               </thead>
@@ -345,8 +355,18 @@ export default function StandaloneAdminPage() {
                 ) : (
                   data.map((row) => (
                     <tr key={row.id} className="hover:bg-amber-950/20 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-amber-300">{row.registrationId}</td>
-                      <td className="py-3 px-4 text-white font-semibold">{row.teamLeaderName}</td>
+                      <td className="py-3 px-4 font-mono font-bold text-amber-300">
+                        {row.registrationId}
+                        <div className="text-[10px] text-zinc-500 font-normal">#{row.queuePosition}</div>
+                      </td>
+                      <td className="py-3 px-4 text-white font-semibold">
+                        {row.teamLeaderName}
+                        <div className="text-[10px] text-amber-400 font-mono font-normal">Roll: {row.rollNo || 'N/A'}</div>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-zinc-300">
+                        <div>{row.department || 'N/A'}</div>
+                        <div className="text-[10px] text-zinc-500">{row.year || 'N/A'}</div>
+                      </td>
                       <td className="py-3 px-4">
                         <span className={`inline-block px-2.5 py-0.5 rounded-md text-[10px] font-extrabold ${
                           row.eventCategory === 'DANCE'
@@ -355,13 +375,26 @@ export default function StandaloneAdminPage() {
                         }`}>
                           {row.eventCategory}
                         </span>
+                        {row.performanceName && (
+                          <div className="text-[11px] text-zinc-300 font-normal mt-0.5">{row.performanceName}</div>
+                        )}
                       </td>
-                      <td className="py-3 px-4 font-mono">{row.numberOfMembers}</td>
+                      <td className="py-3 px-4 font-mono">
+                        <span className="text-amber-300 font-bold">{row.format || 'SOLO'}</span> ({row.numberOfMembers} member{row.numberOfMembers > 1 ? 's' : ''})
+                        {row.membersList && (
+                          <div className="text-[10px] text-zinc-400 font-normal max-w-xs truncate" title={row.membersList}>
+                            {row.membersList}
+                          </div>
+                        )}
+                      </td>
                       <td className="py-3 px-4 font-mono font-bold text-emerald-300">
                         {row.slotStartTime} – {row.slotEndTime}
+                        <div className="text-[10px] text-zinc-500 font-normal">{row.performanceDuration} mins</div>
                       </td>
-                      <td className="py-3 px-4 font-mono">{row.performanceDuration} mins</td>
-                      <td className="py-3 px-4 font-mono text-zinc-400">{row.phone}</td>
+                      <td className="py-3 px-4 font-mono text-zinc-400">
+                        <div>{row.phone}</div>
+                        <div className="text-[10px] text-zinc-500">{row.email}</div>
+                      </td>
                       <td className="py-3 px-4">
                         <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-700/50">
                           {row.status}

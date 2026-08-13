@@ -44,6 +44,33 @@ export const submitRegistration = async (registrationData) => {
     }
   }
 
+  const primaryRollNo =
+    registrationData.teamLeader?.rollNo ||
+    registrationData.participant?.rollNo ||
+    registrationData.participant1?.rollNo ||
+    'N/A';
+
+  const primaryDept =
+    registrationData.teamLeader?.department ||
+    registrationData.participant?.department ||
+    registrationData.participant1?.department ||
+    'N/A';
+
+  const primaryYear =
+    registrationData.teamLeader?.year ||
+    registrationData.participant?.year ||
+    registrationData.participant1?.year ||
+    'N/A';
+
+  const format = (registrationData.format || 'solo').toUpperCase();
+
+  let membersListStr = '';
+  if (registrationData.format === 'duo' && registrationData.participant2?.name) {
+    membersListStr = `Partner: ${registrationData.participant2.name} (${registrationData.participant2.rollNo || 'N/A'} - ${registrationData.participant2.department || 'N/A'})`;
+  } else if (registrationData.format === 'group' && registrationData.members?.length > 0) {
+    membersListStr = registrationData.members.map((m, idx) => `Member ${idx + 2}: ${m.name || 'Member'} (${m.rollNo || 'N/A'} - ${m.department || 'N/A'})`).join('; ');
+  }
+
   // Read local queue sync state from localStorage
   let clientQueuePos = 0;
   let clientEndMins = 0;
@@ -62,12 +89,17 @@ export const submitRegistration = async (registrationData) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         teamLeaderName: primaryName,
+        rollNo: primaryRollNo,
+        department: primaryDept,
+        year: primaryYear,
+        format,
         numberOfMembers: memberCount,
         eventCategory: category,
         performanceName,
         performanceDuration,
         email: primaryEmail,
         phone: primaryPhone,
+        membersList: membersListStr,
         clientQueuePos,
         clientEndMins
       })

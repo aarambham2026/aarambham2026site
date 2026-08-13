@@ -5,12 +5,17 @@ import { allocateSlot, savePersistentQueueStore } from '@/lib/slotAllocator';
 
 const registerSchema = z.object({
   teamLeaderName: z.string().min(1, 'Team leader name is required'),
+  rollNo: z.string().optional(),
+  department: z.string().optional(),
+  year: z.string().optional(),
+  format: z.string().optional(),
   numberOfMembers: z.number().int().positive('Number of members must be greater than 0'),
   eventCategory: z.string().min(1, 'Event category is required'),
   performanceName: z.string().optional(),
   performanceDuration: z.number().int().positive().optional(),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(5, 'Invalid phone number'),
+  membersList: z.string().optional(),
   clientQueuePos: z.number().optional(),
   clientEndMins: z.number().optional()
 });
@@ -43,12 +48,17 @@ export async function POST(req: Request) {
       const regRecord = {
         registrationId,
         teamLeaderName: validated.teamLeaderName.trim(),
+        rollNo: validated.rollNo || 'N/A',
+        department: validated.department || 'N/A',
+        year: validated.year || 'N/A',
+        format: (validated.format || 'SOLO').toUpperCase(),
         numberOfMembers: validated.numberOfMembers,
         eventCategory: categoryUpper,
         performanceName: perfName,
         performanceDuration: requestedDuration,
         email: validated.email.trim().toLowerCase(),
         phone: validated.phone.trim(),
+        membersList: validated.membersList || '',
         queuePosition,
         slotStartTime,
         slotEndTime,

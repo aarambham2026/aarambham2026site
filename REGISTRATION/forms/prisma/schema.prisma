@@ -11,12 +11,17 @@ model Registration {
   id                  String   @id @default(cuid())
   registrationId      String   @unique
   teamLeaderName      String
+  rollNo              String?
+  department          String?
+  year                String?
+  format              String?
   numberOfMembers     Int
   eventCategory       String
-  performanceName     String?  // Optional name of performance for OTHERS / Music / Dance
+  performanceName     String?
   performanceDuration Int      @default(10)
   email               String
   phone               String
+  membersList         String?
   queuePosition       Int
   slotStartTime       String
   slotEndTime         String

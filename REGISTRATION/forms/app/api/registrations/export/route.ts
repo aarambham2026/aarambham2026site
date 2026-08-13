@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { getPersistentQueueStore } from '@/lib/slotAllocator';
 import * as XLSX from 'xlsx';
 
 export async function GET(req: Request) {
@@ -8,56 +9,95 @@ export async function GET(req: Request) {
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
-    const where: any = {};
-    if (category && category !== 'ALL') where.eventCategory = category;
-    if (status && status !== 'ALL') where.status = status;
+    let dbRegistrations: any[] = [];
+    try {
+      dbRegistrations = await prisma.registration.findMany({
+        orderBy: { createdAt: 'asc' }
+      });
+    } catch (e) {
+      // Ignore Prisma DB read error
+    }
 
-    const registrations = await prisma.registration.findMany({
-      where,
-      orderBy: {
-        createdAt: 'asc'
+    const store = getPersistentQueueStore();
+    const storeRegistrations = Object.values(store.registrations || {});
+
+    const regMap = new Map<string, any>();
+    dbRegistrations.forEach((reg) => {
+      if (reg.registrationId) regMap.set(reg.registrationId, reg);
+    });
+
+    storeRegistrations.forEach((reg: any) => {
+      if (reg.registrationId && !regMap.has(reg.registrationId)) {
+        regMap.set(reg.registrationId, {
+          id: reg.registrationId,
+          createdAt: new Date().toISOString(),
+          ...reg
+        });
       }
     });
 
-    const dataRows = registrations.map((reg) => ({
-      'Queue #': reg.queuePosition,
-      'Registration ID': reg.registrationId,
-      'Team Leader Name': reg.teamLeaderName,
-      'Email Address': reg.email,
-      'Phone Number': reg.phone,
-      'Number of Members': reg.numberOfMembers,
-      'Event Category': reg.eventCategory,
+    let combinedList = Array.from(regMap.values());
+
+    if (category && category !== 'ALL') {
+      combinedList = combinedList.filter((item) => item.eventCategory?.toUpperCase() === category);
+    }
+    if (status && status !== 'ALL') {
+      combinedList = combinedList.filter((item) => item.status?.toUpperCase() === status);
+    }
+
+    combinedList.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
+
+    const dataRows = combinedList.map((reg) => ({
+      'Queue #': reg.queuePosition || 0,
+      'Registration ID': reg.registrationId || 'N/A',
+      'Team Leader Name': reg.teamLeaderName || 'N/A',
+      'Roll Number': reg.rollNo || 'N/A',
+      'Department': reg.department || 'N/A',
+      'Year / Semester': reg.year || 'N/A',
+      'Performance Format': reg.format || 'SOLO',
+      'Number of Members': reg.numberOfMembers || 1,
+      'Event Category': reg.eventCategory || 'N/A',
+      'Performance Title': reg.performanceName || 'N/A',
       'Performance Duration (mins)': reg.performanceDuration || 10,
-      'Slot Start Time': reg.slotStartTime,
-      'Slot End Time': reg.slotEndTime,
-      'Registration Date & Time': new Date(reg.createdAt).toLocaleString('en-US', {
+      'Slot Start Time': reg.slotStartTime || 'N/A',
+      'Slot End Time': reg.slotEndTime || 'N/A',
+      'Email Address': reg.email || 'N/A',
+      'Phone Number': reg.phone || 'N/A',
+      'Team Members Roster': reg.membersList || 'N/A',
+      'Registration Date & Time': new Date(reg.createdAt || Date.now()).toLocaleString('en-US', {
         dateStyle: 'medium',
         timeStyle: 'short'
       }),
-      'Status': reg.status
+      'Status': reg.status || 'REGISTERED'
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataRows);
     
     // Auto-fit column widths
     const colWidths = [
-      { wch: 10 }, // Queue #
-      { wch: 18 }, // Reg ID
-      { wch: 25 }, // Leader Name
-      { wch: 30 }, // Email
-      { wch: 16 }, // Phone
+      { wch: 8 },  // Queue #
+      { wch: 14 }, // Reg ID
+      { wch: 24 }, // Leader Name
+      { wch: 14 }, // Roll Number
+      { wch: 16 }, // Department
+      { wch: 16 }, // Year
+      { wch: 14 }, // Format
       { wch: 12 }, // Members
-      { wch: 15 }, // Category
-      { wch: 24 }, // Duration
-      { wch: 16 }, // Slot Start
-      { wch: 16 }, // Slot End
-      { wch: 25 }, // Reg Date & Time
-      { wch: 14 }  // Status
+      { wch: 14 }, // Category
+      { wch: 24 }, // Title
+      { wch: 18 }, // Duration
+      { wch: 14 }, // Slot Start
+      { wch: 14 }, // Slot End
+      { wch: 28 }, // Email
+      { wch: 16 }, // Phone
+      { wch: 40 }, // Team Roster
+      { wch: 24 }, // Date & Time
+      { wch: 12 }  // Status
     ];
     worksheet['!cols'] = colWidths;
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registrations');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Festival Registrations');
 
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
@@ -65,7 +105,7 @@ export async function GET(req: Request) {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': `attachment; filename="registrations_${new Date().toISOString().slice(0, 10)}.xlsx"`,
+        'Content-Disposition': `attachment; filename="Aarambham_2026_Registrations_${new Date().toISOString().slice(0, 10)}.xlsx"`,
         'Cache-Control': 'no-store, max-age=0'
       }
     });
