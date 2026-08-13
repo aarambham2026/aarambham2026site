@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { cookies } from 'next/headers';
 
 const AUTH_SECRET = process.env.ADMIN_JWT_SECRET || 'aarambham_2026_super_secure_admin_secret_key_998811!';
 
@@ -32,6 +33,16 @@ export function verifyAdminToken(token: string | undefined | null): boolean {
   return timingSafeCompare(hmac, expectedHmac);
 }
 
+export async function isRequestAuthorized(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('admin_session')?.value || cookieStore.get('aarambham_admin_session')?.value;
+    return verifyAdminToken(token);
+  } catch {
+    return false;
+  }
+}
+
 export function timingSafeCompare(a: string, b: string): boolean {
   try {
     const bufA = Buffer.from(a);
@@ -54,8 +65,9 @@ export function sanitizeInput(str: string | undefined | null): string {
     .trim();
 }
 
-// In-Memory Rate Limiter
+// Rate limiters
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const loginLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 export function checkRateLimit(ip: string, maxRequests = 10, windowMs = 15 * 60 * 1000): { allowed: boolean; remaining: number } {
   const now = Date.now();
@@ -72,4 +84,21 @@ export function checkRateLimit(ip: string, maxRequests = 10, windowMs = 15 * 60 
 
   record.count += 1;
   return { allowed: true, remaining: maxRequests - record.count };
+}
+
+export function checkLoginRateLimit(ip: string, maxAttempts = 5, windowMs = 15 * 60 * 1000): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const record = loginLimitMap.get(ip);
+
+  if (!record || now > record.resetAt) {
+    loginLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
+    return { allowed: true, remaining: maxAttempts - 1 };
+  }
+
+  if (record.count >= maxAttempts) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  record.count += 1;
+  return { allowed: true, remaining: maxAttempts - record.count };
 }

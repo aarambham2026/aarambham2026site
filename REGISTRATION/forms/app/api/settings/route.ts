@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { invalidateSettingsCache } from '@/lib/slotAllocator';
+import { isRequestAuthorized } from '@/lib/security';
 
 const settingsSchema = z.object({
   eventStartTime: z.string().min(1, 'Event start time is required'),
@@ -36,6 +37,11 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   try {
+    const authorized = await isRequestAuthorized();
+    if (!authorized) {
+      return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
+    }
+
     const body = await req.json();
     const validated = settingsSchema.parse(body);
 

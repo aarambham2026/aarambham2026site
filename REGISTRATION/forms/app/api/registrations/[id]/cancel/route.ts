@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isRequestAuthorized } from '@/lib/security';
 
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authorized = await isRequestAuthorized();
+    if (!authorized) {
+      return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
+    }
+
     const { id } = await params;
 
     const existing = await prisma.registration.findFirst({

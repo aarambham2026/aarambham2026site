@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isRequestAuthorized } from '@/lib/security';
 
 export async function POST() {
   try {
+    const authorized = await isRequestAuthorized();
+    if (!authorized) {
+      return NextResponse.json({ success: false, error: 'Unauthorized admin access' }, { status: 401 });
+    }
+
     // Clear all registration records from SQLite database
     await prisma.registration.deleteMany();
 
