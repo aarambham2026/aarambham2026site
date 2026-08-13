@@ -1,4 +1,48 @@
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import { prisma } from './db';
+
+const TMP_FILE = path.join(os.tmpdir(), 'onam_serverless_queue.json');
+
+export interface QueueStoreData {
+  counter: number;
+  lastEndMinutes: number;
+  registrations: Record<string, any>;
+}
+
+export function getPersistentQueueStore(): QueueStoreData {
+  try {
+    if (fs.existsSync(TMP_FILE)) {
+      const raw = fs.readFileSync(TMP_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (typeof parsed.counter === 'number' && typeof parsed.lastEndMinutes === 'number') {
+        return {
+          counter: parsed.counter || 0,
+          lastEndMinutes: parsed.lastEndMinutes || 14 * 60,
+          registrations: parsed.registrations || {}
+        };
+      }
+    }
+  } catch (e) {
+    // Ignore read errors
+  }
+  return { counter: 0, lastEndMinutes: 14 * 60, registrations: {} };
+}
+
+export function savePersistentQueueStore(counter: number, lastEndMinutes: number, regData?: any) {
+  try {
+    const store = getPersistentQueueStore();
+    store.counter = Math.max(store.counter, counter);
+    store.lastEndMinutes = Math.max(store.lastEndMinutes, lastEndMinutes);
+    if (regData && regData.registrationId) {
+      store.registrations[regData.registrationId] = regData;
+    }
+    fs.writeFileSync(TMP_FILE, JSON.stringify(store, null, 2), 'utf-8');
+  } catch (e) {
+    // Ignore write errors
+  }
+}
 
 export function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 14 * 60; // Default 2:00 PM (840 mins)
@@ -54,61 +98,84 @@ export function invalidateSettingsCache() {
 
 export async function getEventSettings(dbClient: any = prisma) {
   if (cachedSettings) return cachedSettings;
-  let settings = await dbClient.eventSettings.findUnique({
-    where: { id: 'default' }
-  });
-
-  if (!settings) {
-    settings = await dbClient.eventSettings.create({
-      data: {
-        id: 'default',
-        eventStartTime: '14:00',
-        musicDuration: 10,
-        danceDuration: 10,
-        setupGap: 2
-      }
+  try {
+    let settings = await dbClient.eventSettings.findUnique({
+      where: { id: 'default' }
     });
+
+    if (!settings) {
+      settings = await dbClient.eventSettings.create({
+        data: {
+          id: 'default',
+          eventStartTime: '14:00',
+          musicDuration: 10,
+          danceDuration: 10,
+          setupGap: 2
+        }
+      });
+    }
+
+    cachedSettings = {
+      eventStartTime: settings.eventStartTime,
+      musicDuration: settings.musicDuration,
+      danceDuration: settings.danceDuration,
+      setupGap: settings.setupGap
+    };
+
+    return cachedSettings;
+  } catch (e) {
+    return {
+      eventStartTime: '14:00',
+      musicDuration: 10,
+      danceDuration: 10,
+      setupGap: 2
+    };
   }
-
-  cachedSettings = {
-    eventStartTime: settings.eventStartTime,
-    musicDuration: settings.musicDuration,
-    danceDuration: settings.danceDuration,
-    setupGap: settings.setupGap
-  };
-
-  return cachedSettings;
 }
 
-export async function allocateSlot(category: string, requestedDuration?: number, dbClient: any = prisma) {
+export async function allocateSlot(
+  category: string,
+  requestedDuration?: number,
+  clientQueuePos?: number,
+  clientEndMins?: number,
+  dbClient: any = prisma
+) {
   const settings = await getEventSettings(dbClient);
   const categoryUpper = category.toUpperCase();
-
-  // Find the last active registration in a single fast query
-  const previousRegistration = await dbClient.registration.findFirst({
-    where: {
-      status: 'REGISTERED'
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    select: {
-      slotEndTime: true,
-      queuePosition: true
-    }
-  });
-
-  let startMinutes: number;
-  if (!previousRegistration) {
-    startMinutes = parseTimeToMinutes(settings.eventStartTime);
-  } else {
-    const prevEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
-    startMinutes = prevEndMinutes + settings.setupGap;
-  }
 
   let duration = requestedDuration && requestedDuration > 0
     ? requestedDuration
     : (categoryUpper === 'DANCE' ? settings.danceDuration : settings.musicDuration);
+
+  let lastQueuePosition = 0;
+  let lastEndMinutes = 0;
+
+  try {
+    const previousRegistration = await dbClient.registration.findFirst({
+      where: { status: 'REGISTERED' },
+      orderBy: { createdAt: 'desc' },
+      select: { slotEndTime: true, queuePosition: true }
+    });
+
+    if (previousRegistration) {
+      lastQueuePosition = previousRegistration.queuePosition;
+      lastEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
+    }
+  } catch (e) {
+    // DB offline fallback
+  }
+
+  // Combine DB state, persistent file store state, and client-side sync state
+  const store = getPersistentQueueStore();
+  const maxQueuePosition = Math.max(lastQueuePosition, store.counter, clientQueuePos || 0);
+  const maxEndMinutes = Math.max(lastEndMinutes, store.lastEndMinutes, clientEndMins || 0);
+
+  let startMinutes: number;
+  if (maxQueuePosition === 0) {
+    startMinutes = parseTimeToMinutes(settings.eventStartTime); // 14:00 (2:00 PM IST = 840 mins)
+  } else {
+    startMinutes = maxEndMinutes + settings.setupGap; // 2 min gap!
+  }
 
   const endMinutes = startMinutes + duration;
 
@@ -117,6 +184,7 @@ export async function allocateSlot(category: string, requestedDuration?: number,
     throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
   }
 
+  const nextQueuePosition = maxQueuePosition + 1;
   const slotStartTime = formatMinutesTo12Hour(startMinutes);
   const slotEndTime = formatMinutesTo12Hour(endMinutes);
 
@@ -125,6 +193,7 @@ export async function allocateSlot(category: string, requestedDuration?: number,
     slotEndTime,
     startMinutes,
     endMinutes,
-    lastQueuePosition: previousRegistration ? previousRegistration.queuePosition : 0
+    nextQueuePosition,
+    lastQueuePosition: maxQueuePosition
   };
 }

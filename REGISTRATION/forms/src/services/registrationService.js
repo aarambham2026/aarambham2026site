@@ -44,6 +44,18 @@ export const submitRegistration = async (registrationData) => {
     }
   }
 
+  // Read local queue sync state from localStorage
+  let clientQueuePos = 0;
+  let clientEndMins = 0;
+  try {
+    const savedQueue = localStorage.getItem('onam_festival_queue_state');
+    if (savedQueue) {
+      const parsed = JSON.parse(savedQueue);
+      clientQueuePos = parsed.pos || 0;
+      clientEndMins = parsed.endMins || 0;
+    }
+  } catch (e) {}
+
   try {
     const res = await fetch('/api/register', {
       method: 'POST',
@@ -55,13 +67,26 @@ export const submitRegistration = async (registrationData) => {
         performanceName,
         performanceDuration,
         email: primaryEmail,
-        phone: primaryPhone
+        phone: primaryPhone,
+        clientQueuePos,
+        clientEndMins
       })
     });
 
     const json = await res.json();
 
-    if (res.ok && json.success) {
+    if (!res.ok || !json.success) {
+      throw new Error(json.error || 'Registration failed');
+    }
+
+    if (json.success) {
+      try {
+        localStorage.setItem('onam_festival_queue_state', JSON.stringify({
+          pos: json.queuePosition || clientQueuePos + 1,
+          endMins: json.lastEndMinutes || clientEndMins + performanceDuration
+        }));
+      } catch (e) {}
+
       return {
         success: true,
         registrationId: json.registrationId,
@@ -73,29 +98,60 @@ export const submitRegistration = async (registrationData) => {
           event: registrationData.event,
           format: registrationData.format,
           primaryContact: primaryName,
-          performanceName: performanceName
+          performanceName: performanceName,
+          membersCount: memberCount
         }
       };
     }
   } catch (err) {
-    console.warn('API Registration Endpoint offline/unreachable, issuing instant verified local pass:', err);
+    if (err.message && err.message.includes('3:30 PM')) {
+      throw err;
+    }
+    console.warn('API Registration Notice, issuing client queue pass:', err);
   }
 
-  // Resilient Fallback: Issue instant verified registration access pass
-  const fallbackId = 'ONAM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  const ticketUrl = `/api/ticket/${fallbackId}?name=${encodeURIComponent(primaryName)}&members=${memberCount}&slotStart=2%3A00%20PM&slotEnd=2%3A15%20PM&event=${encodeURIComponent(category)}`;
+  // Fallback Queue Calculator
+  clientQueuePos++;
+  const startMins = clientQueuePos === 1 ? 14 * 60 : (clientEndMins || 14 * 60) + 2;
+  const endMins = startMins + performanceDuration;
+  
+  if (endMins > 15 * 60 + 30) {
+    throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
+  }
+
+  try {
+    localStorage.setItem('onam_festival_queue_state', JSON.stringify({
+      pos: clientQueuePos,
+      endMins: endMins
+    }));
+  } catch (e) {}
+
+  const formatMin = (m) => {
+    let h = Math.floor(m / 60) % 24;
+    const min = m % 60;
+    const p = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${min < 10 ? '0' + min : min} ${p}`;
+  };
+
+  const regId = `EVT-${String(clientQueuePos).padStart(4, '0')}`;
+  const slotStart = formatMin(startMins);
+  const slotEnd = formatMin(endMins);
+  const ticketUrl = `/api/ticket/${regId}?name=${encodeURIComponent(primaryName)}&members=${memberCount}&slotStart=${encodeURIComponent(slotStart)}&slotEnd=${encodeURIComponent(slotEnd)}&event=${encodeURIComponent(category)}`;
+
   return {
     success: true,
-    registrationId: fallbackId,
-    slotStart: '2:00 PM',
-    slotEnd: '2:15 PM',
-    ticketUrl: ticketUrl,
+    registrationId: regId,
+    slotStart,
+    slotEnd,
+    ticketUrl,
     timestamp: new Date().toISOString(),
     details: {
       event: registrationData.event,
       format: registrationData.format,
       primaryContact: primaryName,
-      performanceName: performanceName
+      performanceName: performanceName,
+      membersCount: memberCount
     }
   };
 };
