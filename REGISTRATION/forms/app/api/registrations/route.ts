@@ -1,53 +1,76 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { getPersistentQueueStore } from '@/lib/slotAllocator';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const search = searchParams.get('search')?.trim() || '';
+    const search = searchParams.get('search')?.trim().toLowerCase() || '';
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
-    // Build Prisma query conditions
-    const where: any = {};
-
-    if (search) {
-      where.OR = [
-        { teamLeaderName: { contains: search } },
-        { registrationId: { contains: search } }
-      ];
+    let dbRegistrations: any[] = [];
+    try {
+      dbRegistrations = await prisma.registration.findMany({
+        orderBy: { createdAt: 'asc' }
+      });
+    } catch (e) {
+      // Ignore Prisma DB read error on serverless fallback
     }
 
-    if (category && category !== 'ALL') {
-      where.eventCategory = category;
-    }
+    // Read persistent serverless store
+    const store = getPersistentQueueStore();
+    const storeRegistrations = Object.values(store.registrations || {});
 
-    if (status && status !== 'ALL') {
-      where.status = status;
-    }
+    // Combine and deduplicate by registrationId
+    const regMap = new Map<string, any>();
+    
+    dbRegistrations.forEach((reg) => {
+      if (reg.registrationId) regMap.set(reg.registrationId, reg);
+    });
 
-    const registrations = await prisma.registration.findMany({
-      where,
-      orderBy: {
-        createdAt: 'asc'
+    storeRegistrations.forEach((reg: any) => {
+      if (reg.registrationId && !regMap.has(reg.registrationId)) {
+        regMap.set(reg.registrationId, {
+          id: reg.registrationId,
+          createdAt: new Date().toISOString(),
+          ...reg
+        });
       }
     });
 
-    // Compute real-time statistics
-    const totalCount = await prisma.registration.count();
-    const musicCount = await prisma.registration.count({
-      where: { eventCategory: 'MUSIC', status: 'REGISTERED' }
-    });
-    const danceCount = await prisma.registration.count({
-      where: { eventCategory: 'DANCE', status: 'REGISTERED' }
-    });
-    const cancelledCount = await prisma.registration.count({
-      where: { status: 'CANCELLED' }
-    });
+    let combinedList = Array.from(regMap.values());
+
+    // Apply filtering
+    if (category && category !== 'ALL') {
+      combinedList = combinedList.filter((item) => item.eventCategory?.toUpperCase() === category);
+    }
+
+    if (status && status !== 'ALL') {
+      combinedList = combinedList.filter((item) => item.status?.toUpperCase() === status);
+    }
+
+    if (search) {
+      combinedList = combinedList.filter((item) => 
+        (item.teamLeaderName && item.teamLeaderName.toLowerCase().includes(search)) ||
+        (item.registrationId && item.registrationId.toLowerCase().includes(search)) ||
+        (item.email && item.email.toLowerCase().includes(search)) ||
+        (item.phone && item.phone.toLowerCase().includes(search))
+      );
+    }
+
+    // Sort by queuePosition or registrationId
+    combinedList.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
+
+    // Stats calculation
+    const totalCount = combinedList.length;
+    const musicCount = combinedList.filter((r) => r.eventCategory?.toUpperCase() === 'MUSIC' && r.status !== 'CANCELLED').length;
+    const danceCount = combinedList.filter((r) => r.eventCategory?.toUpperCase() === 'DANCE' && r.status !== 'CANCELLED').length;
+    const cancelledCount = combinedList.filter((r) => r.status?.toUpperCase() === 'CANCELLED').length;
 
     return NextResponse.json({
       success: true,
-      data: registrations,
+      data: combinedList,
       stats: {
         total: totalCount,
         music: musicCount,
