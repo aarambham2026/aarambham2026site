@@ -1,6 +1,0 @@
-# node_modules and build artifacts
-node_modules
-.next
-dist
-*.log
-.DS_Store
