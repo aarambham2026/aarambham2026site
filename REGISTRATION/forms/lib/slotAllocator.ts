@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { prisma } from './db';
+import { fetchCloudRegistrations } from './cloudStore';
 
 const TMP_FILE = path.join(os.tmpdir(), 'onam_serverless_queue.json');
 
@@ -174,6 +175,27 @@ export async function allocateSlot(
   let lastEndMinutes = 0;
 
   if (!isResetActive) {
+    // 1. Check Cloud Persistent Store first for existing queue state
+    try {
+      const cloudRegistrations = await fetchCloudRegistrations();
+      if (cloudRegistrations && cloudRegistrations.length > 0) {
+        cloudRegistrations.forEach((reg) => {
+          if (reg.queuePosition && reg.queuePosition > lastQueuePosition) {
+            lastQueuePosition = reg.queuePosition;
+          }
+          if (reg.slotEndTime) {
+            const endMins = parseTimeToMinutes(reg.slotEndTime);
+            if (endMins > lastEndMinutes) {
+              lastEndMinutes = endMins;
+            }
+          }
+        });
+      }
+    } catch (cloudErr) {
+      console.warn('Cloud slot check warning:', cloudErr);
+    }
+
+    // 2. Check local DB as fallback
     try {
       const previousRegistration = await dbClient.registration.findFirst({
         where: { status: 'REGISTERED' },
@@ -182,8 +204,13 @@ export async function allocateSlot(
       });
 
       if (previousRegistration) {
-        lastQueuePosition = previousRegistration.queuePosition;
-        lastEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
+        if (previousRegistration.queuePosition > lastQueuePosition) {
+          lastQueuePosition = previousRegistration.queuePosition;
+        }
+        const dbEndMins = parseTimeToMinutes(previousRegistration.slotEndTime);
+        if (dbEndMins > lastEndMinutes) {
+          lastEndMinutes = dbEndMins;
+        }
       }
     } catch (e) {
       // DB offline fallback
