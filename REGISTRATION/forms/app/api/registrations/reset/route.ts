@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { isRequestAuthorized } from '@/lib/security';
 import { clearPersistentQueueStore } from '@/lib/slotAllocator';
@@ -20,8 +21,18 @@ export async function POST() {
     // Clear persistent queue store and reset queue state
     clearPersistentQueueStore();
 
+    (globalThis as any).isResetActive = true;
+
     const { addAuditLog } = await import('@/lib/security');
     addAuditLog('RESET_ALL', 'Admin executed full system reset of all registrations');
+
+    const cookieStore = await cookies();
+    cookieStore.set('aarambham_reset', '1', {
+      path: '/',
+      maxAge: 30 * 24 * 60 * 60,
+      httpOnly: false,
+      sameSite: 'lax'
+    });
 
     return NextResponse.json({
       success: true,

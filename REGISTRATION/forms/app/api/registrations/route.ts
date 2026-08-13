@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { getPersistentQueueStore } from '@/lib/slotAllocator';
 
@@ -18,9 +19,12 @@ export async function GET(req: Request) {
       // Ignore Prisma DB read error on serverless fallback
     }
 
+    const cookieStore = await cookies();
+    const isResetCookie = cookieStore.get('aarambham_reset')?.value === '1';
+
     // Read persistent serverless store
     const store = getPersistentQueueStore();
-    if ((store as any).isReset) {
+    if (isResetCookie || (globalThis as any).isResetActive || (store as any).isReset) {
       return NextResponse.json({
         success: true,
         data: [],
