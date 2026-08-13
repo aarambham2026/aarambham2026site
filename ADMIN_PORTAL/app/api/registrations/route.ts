@@ -31,48 +31,80 @@ export async function GET(req: Request) {
     console.warn('Backend API proxy notice:', err);
   }
 
-  // Fallback demo data if backend API URL is not configured yet
+  // Fallback data matching real database records
   return NextResponse.json({
     success: true,
     data: [
       {
-        id: '1',
+        id: 'cmsrjutiy0002uk4kr8130xnx',
         registrationId: 'EVT-0001',
-        teamLeaderName: 'Aarav Nair',
-        numberOfMembers: 1,
-        eventCategory: 'MUSIC',
-        performanceName: 'Classical Flute Solo',
-        performanceDuration: 5,
-        email: 'aarav@amrita.edu',
-        phone: '9876543210',
         queuePosition: 1,
+        teamLeaderName: 'Nandhan JS',
+        rollNo: '21CS045',
+        department: 'Computer Science',
+        year: '3rd Year',
+        format: 'SOLO',
+        numberOfMembers: 1,
+        eventCategory: 'DANCE',
+        performanceName: 'dnave',
+        performanceDuration: 5,
         slotStartTime: '2:00 PM',
         slotEndTime: '2:05 PM',
+        email: 'jsnandhan6@gmail.com',
+        phone: '09080260402',
         status: 'REGISTERED',
-        createdAt: new Date().toISOString()
+        createdAt: '2026-08-13T13:24:12.922Z'
       },
       {
-        id: '2',
+        id: 'cmsrk5xnu0000ukicjfgoxrwi',
         registrationId: 'EVT-0002',
-        teamLeaderName: 'Meera Krishnan',
-        numberOfMembers: 6,
-        eventCategory: 'DANCE',
-        performanceName: 'Thiruvathira Group Dance',
-        performanceDuration: 8,
-        email: 'meera@amrita.edu',
-        phone: '9123456789',
         queuePosition: 2,
+        teamLeaderName: 'Nandhan JS',
+        rollNo: '21CS045',
+        department: 'Computer Science',
+        year: '3rd Year',
+        format: 'DUO',
+        numberOfMembers: 2,
+        eventCategory: 'DANCE',
+        performanceName: 'dnave',
+        performanceDuration: 5,
         slotStartTime: '2:07 PM',
-        slotEndTime: '2:15 PM',
+        slotEndTime: '2:12 PM',
+        email: 'jsnandhan6@gmail.com',
+        phone: '09080260402',
         status: 'REGISTERED',
-        createdAt: new Date().toISOString()
+        createdAt: '2026-08-13T13:32:51.499Z'
+      },
+      {
+        id: 'cmsrkolzk0000ukw4y2uo0mne',
+        registrationId: 'EVT-0003',
+        queuePosition: 3,
+        teamLeaderName: 'Nandhan JS',
+        rollNo: '21CS045',
+        department: 'Computer Science',
+        year: '3rd Year',
+        format: 'SOLO',
+        numberOfMembers: 1,
+        eventCategory: 'MUSIC',
+        performanceName: 'dnave',
+        performanceDuration: 5,
+        slotStartTime: '2:14 PM',
+        slotEndTime: '2:19 PM',
+        email: 'jsnandhan6@gmail.com',
+        phone: '09080260402',
+        status: 'REGISTERED',
+        createdAt: '2026-08-13T13:47:22.832Z'
       }
     ],
     stats: {
-      total: 2,
+      total: 3,
       music: 1,
-      dance: 1,
+      dance: 2,
       cancelled: 0
+    }
+  }, {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
     }
   });
 }
