@@ -60,6 +60,46 @@ class EventSystem {
     this.renderCards();
     this.bindCardInteractions();
     this.bindModalEvents();
+    this.fetchLiveSettings();
+  }
+
+  async fetchLiveSettings() {
+    try {
+      const res = await fetch('https://aarambham2026registration.vercel.app/api/settings');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          const s = json.data;
+          let [h, m] = (s.eventStartTime || '14:00').split(':').map(Number);
+          const formatTime = (hour, min) => {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const h12 = hour % 12 || 12;
+            const mStr = min < 10 ? '0' + min : min;
+            return `${h12 < 10 ? '0' + h12 : h12}:${mStr} ${period}`;
+          };
+
+          const danceStartMin = h * 60 + m;
+          const danceEndMin = danceStartMin + 120;
+          const musicStartMin = danceEndMin + (s.setupGap || 15);
+          const musicEndMin = musicStartMin + 180;
+
+          const danceEv = eventDataLineup.find((e) => e.id === 'dance');
+          if (danceEv) {
+            danceEv.time = `${formatTime(Math.floor(danceStartMin / 60), danceStartMin % 60)} - ${formatTime(Math.floor(danceEndMin / 60), danceEndMin % 60)}`;
+          }
+
+          const musicEv = eventDataLineup.find((e) => e.id === 'music');
+          if (musicEv) {
+            musicEv.time = `${formatTime(Math.floor(musicStartMin / 60), musicStartMin % 60)} - ${formatTime(Math.floor(musicEndMin / 60), musicEndMin % 60)}`;
+          }
+
+          this.renderCards();
+          this.bindCardInteractions();
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch live event settings:', e);
+    }
   }
 
   renderCards() {
