@@ -8,7 +8,7 @@ import AdminTable, { RegistrationRecord } from '@/src/components/Admin/AdminTabl
 import { ShieldCheck, ArrowLeft, Lock, LogOut, KeyRound, User, Radio } from 'lucide-react';
 
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -29,6 +29,19 @@ export default function AdminPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+  // Auto check session on mount
+  useEffect(() => {
+    fetch('/api/admin/check')
+      .then((res) => {
+        if (res.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   const fetchData = useCallback(async () => {
     if (!isAuthenticated) return;
