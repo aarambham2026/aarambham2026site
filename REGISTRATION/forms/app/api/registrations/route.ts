@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { getPersistentQueueStore } from '@/lib/slotAllocator';
 
@@ -13,35 +12,18 @@ export async function GET(req: Request) {
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
-    const cookieStore = await cookies();
-    const isResetCookie = cookieStore.get('aarambham_reset')?.value === '1';
-
-    // Read persistent serverless store
-    const store = getPersistentQueueStore();
-    if (isResetCookie || (globalThis as any).isResetActive || (store as any).isReset) {
-      return NextResponse.json(
-        {
-          success: true,
-          data: [],
-          stats: { total: 0, music: 0, dance: 0, cancelled: 0 }
-        },
-        {
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
-          }
-        }
-      );
-    }
-
+    // Fetch real registrations directly from Prisma DB
     let dbRegistrations: any[] = [];
     try {
       dbRegistrations = await prisma.registration.findMany({
-        orderBy: { createdAt: 'asc' }
+        orderBy: { queuePosition: 'asc' }
       });
     } catch (e) {
-      // DB fallback
+      console.warn('Prisma DB fetch warning:', e);
     }
 
+    // Read persistent serverless store
+    const store = getPersistentQueueStore();
     const storeRegistrations = Object.values(store.registrations || {});
 
     const regMap = new Map<string, any>();

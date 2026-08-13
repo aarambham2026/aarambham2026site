@@ -11,28 +11,22 @@ export async function POST() {
       return NextResponse.json({ success: false, error: 'Unauthorized admin access' }, { status: 401 });
     }
 
-    // Safely attempt database clearing (catch read-only/missing SQLite errors on Vercel serverless)
+    // Permanently delete all registration records from Prisma DB
     try {
       await prisma.registration.deleteMany();
     } catch (dbErr: any) {
       console.warn('Database reset notice:', dbErr?.message || dbErr);
     }
 
-    // Clear persistent queue store and reset queue state
+    // Clear persistent queue store and reset queue state to 0
     clearPersistentQueueStore();
-
-    (globalThis as any).isResetActive = true;
 
     const { addAuditLog } = await import('@/lib/security');
     addAuditLog('RESET_ALL', 'Admin executed full system reset of all registrations');
 
+    // Remove any reset blocking cookie
     const cookieStore = await cookies();
-    cookieStore.set('aarambham_reset', '1', {
-      path: '/',
-      maxAge: 30 * 24 * 60 * 60,
-      httpOnly: false,
-      sameSite: 'lax'
-    });
+    cookieStore.delete('aarambham_reset');
 
     return NextResponse.json({
       success: true,
