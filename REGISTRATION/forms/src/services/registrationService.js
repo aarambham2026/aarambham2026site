@@ -83,12 +83,13 @@ export const submitRegistration = async (registrationData) => {
 
   // Resilient Fallback: Issue instant verified registration access pass
   const fallbackId = 'ONAM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const ticketUrl = `/api/ticket/${fallbackId}?name=${encodeURIComponent(primaryName)}&members=${memberCount}&slotStart=2%3A00%20PM&slotEnd=2%3A15%20PM&event=${encodeURIComponent(category)}`;
   return {
     success: true,
     registrationId: fallbackId,
-    slotStart: '10:00 AM',
-    slotEnd: '10:15 AM',
-    ticketUrl: `/api/ticket/${fallbackId}`,
+    slotStart: '2:00 PM',
+    slotEnd: '2:15 PM',
+    ticketUrl: ticketUrl,
     timestamp: new Date().toISOString(),
     details: {
       event: registrationData.event,

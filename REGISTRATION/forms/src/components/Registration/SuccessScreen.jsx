@@ -8,7 +8,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
 
   const regId = registrationResult?.registrationId || 'EVT-0001';
   const slotStart = registrationResult?.slotStart || '2:00 PM';
-  const slotEnd = registrationResult?.slotEnd || '2:10 PM';
+  const slotEnd = registrationResult?.slotEnd || '2:15 PM';
   const ticketUrl = registrationResult?.ticketUrl || `/api/ticket/${regId}`;
   const teamLeader = registrationResult?.details?.primaryContact || 'Participant';
   const eventCategory = (eventTitle || 'MUSIC').toUpperCase();

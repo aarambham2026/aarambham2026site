@@ -76,39 +76,20 @@ document.addEventListener(
 ========================================================= */
 
 function updateCursor() {
-
     if (!cursor) {
         return;
     }
 
-    cursor.style.left =
-        mouseX + "px";
+    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
 
-    cursor.style.top =
-        mouseY + "px";
-
-    ringX +=
-        (mouseX - ringX) * 0.14;
-
-    ringY +=
-        (mouseY - ringY) * 0.14;
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
 
     if (cursorRing) {
-
-        cursorRing.style.transform =
-            `
-            translate(
-                ${ringX - mouseX}px,
-                ${ringY - mouseY}px
-            )
-            `;
-
+        cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
     }
 
-    requestAnimationFrame(
-        updateCursor
-    );
-
+    requestAnimationFrame(updateCursor);
 }
 
 updateCursor();

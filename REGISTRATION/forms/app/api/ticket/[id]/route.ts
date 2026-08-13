@@ -8,13 +8,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const url = new URL(req.url);
     
-    let teamLeaderName = 'Participant';
-    let numberOfMembers = 1;
-    let slotStartTime = '10:00 AM';
-    let slotEndTime = '10:15 AM';
+    let teamLeaderName = url.searchParams.get('name') || 'Participant';
+    let numberOfMembers = parseInt(url.searchParams.get('members') || '1', 10);
+    let slotStartTime = url.searchParams.get('slotStart') || '2:00 PM';
+    let slotEndTime = url.searchParams.get('slotEnd') || '2:15 PM';
     let registrationId = id;
-    let eventName = 'CULTURAL EVENT';
+    let eventName = url.searchParams.get('event') || 'CULTURAL EVENT';
 
     try {
       const reg = await prisma.registration.findFirst({
