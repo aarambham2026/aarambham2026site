@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import { allocateSlot } from '@/lib/slotAllocator';
+import { allocateSlot, formatMinutesTo12Hour } from '@/lib/slotAllocator';
 
 const registerSchema = z.object({
   teamLeaderName: z.string().min(1, 'Team leader name is required'),
@@ -13,26 +13,28 @@ const registerSchema = z.object({
   phone: z.string().min(5, 'Invalid phone number')
 });
 
+// Serverless resilient queue state (fallback when SQLite DB is unwritable)
+let globalFallbackQueueCounter = 0;
+let globalLastFallbackEndMinutes = 14 * 60; // 2:00 PM IST (840 mins)
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const validated = registerSchema.parse(body);
 
     const categoryUpper = validated.eventCategory.toUpperCase();
-    const requestedDuration = validated.performanceDuration || 10;
+    const requestedDuration = validated.performanceDuration && validated.performanceDuration > 0
+      ? validated.performanceDuration
+      : 10;
     const perfName = validated.performanceName ? validated.performanceName.trim() : null;
-
-    let registrationId = `EVT-${Math.floor(1000 + Math.random() * 9000)}`;
-    let slotStartTime = '2:00 PM';
-    let slotEndTime = '2:15 PM';
 
     try {
       // Try Prisma database registration
       const slot = await allocateSlot(categoryUpper, requestedDuration, prisma);
       const queuePosition = (slot.lastQueuePosition || 0) + 1;
-      registrationId = `EVT-${String(queuePosition).padStart(4, '0')}`;
-      slotStartTime = slot.slotStartTime;
-      slotEndTime = slot.slotEndTime;
+      const registrationId = `EVT-${String(queuePosition).padStart(4, '0')}`;
+      const slotStartTime = slot.slotStartTime;
+      const slotEndTime = slot.slotEndTime;
 
       const registration = await prisma.registration.create({
         data: {
@@ -61,8 +63,41 @@ export async function POST(req: Request) {
         slotEnd: registration.slotEndTime,
         ticketUrl: buildTicketUrl(registration.registrationId, registration.teamLeaderName, registration.numberOfMembers, registration.slotStartTime, registration.slotEndTime, registration.eventCategory)
       });
-    } catch (dbErr) {
-      console.warn('Prisma DB write notice (serverless environment fallback), issuing instant verified pass:', dbErr);
+    } catch (dbErr: any) {
+      console.warn('Prisma DB write notice (serverless fallback), processing with serverless queue allocator:', dbErr);
+      
+      // If error was slot cutoff at 3:30 PM, pass error back to user
+      if (dbErr?.message?.includes('3:30 PM')) {
+        return NextResponse.json(
+          { success: false, error: dbErr.message },
+          { status: 400 }
+        );
+      }
+
+      // Serverless continuous queue allocation starting from EVT-0001 at 2:00 PM IST
+      globalFallbackQueueCounter++;
+      const registrationId = `EVT-${String(globalFallbackQueueCounter).padStart(4, '0')}`;
+      
+      const startMinutes = globalFallbackQueueCounter === 1 
+        ? 14 * 60 
+        : globalLastFallbackEndMinutes + 2; // 2 min setup gap after each event
+      
+      const endMinutes = startMinutes + requestedDuration;
+      
+      const CUTOFF_MINUTES = 15 * 60 + 30; // 3:30 PM (930 mins)
+      if (endMinutes > CUTOFF_MINUTES) {
+        globalFallbackQueueCounter--; // Rollback counter
+        return NextResponse.json(
+          { success: false, error: 'All performance slots up to 3:30 PM have been fully allocated.' },
+          { status: 400 }
+        );
+      }
+
+      globalLastFallbackEndMinutes = endMinutes;
+
+      const slotStartTime = formatMinutesTo12Hour(startMinutes);
+      const slotEndTime = formatMinutesTo12Hour(endMinutes);
+
       const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
         `/api/ticket/${id}?name=${encodeURIComponent(name)}&members=${members}&slotStart=${encodeURIComponent(start)}&slotEnd=${encodeURIComponent(end)}&event=${encodeURIComponent(cat)}`;
 
@@ -81,13 +116,9 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const fallbackId = `ONAM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    return NextResponse.json({
-      success: true,
-      registrationId: fallbackId,
-      slotStart: '2:00 PM',
-      slotEnd: '2:15 PM',
-      ticketUrl: `/api/ticket/${fallbackId}?name=Participant&members=1&slotStart=2%3A00%20PM&slotEnd=2%3A15%20PM&event=CULTURAL%20EVENT`
-    });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Registration processing failed' },
+      { status: 500 }
+    );
   }
 }

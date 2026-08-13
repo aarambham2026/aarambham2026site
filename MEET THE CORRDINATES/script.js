@@ -86,7 +86,7 @@ function updateCursor() {
     ringY += (mouseY - ringY) * 0.18;
 
     if (cursorRing) {
-        cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+        cursorRing.style.transform = `translate3d(${ringX - mouseX}px, ${ringY - mouseY}px, 0)`;
     }
 
     requestAnimationFrame(updateCursor);

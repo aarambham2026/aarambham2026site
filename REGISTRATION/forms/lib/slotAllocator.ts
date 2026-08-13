@@ -112,6 +112,11 @@ export async function allocateSlot(category: string, requestedDuration?: number,
 
   const endMinutes = startMinutes + duration;
 
+  const CUTOFF_MINUTES = 15 * 60 + 30; // 3:30 PM IST (930 minutes)
+  if (endMinutes > CUTOFF_MINUTES) {
+    throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
+  }
+
   const slotStartTime = formatMinutesTo12Hour(startMinutes);
   const slotEndTime = formatMinutesTo12Hour(endMinutes);
 
