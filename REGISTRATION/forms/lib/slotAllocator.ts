@@ -20,8 +20,9 @@ export function getPersistentQueueStore(): QueueStoreData {
         return {
           counter: parsed.counter || 0,
           lastEndMinutes: parsed.lastEndMinutes || 14 * 60,
-          registrations: parsed.registrations || {}
-        };
+          registrations: parsed.registrations || {},
+          isReset: parsed.isReset || false
+        } as any;
       }
     }
   } catch (e) {
@@ -33,9 +34,19 @@ export function getPersistentQueueStore(): QueueStoreData {
 export function savePersistentQueueStore(counter: number, lastEndMinutes: number, regData?: any) {
   try {
     const store = getPersistentQueueStore();
-    store.counter = Math.max(store.counter, counter);
-    store.lastEndMinutes = Math.max(store.lastEndMinutes, lastEndMinutes);
-    delete (store as any).isReset;
+    const isReset = (store as any).isReset || (globalThis as any).isResetActive;
+
+    if (isReset) {
+      store.counter = counter;
+      store.lastEndMinutes = lastEndMinutes;
+      store.registrations = {};
+      delete (store as any).isReset;
+      (globalThis as any).isResetActive = false;
+    } else {
+      store.counter = Math.max(store.counter, counter);
+      store.lastEndMinutes = Math.max(store.lastEndMinutes, lastEndMinutes);
+    }
+
     if (regData && regData.registrationId) {
       store.registrations[regData.registrationId] = regData;
     }
@@ -47,6 +58,7 @@ export function savePersistentQueueStore(counter: number, lastEndMinutes: number
 
 export function clearPersistentQueueStore() {
   try {
+    (globalThis as any).isResetActive = true;
     const resetStore = { counter: 0, lastEndMinutes: 14 * 60, registrations: {}, isReset: true };
     fs.writeFileSync(TMP_FILE, JSON.stringify(resetStore, null, 2), 'utf-8');
   } catch (e) {}
@@ -155,34 +167,43 @@ export async function allocateSlot(
     ? requestedDuration
     : (categoryUpper === 'DANCE' ? settings.danceDuration : settings.musicDuration);
 
+  const store = getPersistentQueueStore();
+  const isResetActive = (store as any).isReset || (globalThis as any).isResetActive;
+
   let lastQueuePosition = 0;
   let lastEndMinutes = 0;
 
-  try {
-    const previousRegistration = await dbClient.registration.findFirst({
-      where: { status: 'REGISTERED' },
-      orderBy: { createdAt: 'desc' },
-      select: { slotEndTime: true, queuePosition: true }
-    });
+  if (!isResetActive) {
+    try {
+      const previousRegistration = await dbClient.registration.findFirst({
+        where: { status: 'REGISTERED' },
+        orderBy: { createdAt: 'desc' },
+        select: { slotEndTime: true, queuePosition: true }
+      });
 
-    if (previousRegistration) {
-      lastQueuePosition = previousRegistration.queuePosition;
-      lastEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
+      if (previousRegistration) {
+        lastQueuePosition = previousRegistration.queuePosition;
+        lastEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
+      }
+    } catch (e) {
+      // DB offline fallback
     }
-  } catch (e) {
-    // DB offline fallback
   }
 
-  // Combine DB state, persistent file store state, and client-side sync state
-  const store = getPersistentQueueStore();
-  const maxQueuePosition = Math.max(lastQueuePosition, store.counter, clientQueuePos || 0);
-  const maxEndMinutes = Math.max(lastEndMinutes, store.lastEndMinutes, clientEndMins || 0);
+  // If reset is active, IGNORE any previous store counters, client queue positions, and old DB records
+  const effectiveStoreCounter = isResetActive ? 0 : store.counter;
+  const effectiveStoreEndMins = isResetActive ? 0 : store.lastEndMinutes;
+  const effectiveClientQueuePos = isResetActive ? 0 : (clientQueuePos || 0);
+  const effectiveClientEndMins = isResetActive ? 0 : (clientEndMins || 0);
+
+  const maxQueuePosition = Math.max(lastQueuePosition, effectiveStoreCounter, effectiveClientQueuePos);
+  const maxEndMinutes = Math.max(lastEndMinutes, effectiveStoreEndMins, effectiveClientEndMins);
 
   let startMinutes: number;
   if (maxQueuePosition === 0) {
     startMinutes = parseTimeToMinutes(settings.eventStartTime); // 14:00 (2:00 PM IST = 840 mins)
   } else {
-    startMinutes = maxEndMinutes + settings.setupGap; // 2 min gap!
+    startMinutes = maxEndMinutes + settings.setupGap; // setup gap mins
   }
 
   const endMinutes = startMinutes + duration;
