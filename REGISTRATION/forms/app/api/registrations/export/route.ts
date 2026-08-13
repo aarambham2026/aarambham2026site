@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db';
 import { getPersistentQueueStore } from '@/lib/slotAllocator';
 import * as XLSX from 'xlsx';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -21,74 +24,7 @@ export async function GET(req: Request) {
     const store = getPersistentQueueStore();
     const storeRegistrations = Object.values(store.registrations || {});
 
-    const BASE_REGISTRATIONS = [
-      {
-        id: 'cmsrjutiy0002uk4kr8130xnx',
-        registrationId: 'EVT-0001',
-        queuePosition: 1,
-        teamLeaderName: 'Nandhan JS',
-        rollNo: '21CS045',
-        department: 'Computer Science',
-        year: '3rd Year / Sem 5-6',
-        format: 'SOLO',
-        numberOfMembers: 1,
-        eventCategory: 'DANCE',
-        performanceName: 'dnave',
-        performanceDuration: 5,
-        slotStartTime: '2:00 PM',
-        slotEndTime: '2:05 PM',
-        email: 'jsnandhan6@gmail.com',
-        phone: '09080260402',
-        status: 'REGISTERED',
-        createdAt: '2026-08-13T13:24:12.922Z'
-      },
-      {
-        id: 'cmsrk5xnu0000ukicjfgoxrwi',
-        registrationId: 'EVT-0002',
-        queuePosition: 2,
-        teamLeaderName: 'Nandhan JS',
-        rollNo: '21CS045',
-        department: 'Computer Science',
-        year: '3rd Year / Sem 5-6',
-        format: 'DUO',
-        numberOfMembers: 2,
-        eventCategory: 'DANCE',
-        performanceName: 'dnave',
-        performanceDuration: 5,
-        slotStartTime: '2:07 PM',
-        slotEndTime: '2:12 PM',
-        email: 'jsnandhan6@gmail.com',
-        phone: '09080260402',
-        status: 'REGISTERED',
-        createdAt: '2026-08-13T13:32:51.499Z'
-      },
-      {
-        id: 'cmsrkolzk0000ukw4y2uo0mne',
-        registrationId: 'EVT-0003',
-        queuePosition: 3,
-        teamLeaderName: 'Nandhan JS',
-        rollNo: '21CS045',
-        department: 'Computer Science',
-        year: '3rd Year / Sem 5-6',
-        format: 'SOLO',
-        numberOfMembers: 1,
-        eventCategory: 'MUSIC',
-        performanceName: 'dnave',
-        performanceDuration: 5,
-        slotStartTime: '2:14 PM',
-        slotEndTime: '2:19 PM',
-        email: 'jsnandhan6@gmail.com',
-        phone: '09080260402',
-        status: 'REGISTERED',
-        createdAt: '2026-08-13T13:47:22.832Z'
-      }
-    ];
-
     const regMap = new Map<string, any>();
-
-    BASE_REGISTRATIONS.forEach((reg) => {
-      regMap.set(reg.registrationId, reg);
-    });
 
     dbRegistrations.forEach((reg) => {
       if (reg.registrationId) regMap.set(reg.registrationId, reg);
@@ -96,9 +32,11 @@ export async function GET(req: Request) {
 
     storeRegistrations.forEach((reg: any) => {
       if (reg.registrationId) {
+        const existing = regMap.get(reg.registrationId) || {};
         regMap.set(reg.registrationId, {
-          id: reg.registrationId,
+          id: reg.id || reg.registrationId,
           createdAt: new Date().toISOString(),
+          ...existing,
           ...reg
         });
       }
@@ -126,46 +64,48 @@ export async function GET(req: Request) {
       'Number of Members': reg.numberOfMembers || 1,
       'Event Category': reg.eventCategory || 'N/A',
       'Performance Title': reg.performanceName || 'N/A',
-      'Performance Duration (mins)': reg.performanceDuration || 10,
+      'Performance Duration': reg.performanceDuration || 10,
       'Slot Start Time': reg.slotStartTime || 'N/A',
       'Slot End Time': reg.slotEndTime || 'N/A',
       'Email Address': reg.email || 'N/A',
       'Phone Number': reg.phone || 'N/A',
       'Team Members Roster': reg.membersList || 'N/A',
-      'Registration Date & Time': new Date(reg.createdAt || Date.now()).toLocaleString('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-      }),
+      'Registration Date & Time': reg.createdAt
+        ? new Date(reg.createdAt).toLocaleString('en-US', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          })
+        : 'N/A',
       'Status': reg.status || 'REGISTERED'
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataRows);
     
-    // Auto-fit column widths
+    // Auto-fit column widths matching Excel sheet
     const colWidths = [
-      { wch: 8 },  // Queue #
-      { wch: 14 }, // Reg ID
-      { wch: 24 }, // Leader Name
-      { wch: 14 }, // Roll Number
-      { wch: 16 }, // Department
-      { wch: 16 }, // Year
-      { wch: 14 }, // Format
-      { wch: 12 }, // Members
-      { wch: 14 }, // Category
-      { wch: 24 }, // Title
-      { wch: 18 }, // Duration
-      { wch: 14 }, // Slot Start
-      { wch: 14 }, // Slot End
-      { wch: 28 }, // Email
-      { wch: 16 }, // Phone
-      { wch: 40 }, // Team Roster
-      { wch: 24 }, // Date & Time
-      { wch: 12 }  // Status
+      { wch: 10 }, // Queue #
+      { wch: 16 }, // Registration ID
+      { wch: 24 }, // Team Leader Name
+      { wch: 16 }, // Roll Number
+      { wch: 20 }, // Department
+      { wch: 20 }, // Year / Semester
+      { wch: 18 }, // Performance Format
+      { wch: 18 }, // Number of Members
+      { wch: 16 }, // Event Category
+      { wch: 24 }, // Performance Title
+      { wch: 20 }, // Performance Duration
+      { wch: 16 }, // Slot Start Time
+      { wch: 16 }, // Slot End Time
+      { wch: 28 }, // Email Address
+      { wch: 18 }, // Phone Number
+      { wch: 40 }, // Team Members Roster
+      { wch: 26 }, // Registration Date & Time
+      { wch: 14 }  // Status
     ];
     worksheet['!cols'] = colWidths;
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Festival Registrations');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registrations');
 
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
@@ -174,7 +114,7 @@ export async function GET(req: Request) {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': `attachment; filename="Aarambham_2026_Registrations_${new Date().toISOString().slice(0, 10)}.xlsx"`,
-        'Cache-Control': 'no-store, max-age=0'
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
       }
     });
   } catch (error: any) {
