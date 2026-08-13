@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { updateCloudRegistration, deleteCloudRegistration } from '@/lib/cloudStore';
 
 export async function GET(
   req: Request,
@@ -74,6 +75,13 @@ export async function PATCH(
       savePersistentQueueStore(store.counter, store.lastEndMinutes, store.registrations[id]);
     }
 
+    // 3. Update Cloud persistent store
+    try {
+      await updateCloudRegistration(id, sanitizedData);
+    } catch (cloudErr) {
+      console.warn('Cloud update error:', cloudErr);
+    }
+
     const name = sanitizedData.teamLeaderName || id;
     addAuditLog('EDIT_REGISTRATION', `Admin manipulated/updated participant ${id} (${name})`, sanitizedData);
 
@@ -111,6 +119,13 @@ export async function DELETE(
     if (store.registrations && store.registrations[id]) {
       delete store.registrations[id];
       savePersistentQueueStore(store.counter, store.lastEndMinutes);
+    }
+
+    // Delete from Cloud persistent store
+    try {
+      await deleteCloudRegistration(id);
+    } catch (cloudErr) {
+      console.warn('Cloud delete error:', cloudErr);
     }
 
     addAuditLog('CANCEL_REGISTRATION', `Admin deleted registration record ${id}`);

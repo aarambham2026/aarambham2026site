@@ -81,8 +81,20 @@ export async function POST(req: Request) {
         // Ignore DB save error on serverless read-only SQLite
       }
 
-      // Save to persistent file store on disk (/tmp)
+      // Save to persistent queue store
       savePersistentQueueStore(queuePosition, slot.endMinutes, regRecord);
+
+      // Save to 24/7 cloud persistent store so page reloads on Vercel NEVER lose data
+      try {
+        const { saveCloudRegistration } = await import('@/lib/cloudStore');
+        await saveCloudRegistration({
+          id: registrationId,
+          ...regRecord,
+          createdAt: new Date().toISOString()
+        });
+      } catch (cloudErr) {
+        console.warn('Cloud store async save warning:', cloudErr);
+      }
 
       const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
         `/api/ticket/${id}?name=${encodeURIComponent(name)}&members=${members}&slotStart=${encodeURIComponent(start)}&slotEnd=${encodeURIComponent(end)}&event=${encodeURIComponent(cat)}`;

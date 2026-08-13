@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getPersistentQueueStore } from '@/lib/slotAllocator';
+import { fetchCloudRegistrations } from '@/lib/cloudStore';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -12,14 +13,17 @@ export async function GET(req: Request) {
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
-    // Fetch real registrations directly from Prisma DB
+    // Fetch from 24/7 Cloud Store first (persists across page reloads & Vercel cold starts)
+    const cloudRegistrations = await fetchCloudRegistrations();
+
+    // Fetch from local Prisma DB
     let dbRegistrations: any[] = [];
     try {
       dbRegistrations = await prisma.registration.findMany({
         orderBy: { queuePosition: 'asc' }
       });
     } catch (e) {
-      console.warn('Prisma DB fetch warning:', e);
+      // Ignore DB fetch warning
     }
 
     // Read persistent serverless store
@@ -28,12 +32,20 @@ export async function GET(req: Request) {
 
     const regMap = new Map<string, any>();
 
-    // Add DB registrations first
-    dbRegistrations.forEach((reg) => {
+    // 1. Add Cloud store records (highest persistence priority)
+    cloudRegistrations.forEach((reg) => {
       if (reg.registrationId) regMap.set(reg.registrationId, reg);
     });
 
-    // Merge in-memory serverless store registrations
+    // 2. Add DB registrations
+    dbRegistrations.forEach((reg) => {
+      if (reg.registrationId) {
+        const existing = regMap.get(reg.registrationId) || {};
+        regMap.set(reg.registrationId, { ...reg, ...existing });
+      }
+    });
+
+    // 3. Merge serverless queue store registrations
     storeRegistrations.forEach((reg: any) => {
       if (reg.registrationId) {
         const existing = regMap.get(reg.registrationId) || {};

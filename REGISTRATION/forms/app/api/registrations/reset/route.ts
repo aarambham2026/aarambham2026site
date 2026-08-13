@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { isRequestAuthorized } from '@/lib/security';
 import { clearPersistentQueueStore } from '@/lib/slotAllocator';
+import { resetCloudRegistrations } from '@/lib/cloudStore';
 
 export async function POST() {
   try {
@@ -16,6 +17,13 @@ export async function POST() {
       await prisma.registration.deleteMany();
     } catch (dbErr: any) {
       console.warn('Database reset notice:', dbErr?.message || dbErr);
+    }
+
+    // Reset 24/7 cloud persistent store
+    try {
+      await resetCloudRegistrations();
+    } catch (cloudErr) {
+      console.warn('Cloud store reset warning:', cloudErr);
     }
 
     // Clear persistent queue store and reset queue state to 0
