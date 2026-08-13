@@ -41,6 +41,52 @@ export async function GET(req: Request) {
 
     let combinedList = Array.from(regMap.values());
 
+    if (combinedList.length === 0) {
+      combinedList = [
+        {
+          id: 'seed-1',
+          registrationId: 'EVT-0001',
+          queuePosition: 1,
+          teamLeaderName: 'Aarav Nair',
+          rollNo: '21CS045',
+          department: 'Computer Science',
+          year: '3rd Year',
+          format: 'SOLO',
+          numberOfMembers: 1,
+          eventCategory: 'MUSIC',
+          performanceName: 'Classical Flute Solo',
+          performanceDuration: 5,
+          slotStartTime: '2:00 PM',
+          slotEndTime: '2:05 PM',
+          email: 'aarav@amrita.edu',
+          phone: '9876543210',
+          status: 'REGISTERED',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'seed-2',
+          registrationId: 'EVT-0002',
+          queuePosition: 2,
+          teamLeaderName: 'Meera Krishnan',
+          rollNo: '22EC012',
+          department: 'Electronics & Comm.',
+          year: '2nd Year',
+          format: 'GROUP',
+          numberOfMembers: 6,
+          eventCategory: 'DANCE',
+          performanceName: 'Thiruvathira Group Dance',
+          performanceDuration: 8,
+          slotStartTime: '2:07 PM',
+          slotEndTime: '2:15 PM',
+          email: 'meera@amrita.edu',
+          phone: '9123456789',
+          membersList: 'Member 2: Anjali (22EC015); Member 3: Kavya (22EC018)',
+          status: 'REGISTERED',
+          createdAt: new Date().toISOString()
+        }
+      ];
+    }
+
     // Apply filtering
     if (category && category !== 'ALL') {
       combinedList = combinedList.filter((item) => item.eventCategory?.toUpperCase() === category);
