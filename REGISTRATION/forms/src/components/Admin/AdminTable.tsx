@@ -143,8 +143,54 @@ export default function AdminTable({
     }
   };
 
+  const upcomingRegistrations = data
+    .filter((r) => r.status === 'REGISTERED')
+    .sort((a, b) => a.queuePosition - b.queuePosition);
+
   return (
     <div className="bg-zinc-950/90 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+      {/* Live Stage Queue & Upcoming Registrations Banner */}
+      <div className="bg-zinc-900/90 border border-emerald-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🎤</span>
+            <h3 className="text-sm font-extrabold text-white font-serif tracking-tight">
+              UPCOMING STAGE PERFORMANCES <span className="text-emerald-400">({upcomingRegistrations.length} In Queue)</span>
+            </h3>
+          </div>
+          <span className="text-[10px] text-zinc-400 font-mono">
+            Registrations till now & upcoming timeline
+          </span>
+        </div>
+
+        {upcomingRegistrations.length === 0 ? (
+          <p className="text-xs text-zinc-500 font-mono py-2 text-center">
+            No upcoming stage performances currently queued.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {upcomingRegistrations.slice(0, 3).map((item, idx) => (
+              <div
+                key={item.id}
+                className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 space-y-1 relative overflow-hidden hover:border-emerald-500/40 transition-colors"
+              >
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="font-bold text-amber-400">{item.registrationId}</span>
+                  <span className="text-emerald-400 font-bold">{item.slotStartTime} – {item.slotEndTime}</span>
+                </div>
+                <div className="text-xs font-bold text-white truncate">{item.teamLeaderName}</div>
+                <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
+                  <span>{item.eventCategory} · {item.format || 'SOLO'}</span>
+                  <span className="px-1.5 py-0.5 bg-emerald-950 border border-emerald-800 text-emerald-300 rounded font-bold">
+                    {idx === 0 ? 'NEXT UP 📍' : `#${item.queuePosition}`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Search & Filter Controls */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         {/* Search */}
@@ -177,8 +223,8 @@ export default function AdminTable({
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase text-zinc-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-500"
           >
-            <option value="ALL">All Statuses</option>
-            <option value="REGISTERED">Registered</option>
+            <option value="ALL">All Registrations Till Now</option>
+            <option value="REGISTERED">Upcoming & Active</option>
             <option value="CANCELLED">Cancelled</option>
           </select>
 
