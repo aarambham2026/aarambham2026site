@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getPersistentQueueStore } from '@/lib/slotAllocator';
+import { fetchCloudRegistrations } from '@/lib/cloudStore';
 import * as XLSX from 'xlsx';
 
 export const dynamic = 'force-dynamic';
@@ -12,10 +13,14 @@ export async function GET(req: Request) {
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
+    // Fetch from 24/7 Cloud Store
+    const cloudRegistrations = await fetchCloudRegistrations();
+
+    // Fetch from local Prisma DB
     let dbRegistrations: any[] = [];
     try {
       dbRegistrations = await prisma.registration.findMany({
-        orderBy: { createdAt: 'asc' }
+        orderBy: { queuePosition: 'asc' }
       });
     } catch (e) {
       // Ignore Prisma DB read error
@@ -26,10 +31,20 @@ export async function GET(req: Request) {
 
     const regMap = new Map<string, any>();
 
-    dbRegistrations.forEach((reg) => {
+    // 1. Add Cloud store records
+    cloudRegistrations.forEach((reg) => {
       if (reg.registrationId) regMap.set(reg.registrationId, reg);
     });
 
+    // 2. Add DB registrations
+    dbRegistrations.forEach((reg) => {
+      if (reg.registrationId) {
+        const existing = regMap.get(reg.registrationId) || {};
+        regMap.set(reg.registrationId, { ...reg, ...existing });
+      }
+    });
+
+    // 3. Add serverless store registrations
     storeRegistrations.forEach((reg: any) => {
       if (reg.registrationId) {
         const existing = regMap.get(reg.registrationId) || {};

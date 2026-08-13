@@ -1,4 +1,4 @@
-const CLOUD_STORE_URL = 'https://api.restful-api.dev/objects/ff8081819ff5b110019ffca0f66f14bc';
+const KVDB_URL = 'https://kvdb.io/2stKqCptjpPySco2fWozui/registrations';
 
 export interface CloudStoreRecord {
   id: string;
@@ -28,20 +28,19 @@ let lastFetchTime = 0;
 
 export async function fetchCloudRegistrations(): Promise<CloudStoreRecord[]> {
   const now = Date.now();
-  // Return memory cache if fetched within 2 seconds
-  if (memoryCache.length > 0 && now - lastFetchTime < 2000) {
+  if (memoryCache.length > 0 && now - lastFetchTime < 1500) {
     return memoryCache;
   }
 
   try {
-    const res = await fetch(CLOUD_STORE_URL, {
+    const res = await fetch(KVDB_URL, {
       cache: 'no-store',
       headers: { 'Cache-Control': 'no-cache' }
     });
     if (res.ok) {
       const json = await res.json();
-      if (json.data && Array.isArray(json.data.registrations)) {
-        memoryCache = json.data.registrations;
+      if (Array.isArray(json)) {
+        memoryCache = json;
         lastFetchTime = now;
         return memoryCache;
       }
@@ -55,7 +54,6 @@ export async function fetchCloudRegistrations(): Promise<CloudStoreRecord[]> {
 export async function saveCloudRegistration(record: CloudStoreRecord): Promise<CloudStoreRecord[]> {
   try {
     const current = await fetchCloudRegistrations();
-    // Prevent duplicates
     const filtered = current.filter((r) => r.registrationId !== record.registrationId);
     const updated = [...filtered, record];
     updated.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
@@ -63,13 +61,10 @@ export async function saveCloudRegistration(record: CloudStoreRecord): Promise<C
     memoryCache = updated;
     lastFetchTime = Date.now();
 
-    await fetch(CLOUD_STORE_URL, {
-      method: 'PUT',
+    await fetch(KVDB_URL, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'aarambham_2026_store',
-        data: { registrations: updated }
-      })
+      body: JSON.stringify(updated)
     });
     return updated;
   } catch (err) {
@@ -94,13 +89,10 @@ export async function updateCloudRegistration(
     memoryCache = updated;
     lastFetchTime = Date.now();
 
-    await fetch(CLOUD_STORE_URL, {
-      method: 'PUT',
+    await fetch(KVDB_URL, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'aarambham_2026_store',
-        data: { registrations: updated }
-      })
+      body: JSON.stringify(updated)
     });
     return updated;
   } catch (err) {
@@ -117,13 +109,10 @@ export async function deleteCloudRegistration(registrationId: string): Promise<C
     memoryCache = updated;
     lastFetchTime = Date.now();
 
-    await fetch(CLOUD_STORE_URL, {
-      method: 'PUT',
+    await fetch(KVDB_URL, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'aarambham_2026_store',
-        data: { registrations: updated }
-      })
+      body: JSON.stringify(updated)
     });
     return updated;
   } catch (err) {
@@ -137,13 +126,10 @@ export async function resetCloudRegistrations(): Promise<void> {
     memoryCache = [];
     lastFetchTime = Date.now();
 
-    await fetch(CLOUD_STORE_URL, {
-      method: 'PUT',
+    await fetch(KVDB_URL, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'aarambham_2026_store',
-        data: { registrations: [] }
-      })
+      body: JSON.stringify([])
     });
   } catch (err) {
     console.error('Cloud store reset error:', err);
