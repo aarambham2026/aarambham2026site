@@ -20,6 +20,9 @@ export async function POST() {
     // Clear persistent queue store and reset queue state
     clearPersistentQueueStore();
 
+    const { addAuditLog } = await import('@/lib/security');
+    addAuditLog('RESET_ALL', 'Admin executed full system reset of all registrations');
+
     return NextResponse.json({
       success: true,
       message: 'All registrations have been reset successfully.'

@@ -56,6 +56,13 @@ export async function PATCH(req: Request) {
 
     invalidateSettingsCache();
 
+    const { addAuditLog } = await import('@/lib/security');
+    addAuditLog(
+      'UPDATE_SETTINGS',
+      `Admin updated slot timing parameters: Start Time ${validated.eventStartTime}, Music ${validated.musicDuration}m, Dance ${validated.danceDuration}m, Setup Gap ${validated.setupGap}m`,
+      validated
+    );
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

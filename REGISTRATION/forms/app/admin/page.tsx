@@ -28,6 +28,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
   const fetchData = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
@@ -36,15 +38,23 @@ export default function AdminPage() {
       if (categoryFilter !== 'ALL') params.append('category', categoryFilter);
       if (statusFilter !== 'ALL') params.append('status', statusFilter);
 
-      const res = await fetch(`/api/registrations?${params.toString()}`);
-      const json = await res.json();
+      const [resData, resLogs] = await Promise.all([
+        fetch(`/api/registrations?${params.toString()}`),
+        fetch('/api/admin/logs')
+      ]);
 
+      const json = await resData.json();
       if (json.success) {
         setData(json.data);
         setStats(json.stats);
         setLastUpdated(new Date().toLocaleTimeString());
-      } else if (res.status === 401) {
+      } else if (resData.status === 401) {
         setIsAuthenticated(false);
+      }
+
+      if (resLogs.ok) {
+        const jsonLogs = await resLogs.json();
+        if (jsonLogs.success) setAuditLogs(jsonLogs.logs || []);
       }
     } catch (err) {
       console.error('Error fetching admin data:', err);
@@ -244,6 +254,61 @@ export default function AdminPage() {
 
         {/* Event Settings Panel */}
         <SettingsForm />
+
+        {/* Live Admin Audit & Update Log Section */}
+        <div className="bg-zinc-950/90 border border-amber-500/30 rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📜</span>
+              <h2 className="text-base font-extrabold text-white font-serif tracking-tight">
+                ADMIN <span className="text-amber-400">UPDATE & ACTIVITY LOGS</span>
+              </h2>
+              <span className="text-[10px] bg-amber-950/80 border border-amber-800/60 text-amber-300 px-2 py-0.5 rounded-full font-mono">
+                {auditLogs.length} Events Logged
+              </span>
+            </div>
+            <button
+              onClick={fetchData}
+              className="text-xs text-amber-300 hover:text-white font-mono flex items-center gap-1"
+            >
+              🔄 Refresh Logs
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-2 text-xs font-mono">
+            {auditLogs.length === 0 ? (
+              <div className="text-zinc-500 text-center py-4">No audit logs recorded yet.</div>
+            ) : (
+              auditLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-zinc-900/80 border border-zinc-800/80 rounded-xl gap-2 hover:border-amber-500/40 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={`px-2 py-0.5 text-[9px] font-extrabold uppercase rounded ${
+                        log.action === 'EDIT_REGISTRATION'
+                          ? 'bg-blue-950 text-blue-300 border border-blue-800'
+                          : log.action === 'UPDATE_SETTINGS'
+                          ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                          : log.action === 'RESET_ALL'
+                          ? 'bg-red-950 text-red-300 border border-red-800'
+                          : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                      }`}
+                    >
+                      {log.action}
+                    </span>
+                    <span className="text-zinc-200">{log.description}</span>
+                  </div>
+
+                  <span className="text-[10px] text-zinc-500 shrink-0">
+                    {new Date(log.timestamp).toLocaleTimeString()} · {new Date(log.timestamp).toLocaleDateString()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
 
         {/* Registrations Management Table */}
         <AdminTable

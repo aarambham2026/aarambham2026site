@@ -102,3 +102,38 @@ export function checkLoginRateLimit(ip: string, maxAttempts = 5, windowMs = 15 *
   record.count += 1;
   return { allowed: true, remaining: maxAttempts - record.count };
 }
+
+// Audit Logs Store
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  action: 'UPDATE_SETTINGS' | 'EDIT_REGISTRATION' | 'CANCEL_REGISTRATION' | 'RESET_ALL' | 'NEW_REGISTRATION';
+  description: string;
+  details?: any;
+}
+
+const auditLogsInMemory: AuditLog[] = [
+  {
+    id: 'log-init-1',
+    timestamp: new Date().toISOString(),
+    action: 'UPDATE_SETTINGS',
+    description: 'System event settings active: Start Time 14:00 (2:00 PM IST), Music 10m, Dance 10m, Setup Gap 2m'
+  }
+];
+
+export function addAuditLog(action: AuditLog['action'], description: string, details?: any): AuditLog {
+  const log: AuditLog = {
+    id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    timestamp: new Date().toISOString(),
+    action,
+    description,
+    details
+  };
+  auditLogsInMemory.unshift(log);
+  if (auditLogsInMemory.length > 50) auditLogsInMemory.pop();
+  return log;
+}
+
+export function getAuditLogs(): AuditLog[] {
+  return auditLogsInMemory;
+}

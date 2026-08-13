@@ -46,6 +46,9 @@ export default function AdminTable({
   statusFilter,
   setStatusFilter
 }: AdminTableProps) {
+  const [editingRecord, setEditingRecord] = useState<RegistrationRecord | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [resetting, setResetting] = useState(false);
 
@@ -92,6 +95,51 @@ export default function AdminTable({
       alert(`Reset error: ${err.message}`);
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRecord) return;
+
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/registrations/${editingRecord.registrationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingRecord)
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setEditingRecord(null);
+        onRefresh();
+      } else {
+        alert(`Failed to save changes: ${json.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      alert(`Error saving changes: ${err.message}`);
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(`⚠️ Are you sure you want to permanently DELETE registration ${id}?`)) return;
+
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/registrations/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        onRefresh();
+      } else {
+        alert('Failed to delete registration');
+      }
+    } catch {
+      alert('Error deleting registration');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -242,11 +290,20 @@ export default function AdminTable({
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-4 text-right space-x-2">
+                  <td className="px-4 py-4 text-right space-x-1.5">
+                    {/* Manipulate Data / Edit Button */}
+                    <button
+                      onClick={() => setEditingRecord({ ...reg })}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-950/80 hover:bg-blue-900 border border-blue-700/60 text-blue-300 rounded-lg font-bold text-[11px] transition-colors"
+                      title="Manipulate / Edit Participant Data"
+                    >
+                      ✏️ Edit
+                    </button>
+
                     <a
                       href={`/api/ticket/${reg.registrationId}`}
                       download={`ticket-${reg.registrationId}.pdf`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/40 text-amber-300 rounded-lg font-bold text-[11px] transition-colors"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/40 text-amber-300 rounded-lg font-bold text-[11px] transition-colors"
                       title="Download E-Ticket PDF"
                     >
                       <Download className="w-3.5 h-3.5" /> Ticket
@@ -256,12 +313,21 @@ export default function AdminTable({
                       <button
                         onClick={() => handleCancel(reg.registrationId)}
                         disabled={cancellingId === reg.registrationId}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/50 text-rose-300 rounded-lg font-bold text-[11px] transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/50 text-rose-300 rounded-lg font-bold text-[11px] transition-colors disabled:opacity-50"
                         title="Cancel Registration"
                       >
                         <Ban className="w-3.5 h-3.5" /> Cancel
                       </button>
                     )}
+
+                    <button
+                      onClick={() => handleDelete(reg.registrationId)}
+                      disabled={deletingId === reg.registrationId}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-950/90 hover:bg-red-900 border border-red-800/70 text-red-400 rounded-lg font-bold text-[11px] transition-colors disabled:opacity-50"
+                      title="Permanently Delete Record"
+                    >
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               ))
@@ -269,6 +335,165 @@ export default function AdminTable({
           </tbody>
         </table>
       </div>
+
+      {/* Data Manipulation Modal */}
+      {editingRecord && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-zinc-950 border border-amber-500/40 rounded-2xl p-6 sm:p-8 max-w-2xl w-full space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+              <div>
+                <h2 className="text-xl font-extrabold text-white font-serif">
+                  MANIPULATE / EDIT <span className="text-amber-400">{editingRecord.registrationId}</span>
+                </h2>
+                <p className="text-xs text-amber-200/60 font-mono mt-0.5">
+                  Update participant details, slot timing, format, or event category
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingRecord(null)}
+                className="text-zinc-400 hover:text-white font-bold text-lg px-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Team Leader Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingRecord.teamLeaderName}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, teamLeaderName: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Roll Number</label>
+                <input
+                  type="text"
+                  value={editingRecord.rollNo || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, rollNo: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Department</label>
+                <input
+                  type="text"
+                  value={editingRecord.department || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, department: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Year / Semester</label>
+                <input
+                  type="text"
+                  value={editingRecord.year || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, year: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Event Category</label>
+                <select
+                  value={editingRecord.eventCategory}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, eventCategory: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                >
+                  <option value="DANCE">DANCE</option>
+                  <option value="MUSIC">MUSIC</option>
+                  <option value="OTHERS">OTHERS</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Performance Title</label>
+                <input
+                  type="text"
+                  value={editingRecord.performanceName || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, performanceName: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Slot Start Time</label>
+                <input
+                  type="text"
+                  value={editingRecord.slotStartTime}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, slotStartTime: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-emerald-300 font-bold focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Slot End Time</label>
+                <input
+                  type="text"
+                  value={editingRecord.slotEndTime}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, slotEndTime: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-emerald-300 font-bold focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Email</label>
+                <input
+                  type="email"
+                  value={editingRecord.email}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, email: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={editingRecord.phone}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, phone: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-amber-200/80 font-bold uppercase mb-1">Status</label>
+                <select
+                  value={editingRecord.status}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, status: e.target.value })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500 font-bold"
+                >
+                  <option value="REGISTERED">REGISTERED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2 flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingRecord(null)}
+                  className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded-xl font-bold uppercase tracking-wider"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  className="px-6 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-extrabold uppercase tracking-wider shadow-lg shadow-amber-950/60 disabled:opacity-50"
+                >
+                  {savingEdit ? 'Saving...' : 'Save Manipulated Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
