@@ -71,60 +71,17 @@ window.eventData = {
   // ── COORDINATORS ───────────────────────────────────────────
   // Add photo paths like: photo: "assets/coordinators/john.jpg"
   coordinators: [
-    {
-      id: 1,
-      name: "Coordinator Name",
-      position: "Festival Director",
-      department: "Department Name",
-      photo: "", // → add path: assets/coordinators/photo.jpg
-      instagram: "#",
-      linkedin: "#",
-    },
-    {
-      id: 2,
-      name: "Coordinator Name",
-      position: "Event Head",
-      department: "Department Name",
-      photo: "",
-      instagram: "#",
-      linkedin: "#",
-    },
-    {
-      id: 3,
-      name: "Coordinator Name",
-      position: "Creative Director",
-      department: "Department Name",
-      photo: "",
-      instagram: "#",
-      linkedin: "#",
-    },
-    {
-      id: 4,
-      name: "Coordinator Name",
-      position: "Logistics Head",
-      department: "Department Name",
-      photo: "",
-      instagram: "#",
-      linkedin: "#",
-    },
-    {
-      id: 5,
-      name: "Coordinator Name",
-      position: "Technical Lead",
-      department: "Department Name",
-      photo: "",
-      instagram: "#",
-      linkedin: "#",
-    },
-    {
-      id: 6,
-      name: "Coordinator Name",
-      position: "Cultural Secretary",
-      department: "Department Name",
-      photo: "",
-      instagram: "#",
-      linkedin: "#",
-    },
+    { id: 1, name: "Abiram", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Abiram.jpeg", instagram: "#", linkedin: "#" },
+    { id: 2, name: "Adhwaith Ashok", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Adhwaith%20Ashok.jpeg", instagram: "#", linkedin: "#" },
+    { id: 3, name: "Adithyan A", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Adithyan%20A.jpeg", instagram: "#", linkedin: "#" },
+    { id: 4, name: "Adithyan V Pillai", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Adithyan%20V%20Pillai.jpeg", instagram: "#", linkedin: "#" },
+    { id: 5, name: "Akhil N", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Akhil%20N.jpeg", instagram: "#", linkedin: "#" },
+    { id: 6, name: "Arunima", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Arunima.jpeg", instagram: "#", linkedin: "#" },
+    { id: 7, name: "Gautham Suresh", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Gautham%20Suresh.jpeg", instagram: "#", linkedin: "#" },
+    { id: 8, name: "Karthika S", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Karthika%20S.jpeg", instagram: "#", linkedin: "#" },
+    { id: 9, name: "Kashinath S", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Kashinath%20S.jpeg", instagram: "#", linkedin: "#" },
+    { id: 10, name: "Kiran R", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Kiran%20R.jpeg", instagram: "#", linkedin: "#" },
+    { id: 11, name: "Nandhan J S", position: "Event Coordinator", department: "Onam '26 Team", photo: "../MEET%20THE%20CORRDINATES/assets/thakirthi_coordinator_photos/Nandhan%20J%20S.jpeg", instagram: "#", linkedin: "#" }
   ],
 
   // ── SNAPSHOT PHOTOS ────────────────────────────────────────
