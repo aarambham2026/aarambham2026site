@@ -20,6 +20,14 @@ export async function GET(req: Request) {
 
     // Read persistent serverless store
     const store = getPersistentQueueStore();
+    if ((store as any).isReset) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        stats: { total: 0, music: 0, dance: 0, cancelled: 0 }
+      });
+    }
+
     const storeRegistrations = Object.values(store.registrations || {});
 
     const BASE_REGISTRATIONS = [

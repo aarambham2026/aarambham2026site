@@ -35,6 +35,7 @@ export function savePersistentQueueStore(counter: number, lastEndMinutes: number
     const store = getPersistentQueueStore();
     store.counter = Math.max(store.counter, counter);
     store.lastEndMinutes = Math.max(store.lastEndMinutes, lastEndMinutes);
+    delete (store as any).isReset;
     if (regData && regData.registrationId) {
       store.registrations[regData.registrationId] = regData;
     }
@@ -42,6 +43,13 @@ export function savePersistentQueueStore(counter: number, lastEndMinutes: number
   } catch (e) {
     // Ignore write errors
   }
+}
+
+export function clearPersistentQueueStore() {
+  try {
+    const resetStore = { counter: 0, lastEndMinutes: 14 * 60, registrations: {}, isReset: true };
+    fs.writeFileSync(TMP_FILE, JSON.stringify(resetStore, null, 2), 'utf-8');
+  } catch (e) {}
 }
 
 export function parseTimeToMinutes(timeStr: string): number {

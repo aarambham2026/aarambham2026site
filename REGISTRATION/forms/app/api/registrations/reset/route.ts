@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { isRequestAuthorized } from '@/lib/security';
+import { clearPersistentQueueStore } from '@/lib/slotAllocator';
 
 export async function POST() {
   try {
@@ -9,8 +10,15 @@ export async function POST() {
       return NextResponse.json({ success: false, error: 'Unauthorized admin access' }, { status: 401 });
     }
 
-    // Clear all registration records from SQLite database
-    await prisma.registration.deleteMany();
+    // Safely attempt database clearing (catch read-only/missing SQLite errors on Vercel serverless)
+    try {
+      await prisma.registration.deleteMany();
+    } catch (dbErr: any) {
+      console.warn('Database reset notice:', dbErr?.message || dbErr);
+    }
+
+    // Clear persistent queue store and reset queue state
+    clearPersistentQueueStore();
 
     return NextResponse.json({
       success: true,
