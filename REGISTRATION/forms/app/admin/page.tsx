@@ -228,14 +228,6 @@ export default function AdminPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold tracking-wider text-amber-200 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-amber-500/30 rounded-full transition-all"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              REGISTRATION PAGE
-            </Link>
-
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider text-rose-300 hover:text-white bg-rose-950/80 hover:bg-rose-900 border border-rose-800/60 rounded-full transition-all"
