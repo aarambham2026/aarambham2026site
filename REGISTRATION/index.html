@@ -163,17 +163,19 @@
   <!-- LIVE NEXT.JS REGISTRATION APP IFRAME -->
   <iframe 
     id="reg-app-frame" 
-    src="http://localhost:3001/" 
+    src="https://aarambham2026-registration.vercel.app" 
     class="app-viewport"
     title="Amrita Vishwa Vidyapeetham Onam Cultural Event Registration & E-Ticket"
   ></iframe>
 
   <script>
-    // Fallback script if port 3001 ever switches to 3000
+    // Fallback script for live Vercel backend / local dev port
     const frame = document.getElementById('reg-app-frame');
-    fetch('http://localhost:3001/', { mode: 'no-cors' }).catch(() => {
-      frame.src = 'http://localhost:3000/';
-    });
+    if (!frame.src || frame.src.includes('localhost')) {
+      fetch('http://localhost:3001/', { mode: 'no-cors' }).catch(() => {
+        frame.src = 'http://localhost:3000/';
+      });
+    }
   </script>
 
   <script src="./preloader.js"></script>
