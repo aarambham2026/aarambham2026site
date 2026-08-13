@@ -163,19 +163,32 @@
   <!-- LIVE NEXT.JS REGISTRATION APP IFRAME -->
   <iframe 
     id="reg-app-frame" 
-    src="https://aarambham2026-registration.vercel.app" 
+    src="http://localhost:3001/" 
     class="app-viewport"
     title="Amrita Vishwa Vidyapeetham Onam Cultural Event Registration & E-Ticket"
   ></iframe>
 
   <script>
-    // Fallback script for live Vercel backend / local dev port
-    const frame = document.getElementById('reg-app-frame');
-    if (!frame.src || frame.src.includes('localhost')) {
-      fetch('http://localhost:3001/', { mode: 'no-cors' }).catch(() => {
-        frame.src = 'http://localhost:3000/';
-      });
-    }
+    (function() {
+      const frame = document.getElementById('reg-app-frame');
+      
+      // Smart Auto-Detect: Local dev server vs Live Vercel deployment
+      if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        fetch('http://localhost:3001/', { mode: 'no-cors' }).then(() => {
+          frame.src = 'http://localhost:3001/';
+        }).catch(() => {
+          fetch('http://localhost:3000/', { mode: 'no-cors' }).then(() => {
+            frame.src = 'http://localhost:3000/';
+          });
+        });
+      } else {
+        // Hosted on Vercel: Auto-link to Vercel deployment origin
+        const currentOrigin = window.location.origin;
+        frame.src = currentOrigin.includes('aarambham2026') 
+          ? currentOrigin + '/REGISTRATION/forms' 
+          : 'https://aarambham2026site.vercel.app/REGISTRATION/forms';
+      }
+    })();
   </script>
 
   <script src="./preloader.js"></script>
