@@ -37,10 +37,12 @@ export default function AdminPage() {
       if (search) params.append('search', search);
       if (categoryFilter !== 'ALL') params.append('category', categoryFilter);
       if (statusFilter !== 'ALL') params.append('status', statusFilter);
+      const now = Date.now();
+      params.append('_t', now.toString());
 
       const [resData, resLogs] = await Promise.all([
-        fetch(`/api/registrations?${params.toString()}`),
-        fetch('/api/admin/logs')
+        fetch(`/api/registrations?${params.toString()}`, { cache: 'no-store' }),
+        fetch(`/api/admin/logs?_t=${now}`, { cache: 'no-store' })
       ]);
 
       const json = await resData.json();

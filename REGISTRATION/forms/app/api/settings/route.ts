@@ -11,6 +11,9 @@ const settingsSchema = z.object({
   setupGap: z.number().int().nonnegative('Setup gap must be non-negative')
 });
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     let settings = await prisma.eventSettings.findUnique({
