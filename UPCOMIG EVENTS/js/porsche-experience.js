@@ -97,9 +97,8 @@ class PorscheExperience {
             carVideo.currentTime = 0;
           } catch (e) {}
           carVideo.style.display = 'block';
-        }
-
-        if (carGif) {
+          if (carGif) carGif.style.display = 'none';
+        } else if (carGif) {
           carGif.style.display = 'block';
         }
 
