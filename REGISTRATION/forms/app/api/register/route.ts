@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { allocateSlot } from '@/lib/slotAllocator';
@@ -16,9 +17,7 @@ const registerSchema = z.object({
   performanceDuration: z.number().int().positive().max(30).optional(),
   email: z.string().email('Invalid email address').max(100),
   phone: z.string().min(5, 'Invalid phone number').max(20),
-  membersList: z.string().max(1000).optional(),
-  clientQueuePos: z.number().optional(),
-  clientEndMins: z.number().optional()
+  membersList: z.string().max(1000).optional()
 });
 
 export async function POST(req: Request) {
@@ -65,13 +64,14 @@ export async function POST(req: Request) {
       const slot = await allocateSlot(
         categoryUpper,
         requestedDuration,
-        validated.clientQueuePos,
-        validated.clientEndMins,
         tx
       );
 
       const queuePosition = slot.nextQueuePosition;
-      const registrationId = `EVT-${String(queuePosition).padStart(4, '0')}`;
+      // Independent registration ID (cryptographically generated, decoupled from queue position)
+      const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+      const registrationId = `A26-${randomSuffix}`;
+
       const slotStartTime = slot.slotStartTime;
       const slotEndTime = slot.slotEndTime;
 
@@ -125,9 +125,6 @@ export async function POST(req: Request) {
       console.error('AuditLog write failed (non-blocking, registration already saved):', auditErr?.message);
     });
 
-    const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
-      `/api/ticket/${id}?name=${encodeURIComponent(name)}&members=${members}&slotStart=${encodeURIComponent(start)}&slotEnd=${encodeURIComponent(end)}&event=${encodeURIComponent(cat)}`;
-
     return NextResponse.json({
       success: true,
       registrationId: result.registrationId,
@@ -135,14 +132,7 @@ export async function POST(req: Request) {
       slotEnd: result.slotEndTime,
       queuePosition: result.queuePosition,
       lastEndMinutes: result.slot.endMinutes,
-      ticketUrl: buildTicketUrl(
-        result.registrationId,
-        validated.teamLeaderName.trim(),
-        validated.numberOfMembers,
-        result.slotStartTime,
-        result.slotEndTime,
-        categoryUpper
-      )
+      ticketUrl: `/api/ticket/${result.registrationId}`
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

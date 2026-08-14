@@ -122,8 +122,6 @@ export async function getEventSettings(dbClient: any = prisma) {
 export async function allocateSlot(
   category: string,
   requestedDuration?: number,
-  _clientQueuePos?: number,
-  _clientEndMins?: number,
   dbClient: any = prisma
 ) {
   const settings = await getEventSettings(dbClient);

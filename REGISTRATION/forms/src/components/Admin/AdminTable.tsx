@@ -108,6 +108,28 @@ export default function AdminTable({
     }
   };
 
+  const handleReorder = async (registrationId: string, newPosition: number) => {
+    if (newPosition < 1) return;
+    setUpdatingId(registrationId);
+    try {
+      const res = await fetch('/api/registrations/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ registrationId, newPosition })
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        onRefresh();
+      } else {
+        alert(json.error || 'Failed to reorder registration');
+      }
+    } catch {
+      alert('Error reordering registration');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleCancel = async (id: string) => {
     if (!confirm(`Are you sure you want to cancel registration ${id}?`)) return;
     await handleStatusChange(id, 'CANCELLED');
@@ -334,7 +356,27 @@ export default function AdminTable({
                 data.map((reg) => (
                   <tr key={reg.id} className="hover:bg-zinc-900/50 transition-colors">
                     <td className="px-4 py-4 font-mono font-bold text-amber-400">
-                      #{reg.queuePosition}
+                      <div className="flex items-center gap-1.5">
+                        <span>#{reg.queuePosition}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleReorder(reg.registrationId, reg.queuePosition - 1)}
+                            disabled={reg.queuePosition <= 1 || updatingId === reg.registrationId}
+                            className="text-[9px] leading-none px-1 py-0.5 bg-zinc-800 hover:bg-amber-600 text-zinc-300 hover:text-white rounded disabled:opacity-30 transition-colors"
+                            title="Move Up in Queue"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            onClick={() => handleReorder(reg.registrationId, reg.queuePosition + 1)}
+                            disabled={updatingId === reg.registrationId}
+                            className="text-[9px] leading-none px-1 py-0.5 bg-zinc-800 hover:bg-amber-600 text-zinc-300 hover:text-white rounded disabled:opacity-30 transition-colors"
+                            title="Move Down in Queue"
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-4 font-mono text-orange-400 font-bold">
                       {reg.registrationId}

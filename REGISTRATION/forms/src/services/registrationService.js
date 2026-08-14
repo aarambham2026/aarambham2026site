@@ -71,18 +71,6 @@ export const submitRegistration = async (registrationData) => {
     membersListStr = registrationData.members.map((m, idx) => `Member ${idx + 2}: ${m.name || 'Member'} (${m.rollNo || 'N/A'} - ${m.department || 'N/A'})`).join('; ');
   }
 
-  // Read local queue sync state from localStorage
-  let clientQueuePos = 0;
-  let clientEndMins = 0;
-  try {
-    const savedQueue = localStorage.getItem('onam_festival_queue_state');
-    if (savedQueue) {
-      const parsed = JSON.parse(savedQueue);
-      clientQueuePos = parsed.pos || 0;
-      clientEndMins = parsed.endMins || 0;
-    }
-  } catch (e) {}
-
   try {
     const res = await fetch('/api/register', {
       method: 'POST',
@@ -99,9 +87,7 @@ export const submitRegistration = async (registrationData) => {
         performanceDuration,
         email: primaryEmail,
         phone: primaryPhone,
-        membersList: membersListStr,
-        clientQueuePos,
-        clientEndMins
+        membersList: membersListStr
       })
     });
 
@@ -110,13 +96,6 @@ export const submitRegistration = async (registrationData) => {
     if (!res.ok || !json.success) {
       throw new Error(json.error || 'Registration failed');
     }
-
-    try {
-      localStorage.setItem('onam_festival_queue_state', JSON.stringify({
-        pos: json.queuePosition || clientQueuePos + 1,
-        endMins: json.lastEndMinutes || clientEndMins + performanceDuration
-      }));
-    } catch (e) {}
 
     return {
       success: true,
@@ -138,3 +117,4 @@ export const submitRegistration = async (registrationData) => {
     throw err;
   }
 };
+
