@@ -28,13 +28,32 @@ model Registration {
   status              String   @default("REGISTERED")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+
+  @@index([queuePosition])
+  @@index([status])
+  @@index([eventCategory])
 }
 
 model EventSettings {
-  id             String   @id @default("default")
-  eventStartTime String   @default("14:00")
-  musicDuration  Int      @default(10)
-  danceDuration  Int      @default(10)
-  setupGap       Int      @default(2)
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default("default")
+  eventStartTime   String   @default("14:00")
+  eventEndTime     String   @default("17:30")
+  registrationOpen Boolean  @default(true)
+  musicDuration    Int      @default(10)
+  danceDuration    Int      @default(10)
+  setupGap         Int      @default(2)
+  updatedAt        DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  actor       String   @default("admin")
+  targetId    String?
+  description String
+  details     String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
 }

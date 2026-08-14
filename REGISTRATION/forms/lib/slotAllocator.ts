@@ -6,17 +6,17 @@ export interface QueueStoreData {
   registrations: Record<string, any>;
 }
 
-// Backward-compatible stubs (PostgreSQL is now the single source of truth)
+// Backward-compatible stubs (PostgreSQL is the single source of truth)
 export function getPersistentQueueStore(): QueueStoreData {
   return { counter: 0, lastEndMinutes: 14 * 60, registrations: {} };
 }
 
 export function savePersistentQueueStore(_counter: number, _lastEndMinutes: number, _regData?: any) {
-  // No-op: Data persistence is managed centrally by PostgreSQL via Prisma
+  // No-op
 }
 
 export function clearPersistentQueueStore() {
-  // No-op: Data persistence is managed centrally by PostgreSQL via Prisma
+  // No-op
 }
 
 export function parseTimeToMinutes(timeStr: string): number {
@@ -63,9 +63,10 @@ export function formatMinutesTo12Hour(totalMinutes: number): string {
   return `${hours}:${minutesStr} ${period}`;
 }
 
-// In-memory settings cache to optimize database queries
 let cachedSettings: {
   eventStartTime: string;
+  eventEndTime: string;
+  registrationOpen: boolean;
   musicDuration: number;
   danceDuration: number;
   setupGap: number;
@@ -87,6 +88,8 @@ export async function getEventSettings(dbClient: any = prisma) {
         data: {
           id: 'default',
           eventStartTime: '14:00',
+          eventEndTime: '17:30',
+          registrationOpen: true,
           musicDuration: 10,
           danceDuration: 10,
           setupGap: 2
@@ -96,6 +99,8 @@ export async function getEventSettings(dbClient: any = prisma) {
 
     cachedSettings = {
       eventStartTime: settings.eventStartTime,
+      eventEndTime: settings.eventEndTime || '17:30',
+      registrationOpen: settings.registrationOpen ?? true,
       musicDuration: settings.musicDuration,
       danceDuration: settings.danceDuration,
       setupGap: settings.setupGap
@@ -105,6 +110,8 @@ export async function getEventSettings(dbClient: any = prisma) {
   } catch (e) {
     return {
       eventStartTime: '14:00',
+      eventEndTime: '17:30',
+      registrationOpen: true,
       musicDuration: 10,
       danceDuration: 10,
       setupGap: 2
@@ -120,8 +127,12 @@ export async function allocateSlot(
   dbClient: any = prisma
 ) {
   const settings = await getEventSettings(dbClient);
-  const categoryUpper = category.toUpperCase();
 
+  if (!settings.registrationOpen) {
+    throw new Error('Registration is currently closed by event administration.');
+  }
+
+  const categoryUpper = category.toUpperCase();
   const duration = requestedDuration && requestedDuration > 0
     ? requestedDuration
     : (categoryUpper === 'DANCE' ? settings.danceDuration : settings.musicDuration);
@@ -129,10 +140,9 @@ export async function allocateSlot(
   let lastQueuePosition = 0;
   let lastEndMinutes = 0;
 
-  // Query database for the latest registered participant ordered by queuePosition
   try {
     const previousRegistration = await dbClient.registration.findFirst({
-      where: { status: 'REGISTERED' },
+      where: { status: { in: ['REGISTERED', 'SCHEDULED'] } },
       orderBy: { queuePosition: 'desc' },
       select: { slotEndTime: true, queuePosition: true }
     });
@@ -147,16 +157,18 @@ export async function allocateSlot(
 
   let startMinutes: number;
   if (lastQueuePosition === 0) {
-    startMinutes = parseTimeToMinutes(settings.eventStartTime); // Default 14:00 (840 mins)
+    startMinutes = parseTimeToMinutes(settings.eventStartTime);
   } else {
     startMinutes = lastEndMinutes + settings.setupGap;
   }
 
   const endMinutes = startMinutes + duration;
 
-  const CUTOFF_MINUTES = 15 * 60 + 30; // 3:30 PM IST (930 minutes)
-  if (endMinutes > CUTOFF_MINUTES) {
-    throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
+  // Dynamic Cutoff based on EventSettings.eventEndTime
+  const cutoffMinutes = parseTimeToMinutes(settings.eventEndTime);
+  if (endMinutes > cutoffMinutes) {
+    const formattedCutoff = formatMinutesTo12Hour(cutoffMinutes);
+    throw new Error(`All available performance slots up to ${formattedCutoff} have been fully allocated.`);
   }
 
   const nextQueuePosition = lastQueuePosition + 1;

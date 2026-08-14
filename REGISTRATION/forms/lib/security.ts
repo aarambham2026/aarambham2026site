@@ -1,17 +1,34 @@
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
+import { prisma } from './db';
 
-const AUTH_SECRET = process.env.ADMIN_JWT_SECRET || 'aarambham_2026_super_secure_admin_secret_key_998811!';
+function getAuthSecret(): string | null {
+  const secret = process.env.ADMIN_JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('FATAL: ADMIN_JWT_SECRET environment variable is missing in production.');
+      return null;
+    }
+    return 'aarambham_2026_dev_secret_fallback_key';
+  }
+  return secret;
+}
 
-export function createAdminToken(): string {
+export function createAdminToken(): string | null {
+  const secret = getAuthSecret();
+  if (!secret) return null;
+
   const timestamp = Date.now();
   const payload = `admin:${timestamp}`;
-  const hmac = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  const hmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   return `${payload}.${hmac}`;
 }
 
 export function verifyAdminToken(token: string | undefined | null): boolean {
   if (!token || typeof token !== 'string') return false;
+
+  const secret = getAuthSecret();
+  if (!secret) return false;
 
   const parts = token.split('.');
   if (parts.length !== 2) return false;
@@ -28,7 +45,7 @@ export function verifyAdminToken(token: string | undefined | null): boolean {
   const maxAgeMs = 24 * 60 * 60 * 1000;
   if (Date.now() - timestamp > maxAgeMs) return false;
 
-  const expectedHmac = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  const expectedHmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
 
   return timingSafeCompare(hmac, expectedHmac);
 }
@@ -103,37 +120,48 @@ export function checkLoginRateLimit(ip: string, maxAttempts = 5, windowMs = 15 *
   return { allowed: true, remaining: maxAttempts - record.count };
 }
 
-// Audit Logs Store
-export interface AuditLog {
-  id: string;
-  timestamp: string;
-  action: 'UPDATE_SETTINGS' | 'EDIT_REGISTRATION' | 'CANCEL_REGISTRATION' | 'RESET_ALL' | 'NEW_REGISTRATION';
-  description: string;
-  details?: any;
-}
-
-const auditLogsInMemory: AuditLog[] = [
-  {
-    id: 'log-init-1',
-    timestamp: new Date().toISOString(),
-    action: 'UPDATE_SETTINGS',
-    description: 'System event settings active: Start Time 14:00 (2:00 PM IST), Music 10m, Dance 10m, Setup Gap 2m'
+// Persistent Database Audit Logs
+export async function addAuditLog(
+  action: string,
+  description: string,
+  details?: any,
+  actor: string = 'admin',
+  targetId?: string
+) {
+  try {
+    const detailsStr = details ? (typeof details === 'string' ? details : JSON.stringify(details)) : null;
+    return await prisma.auditLog.create({
+      data: {
+        action,
+        actor,
+        targetId: targetId || null,
+        description,
+        details: detailsStr
+      }
+    });
+  } catch (err) {
+    console.error('Failed to create AuditLog in PostgreSQL:', err);
+    return null;
   }
-];
-
-export function addAuditLog(action: AuditLog['action'], description: string, details?: any): AuditLog {
-  const log: AuditLog = {
-    id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-    timestamp: new Date().toISOString(),
-    action,
-    description,
-    details
-  };
-  auditLogsInMemory.unshift(log);
-  if (auditLogsInMemory.length > 50) auditLogsInMemory.pop();
-  return log;
 }
 
-export function getAuditLogs(): AuditLog[] {
-  return auditLogsInMemory;
+export async function getAuditLogs(limit = 50) {
+  try {
+    const logs = await prisma.auditLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: limit
+    });
+    return logs.map((l) => ({
+      id: l.id,
+      timestamp: l.createdAt.toISOString(),
+      action: l.action,
+      actor: l.actor,
+      targetId: l.targetId,
+      description: l.description,
+      details: l.details ? JSON.parse(l.details) : null
+    }));
+  } catch (err) {
+    console.error('Failed to query AuditLogs from PostgreSQL:', err);
+    return [];
+  }
 }
