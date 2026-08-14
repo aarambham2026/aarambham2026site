@@ -102,12 +102,22 @@
         <div class="car-display-container">
           <div class="car-media-wrap">
             <canvas id="car-poster-canvas" class="car-poster-canvas"></canvas>
+            <video
+              id="car-video"
+              class="car-gif-img"
+              src="bmwgif.mp4"
+              loop
+              muted
+              playsinline
+              preload="auto"
+              style="display: none; width: 100%; height: 100%; object-fit: cover;"
+            ></video>
             <img
               id="car-gif"
               class="car-gif-img"
               src="bmwgif.gif"
               alt="BMW M5 Performance Animation"
-              style="display: none;"
+              style="display: none; width: 100%; height: 100%; object-fit: cover;"
             />
           </div>
           <div class="car-display-overlay">

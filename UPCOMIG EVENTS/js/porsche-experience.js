@@ -15,34 +15,48 @@ class PorscheExperience {
   }
 
   initCarDisplay() {
+    const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
     const posterCanvas = document.getElementById('car-poster-canvas');
+    const videoSrc = 'bmwgif.mp4';
     const gifSrc = 'bmwgif.gif';
 
+    if (carVideo) {
+      carVideo.src = videoSrc;
+    }
     if (carGif) {
       carGif.src = gifSrc;
     }
 
     if (posterCanvas) {
-      // Draw static first frame onto poster canvas for standby display
-      const img = new Image();
-      img.src = gifSrc;
-      img.onload = () => {
+      const renderPosterFrame = (source) => {
         const ctx = posterCanvas.getContext('2d');
-        posterCanvas.width = img.naturalWidth || 900;
-        posterCanvas.height = img.naturalHeight || 450;
+        if (!ctx) return;
+        posterCanvas.width = source.videoWidth || source.naturalWidth || 900;
+        posterCanvas.height = source.videoHeight || source.naturalHeight || 450;
         try {
-          ctx.drawImage(img, 0, 0, posterCanvas.width, posterCanvas.height);
+          ctx.drawImage(source, 0, 0, posterCanvas.width, posterCanvas.height);
         } catch (e) {}
       };
+
+      if (carVideo) {
+        carVideo.onloadeddata = () => renderPosterFrame(carVideo);
+        carVideo.currentTime = 0.1;
+      }
+
+      const img = new Image();
+      img.src = gifSrc;
+      img.onload = () => renderPosterFrame(img);
     }
   }
 
   initIgniteButton() {
     const igniteBtn = document.getElementById('ignite-engine-btn');
     const statusText = document.getElementById('engine-status-text');
+    const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
     const posterCanvas = document.getElementById('car-poster-canvas');
+    const videoSrc = 'bmwgif.mp4';
     const gifSrc = 'bmwgif.gif';
 
     if (!igniteBtn) return;
@@ -51,10 +65,33 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        // Show GIF animation on click
         if (posterCanvas) posterCanvas.style.display = 'none';
 
-        if (carGif) {
+        let playedVideo = false;
+
+        if (carVideo) {
+          carVideo.src = videoSrc;
+          carVideo.style.display = 'block';
+          carVideo.currentTime = 0;
+          const promise = carVideo.play();
+          if (promise !== undefined) {
+            promise
+              .then(() => {
+                playedVideo = true;
+                if (carGif) carGif.style.display = 'none';
+              })
+              .catch(() => {
+                // Fallback to img if video autoplay blocked
+                if (carGif) {
+                  carGif.src = gifSrc;
+                  carGif.style.display = 'block';
+                  carGif.style.opacity = '1';
+                }
+              });
+          }
+        }
+
+        if (!playedVideo && carGif) {
           carGif.src = gifSrc;
           carGif.style.display = 'block';
           carGif.style.opacity = '1';
@@ -78,6 +115,11 @@ class PorscheExperience {
 
       } else {
         // Return to standby
+        if (carVideo) {
+          carVideo.pause();
+          carVideo.style.display = 'none';
+        }
+
         if (carGif) {
           carGif.style.display = 'none';
         }
