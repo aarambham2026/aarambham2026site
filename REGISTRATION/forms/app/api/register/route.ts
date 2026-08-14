@@ -45,6 +45,7 @@ export async function POST(req: Request) {
     const sanitizedPhone = sanitizeInput(validated.phone);
 
     // Atomic duplicate check, slot allocation, and registration creation inside Prisma transaction
+    // AuditLog is written OUTSIDE the transaction so a missing table never kills a registration
     const result = await prisma.$transaction(async (tx) => {
       const duplicate = await tx.registration.findFirst({
         where: {
@@ -96,22 +97,6 @@ export async function POST(req: Request) {
 
       const created = await tx.registration.create({ data: regRecord });
 
-      // Create persistent database AuditLog entry
-      await tx.auditLog.create({
-        data: {
-          action: 'REGISTRATION_CREATED',
-          actor: 'user',
-          targetId: registrationId,
-          description: `New registration ${registrationId} created for ${sanitizeInput(validated.teamLeaderName)} (${categoryUpper})`,
-          details: JSON.stringify({
-            email: sanitizedEmail,
-            queuePosition,
-            slotStartTime,
-            slotEndTime
-          })
-        }
-      });
-
       return {
         created,
         slot,
@@ -120,6 +105,24 @@ export async function POST(req: Request) {
         slotEndTime,
         queuePosition
       };
+    });
+
+    // Write AuditLog AFTER the transaction — non-blocking, never kills registrations
+    prisma.auditLog.create({
+      data: {
+        action: 'REGISTRATION_CREATED',
+        actor: 'user',
+        targetId: result.registrationId,
+        description: `New registration ${result.registrationId} created for ${sanitizeInput(validated.teamLeaderName)} (${categoryUpper})`,
+        details: JSON.stringify({
+          email: sanitizedEmail,
+          queuePosition: result.queuePosition,
+          slotStartTime: result.slotStartTime,
+          slotEndTime: result.slotEndTime
+        })
+      }
+    }).catch((auditErr: any) => {
+      console.error('AuditLog write failed (non-blocking, registration already saved):', auditErr?.message);
     });
 
     const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
