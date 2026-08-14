@@ -1,4 +1,4 @@
-const KVDB_URL = 'https://kvdb.io/2stKqCptjpPySco2fWozui/registrations';
+import { prisma } from './db';
 
 export interface CloudStoreRecord {
   id: string;
@@ -22,111 +22,124 @@ export interface CloudStoreRecord {
   createdAt: string;
 }
 
-let cloudLock: Promise<any> = Promise.resolve();
-
-function withCloudLock<T>(fn: () => Promise<T>): Promise<T> {
-  const next = cloudLock.then(fn, fn);
-  cloudLock = next.catch(() => {});
-  return next;
-}
-
 export async function fetchCloudRegistrations(): Promise<CloudStoreRecord[]> {
   try {
-    const res = await fetch(KVDB_URL, {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
-      }
+    const dbRecords = await prisma.registration.findMany({
+      orderBy: { queuePosition: 'asc' }
     });
-    if (res.ok) {
-      const json = await res.json();
-      if (Array.isArray(json)) {
-        return json;
-      }
-    }
+    return dbRecords.map((r) => ({
+      id: r.id,
+      registrationId: r.registrationId,
+      queuePosition: r.queuePosition,
+      teamLeaderName: r.teamLeaderName,
+      rollNo: r.rollNo,
+      department: r.department,
+      year: r.year,
+      format: r.format,
+      numberOfMembers: r.numberOfMembers,
+      eventCategory: r.eventCategory,
+      performanceName: r.performanceName,
+      performanceDuration: r.performanceDuration,
+      slotStartTime: r.slotStartTime,
+      slotEndTime: r.slotEndTime,
+      email: r.email,
+      phone: r.phone,
+      membersList: r.membersList,
+      status: r.status,
+      createdAt: r.createdAt.toISOString()
+    }));
   } catch (err) {
-    console.warn('Cloud store fetch warning:', err);
+    console.warn('PostgreSQL fetch error in cloudStore:', err);
+    return [];
   }
-  return [];
 }
 
 export async function saveCloudRegistration(record: CloudStoreRecord): Promise<CloudStoreRecord[]> {
-  return withCloudLock(async () => {
-    try {
-      const current = await fetchCloudRegistrations();
-      const filtered = current.filter((r) => r.registrationId !== record.registrationId);
-      const updated = [...filtered, record];
-      updated.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
-
-      await fetch(KVDB_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      return updated;
-    } catch (err) {
-      console.error('Cloud store save error:', err);
-      return [];
-    }
-  });
+  try {
+    await prisma.registration.upsert({
+      where: { registrationId: record.registrationId },
+      update: {
+        teamLeaderName: record.teamLeaderName,
+        rollNo: record.rollNo,
+        department: record.department,
+        year: record.year,
+        format: record.format,
+        numberOfMembers: record.numberOfMembers,
+        eventCategory: record.eventCategory,
+        performanceName: record.performanceName,
+        performanceDuration: record.performanceDuration,
+        slotStartTime: record.slotStartTime,
+        slotEndTime: record.slotEndTime,
+        email: record.email,
+        phone: record.phone,
+        membersList: record.membersList,
+        queuePosition: record.queuePosition,
+        status: record.status
+      },
+      create: {
+        registrationId: record.registrationId,
+        teamLeaderName: record.teamLeaderName,
+        rollNo: record.rollNo || 'N/A',
+        department: record.department || 'N/A',
+        year: record.year || 'N/A',
+        format: record.format || 'SOLO',
+        numberOfMembers: record.numberOfMembers,
+        eventCategory: record.eventCategory,
+        performanceName: record.performanceName,
+        performanceDuration: record.performanceDuration,
+        slotStartTime: record.slotStartTime,
+        slotEndTime: record.slotEndTime,
+        email: record.email,
+        phone: record.phone,
+        membersList: record.membersList || '',
+        queuePosition: record.queuePosition,
+        status: record.status || 'REGISTERED'
+      }
+    });
+  } catch (err) {
+    console.error('PostgreSQL save error in cloudStore:', err);
+  }
+  return fetchCloudRegistrations();
 }
 
 export async function updateCloudRegistration(
   registrationId: string,
   patchData: Partial<CloudStoreRecord>
 ): Promise<CloudStoreRecord[]> {
-  return withCloudLock(async () => {
-    try {
-      const current = await fetchCloudRegistrations();
-      const updated = current.map((item) => {
-        if (item.registrationId === registrationId) {
-          return { ...item, ...patchData };
-        }
-        return item;
+  try {
+    const existing = await prisma.registration.findFirst({
+      where: { OR: [{ registrationId }, { id: registrationId }] }
+    });
+    if (existing) {
+      await prisma.registration.update({
+        where: { id: existing.id },
+        data: patchData as any
       });
-
-      await fetch(KVDB_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      return updated;
-    } catch (err) {
-      console.error('Cloud store update error:', err);
-      return [];
     }
-  });
+  } catch (err) {
+    console.error('PostgreSQL update error in cloudStore:', err);
+  }
+  return fetchCloudRegistrations();
 }
 
 export async function deleteCloudRegistration(registrationId: string): Promise<CloudStoreRecord[]> {
-  return withCloudLock(async () => {
-    try {
-      const current = await fetchCloudRegistrations();
-      const updated = current.filter((item) => item.registrationId !== registrationId);
-
-      await fetch(KVDB_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      return updated;
-    } catch (err) {
-      console.error('Cloud store delete error:', err);
-      return [];
+  try {
+    const existing = await prisma.registration.findFirst({
+      where: { OR: [{ registrationId }, { id: registrationId }] }
+    });
+    if (existing) {
+      await prisma.registration.delete({ where: { id: existing.id } });
     }
-  });
+  } catch (err) {
+    console.error('PostgreSQL delete error in cloudStore:', err);
+  }
+  return fetchCloudRegistrations();
 }
 
 export async function resetCloudRegistrations(): Promise<void> {
-  return withCloudLock(async () => {
-    try {
-      await fetch(KVDB_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify([])
-      });
-    } catch (err) {
-      console.error('Cloud store reset error:', err);
-    }
-  });
+  try {
+    await prisma.registration.deleteMany();
+  } catch (err) {
+    console.error('PostgreSQL reset error in cloudStore:', err);
+  }
 }

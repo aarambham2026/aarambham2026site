@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getPersistentQueueStore } from '@/lib/slotAllocator';
-import { fetchCloudRegistrations } from '@/lib/cloudStore';
 import * as XLSX from 'xlsx';
 
 export const dynamic = 'force-dynamic';
@@ -13,62 +11,16 @@ export async function GET(req: Request) {
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';
 
-    // Fetch from 24/7 Cloud Store
-    const cloudRegistrations = await fetchCloudRegistrations();
+    const whereClause: any = {};
+    if (category && category !== 'ALL') whereClause.eventCategory = category;
+    if (status && status !== 'ALL') whereClause.status = status;
 
-    // Fetch from local Prisma DB
-    let dbRegistrations: any[] = [];
-    try {
-      dbRegistrations = await prisma.registration.findMany({
-        orderBy: { queuePosition: 'asc' }
-      });
-    } catch (e) {
-      // Ignore Prisma DB read error
-    }
-
-    const store = getPersistentQueueStore();
-    const storeRegistrations = Object.values(store.registrations || {});
-
-    const regMap = new Map<string, any>();
-
-    // 1. Add Cloud store records
-    cloudRegistrations.forEach((reg) => {
-      if (reg.registrationId) regMap.set(reg.registrationId, reg);
+    const registrations = await prisma.registration.findMany({
+      where: whereClause,
+      orderBy: { queuePosition: 'asc' }
     });
 
-    // 2. Add DB registrations
-    dbRegistrations.forEach((reg) => {
-      if (reg.registrationId) {
-        const existing = regMap.get(reg.registrationId) || {};
-        regMap.set(reg.registrationId, { ...reg, ...existing });
-      }
-    });
-
-    // 3. Add serverless store registrations
-    storeRegistrations.forEach((reg: any) => {
-      if (reg.registrationId) {
-        const existing = regMap.get(reg.registrationId) || {};
-        regMap.set(reg.registrationId, {
-          id: reg.id || reg.registrationId,
-          createdAt: new Date().toISOString(),
-          ...existing,
-          ...reg
-        });
-      }
-    });
-
-    let combinedList = Array.from(regMap.values());
-
-    if (category && category !== 'ALL') {
-      combinedList = combinedList.filter((item) => item.eventCategory?.toUpperCase() === category);
-    }
-    if (status && status !== 'ALL') {
-      combinedList = combinedList.filter((item) => item.status?.toUpperCase() === status);
-    }
-
-    combinedList.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
-
-    const dataRows = combinedList.map((reg) => ({
+    const dataRows = registrations.map((reg) => ({
       'Queue #': reg.queuePosition || 0,
       'Registration ID': reg.registrationId || 'N/A',
       'Team Leader Name': reg.teamLeaderName || 'N/A',
@@ -96,7 +48,6 @@ export async function GET(req: Request) {
 
     const worksheet = XLSX.utils.json_to_sheet(dataRows);
     
-    // Auto-fit column widths matching Excel sheet
     const colWidths = [
       { wch: 10 }, // Queue #
       { wch: 16 }, // Registration ID
@@ -134,6 +85,6 @@ export async function GET(req: Request) {
     });
   } catch (error: any) {
     console.error('Export Registrations Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Export failed' }, { status: 500 });
   }
 }

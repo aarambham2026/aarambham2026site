@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { updateCloudRegistration, deleteCloudRegistration } from '@/lib/cloudStore';
 
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -17,9 +16,13 @@ export async function GET(
       }
     });
 
+    if (!registration) {
+      return NextResponse.json({ success: false, error: 'Registration not found' }, { status: 404 });
+    }
+
     return NextResponse.json({ success: true, data: registration });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
@@ -29,7 +32,6 @@ export async function PATCH(
 ) {
   try {
     const { isRequestAuthorized, addAuditLog, sanitizeInput } = await import('@/lib/security');
-    const { getPersistentQueueStore, savePersistentQueueStore } = await import('@/lib/slotAllocator');
 
     const authorized = await isRequestAuthorized();
     if (!authorized) {
@@ -54,50 +56,34 @@ export async function PATCH(
     if (body.phone) sanitizedData.phone = sanitizeInput(body.phone);
     if (body.status) sanitizedData.status = sanitizeInput(body.status).toUpperCase();
 
-    // 1. Update DB
-    let updatedDb = null;
-    try {
-      const existing = await prisma.registration.findFirst({
-        where: { OR: [{ registrationId: id }, { id: id }] }
-      });
-      if (existing) {
-        updatedDb = await prisma.registration.update({
-          where: { id: existing.id },
-          data: sanitizedData
-        });
-      }
-    } catch (e) {}
+    const existing = await prisma.registration.findFirst({
+      where: { OR: [{ registrationId: id }, { id: id }] }
+    });
 
-    // 2. Update persistent queue store
-    const store = getPersistentQueueStore();
-    if (store.registrations && store.registrations[id]) {
-      store.registrations[id] = { ...store.registrations[id], ...sanitizedData };
-      savePersistentQueueStore(store.counter, store.lastEndMinutes, store.registrations[id]);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Registration record not found' }, { status: 404 });
     }
 
-    // 3. Update Cloud persistent store
-    try {
-      await updateCloudRegistration(id, sanitizedData);
-    } catch (cloudErr) {
-      console.warn('Cloud update error:', cloudErr);
-    }
+    const updatedDb = await prisma.registration.update({
+      where: { id: existing.id },
+      data: sanitizedData
+    });
 
     const name = sanitizedData.teamLeaderName || id;
-    addAuditLog('EDIT_REGISTRATION', `Admin manipulated/updated participant ${id} (${name})`, sanitizedData);
+    addAuditLog('EDIT_REGISTRATION', `Admin updated participant ${id} (${name})`, sanitizedData);
 
-    return NextResponse.json({ success: true, data: updatedDb || sanitizedData });
+    return NextResponse.json({ success: true, data: updatedDb });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { isRequestAuthorized, addAuditLog } = await import('@/lib/security');
-    const { getPersistentQueueStore, savePersistentQueueStore } = await import('@/lib/slotAllocator');
 
     const authorized = await isRequestAuthorized();
     if (!authorized) {
@@ -106,26 +92,12 @@ export async function DELETE(
 
     const { id } = await params;
 
-    try {
-      const existing = await prisma.registration.findFirst({
-        where: { OR: [{ registrationId: id }, { id: id }] }
-      });
-      if (existing) {
-        await prisma.registration.delete({ where: { id: existing.id } });
-      }
-    } catch (e) {}
+    const existing = await prisma.registration.findFirst({
+      where: { OR: [{ registrationId: id }, { id: id }] }
+    });
 
-    const store = getPersistentQueueStore();
-    if (store.registrations && store.registrations[id]) {
-      delete store.registrations[id];
-      savePersistentQueueStore(store.counter, store.lastEndMinutes);
-    }
-
-    // Delete from Cloud persistent store
-    try {
-      await deleteCloudRegistration(id);
-    } catch (cloudErr) {
-      console.warn('Cloud delete error:', cloudErr);
+    if (existing) {
+      await prisma.registration.delete({ where: { id: existing.id } });
     }
 
     addAuditLog('CANCEL_REGISTRATION', `Admin deleted registration record ${id}`);

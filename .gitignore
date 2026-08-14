@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+*.local
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env*.local
+*.db
+*.db-journal
+dev.db
+.DS_Store

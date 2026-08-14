@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import { allocateSlot, savePersistentQueueStore } from '@/lib/slotAllocator';
+import { allocateSlot } from '@/lib/slotAllocator';
 import { sanitizeInput, checkRateLimit } from '@/lib/security';
 
 const registerSchema = z.object({
@@ -44,36 +44,29 @@ export async function POST(req: Request) {
     const sanitizedEmail = sanitizeInput(validated.email).toLowerCase();
     const sanitizedPhone = sanitizeInput(validated.phone);
 
-    // Duplicate submission check against persistent store
-    try {
-      const { fetchCloudRegistrations } = await import('@/lib/cloudStore');
-      const existingCloud = await fetchCloudRegistrations();
-      const duplicate = existingCloud.find(
-        (r) =>
-          r.eventCategory?.toUpperCase() === categoryUpper &&
-          (r.email?.toLowerCase() === sanitizedEmail || r.phone === sanitizedPhone) &&
-          r.status === 'REGISTERED'
-      );
-      if (duplicate) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `A registration for ${categoryUpper} already exists for this email/phone (ID: ${duplicate.registrationId}).`
-          },
-          { status: 409 }
-        );
-      }
-    } catch (dupCheckErr) {
-      // Continue if duplicate check fetch warning
-    }
+    // Atomic duplicate check and registration creation inside Prisma transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const duplicate = await tx.registration.findFirst({
+        where: {
+          eventCategory: categoryUpper,
+          status: 'REGISTERED',
+          OR: [
+            { email: sanitizedEmail },
+            { phone: sanitizedPhone }
+          ]
+        }
+      });
 
-    try {
+      if (duplicate) {
+        throw new Error(`DUPLICATE_REGISTRATION:${duplicate.registrationId}`);
+      }
+
       const slot = await allocateSlot(
         categoryUpper,
         requestedDuration,
         validated.clientQueuePos,
         validated.clientEndMins,
-        prisma
+        tx
       );
 
       const queuePosition = slot.nextQueuePosition;
@@ -101,53 +94,37 @@ export async function POST(req: Request) {
         status: 'REGISTERED'
       };
 
-      let dbSaved = false;
-      try {
-        await prisma.registration.create({ data: regRecord });
-        dbSaved = true;
-      } catch (dbErr) {
-        console.warn('Prisma DB save warning:', dbErr);
-      }
+      const created = await tx.registration.create({ data: regRecord });
 
-      // Save to persistent queue store
-      savePersistentQueueStore(queuePosition, slot.endMinutes, regRecord);
-
-      // Save to 24/7 cloud persistent store so page reloads on Vercel NEVER lose data
-      let cloudSaved = false;
-      try {
-        const { saveCloudRegistration } = await import('@/lib/cloudStore');
-        const resRecords = await saveCloudRegistration({
-          id: registrationId,
-          ...regRecord,
-          createdAt: new Date().toISOString()
-        });
-        if (resRecords && resRecords.length > 0) cloudSaved = true;
-      } catch (cloudErr) {
-        console.warn('Cloud store async save warning:', cloudErr);
-      }
-
-      if (!dbSaved && !cloudSaved) {
-        throw new Error('Database persistence temporary failure. Please retry your submission.');
-      }
-
-      const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
-        `/api/ticket/${id}?name=${encodeURIComponent(name)}&members=${members}&slotStart=${encodeURIComponent(start)}&slotEnd=${encodeURIComponent(end)}&event=${encodeURIComponent(cat)}`;
-
-      return NextResponse.json({
-        success: true,
+      return {
+        created,
+        slot,
         registrationId,
-        slotStart: slotStartTime,
-        slotEnd: slotEndTime,
-        queuePosition,
-        lastEndMinutes: slot.endMinutes,
-        ticketUrl: buildTicketUrl(registrationId, validated.teamLeaderName.trim(), validated.numberOfMembers, slotStartTime, slotEndTime, categoryUpper)
-      });
-    } catch (allocErr: any) {
-      return NextResponse.json(
-        { success: false, error: allocErr.message || 'Slot allocation failed' },
-        { status: 400 }
-      );
-    }
+        slotStartTime,
+        slotEndTime,
+        queuePosition
+      };
+    });
+
+    const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
+      `/api/ticket/${id}?name=${encodeURIComponent(name)}&members=${members}&slotStart=${encodeURIComponent(start)}&slotEnd=${encodeURIComponent(end)}&event=${encodeURIComponent(cat)}`;
+
+    return NextResponse.json({
+      success: true,
+      registrationId: result.registrationId,
+      slotStart: result.slotStartTime,
+      slotEnd: result.slotEndTime,
+      queuePosition: result.queuePosition,
+      lastEndMinutes: result.slot.endMinutes,
+      ticketUrl: buildTicketUrl(
+        result.registrationId,
+        validated.teamLeaderName.trim(),
+        validated.numberOfMembers,
+        result.slotStartTime,
+        result.slotEndTime,
+        categoryUpper
+      )
+    });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -155,9 +132,21 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    if (typeof error.message === 'string' && error.message.startsWith('DUPLICATE_REGISTRATION:')) {
+      const existingId = error.message.split(':')[1];
+      return NextResponse.json(
+        {
+          success: false,
+          error: `A registration for this event category already exists for this email or phone number (ID: ${existingId}).`
+        },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message || 'Registration processing failed' },
-      { status: 500 }
+      { success: false, error: error.message || 'Registration processing failed. Please try again.' },
+      { status: 400 }
     );
   }
 }

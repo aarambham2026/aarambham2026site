@@ -1,48 +1,41 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { isRequestAuthorized } from '@/lib/security';
-import { updateCloudRegistration } from '@/lib/cloudStore';
+import { isRequestAuthorized, addAuditLog } from '@/lib/security';
 
 export async function PATCH(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authorized = await isRequestAuthorized();
     if (!authorized) {
-      return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized admin access' }, { status: 401 });
     }
 
     const { id } = await params;
 
-    let updated = null;
-    try {
-      const existing = await prisma.registration.findFirst({
-        where: {
-          OR: [
-            { registrationId: id },
-            { id: id }
-          ]
-        }
-      });
-
-      if (existing) {
-        updated = await prisma.registration.update({
-          where: { id: existing.id },
-          data: { status: 'CANCELLED' }
-        });
+    const existing = await prisma.registration.findFirst({
+      where: {
+        OR: [
+          { registrationId: id },
+          { id: id }
+        ]
       }
-    } catch (e) {}
+    });
 
-    // Update status in Cloud persistent store
-    try {
-      await updateCloudRegistration(id, { status: 'CANCELLED' });
-    } catch (cloudErr) {
-      console.warn('Cloud cancel warning:', cloudErr);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Registration record not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: updated || { registrationId: id, status: 'CANCELLED' } });
+    const updated = await prisma.registration.update({
+      where: { id: existing.id },
+      data: { status: 'CANCELLED' }
+    });
+
+    addAuditLog('CANCEL_REGISTRATION', `Admin cancelled registration ${id}`);
+
+    return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

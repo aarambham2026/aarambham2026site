@@ -7,15 +7,6 @@
     let currentStep = 0;
     const totalSteps = segments.length;
 
-    // Immediately trigger backend activation & pre-warming call on port 3001
-    function prewarmBackend() {
-      try {
-        fetch('http://localhost:3001/', { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
-      } catch (e) {}
-    }
-
-    prewarmBackend();
-
     const intervalTime = 300;
 
     const progressInterval = setInterval(() => {
@@ -24,9 +15,6 @@
           segments[currentStep].classList.add('active');
         }
         currentStep++;
-        if (currentStep === 2) {
-          prewarmBackend();
-        }
       } else {
         clearInterval(progressInterval);
         setTimeout(() => {

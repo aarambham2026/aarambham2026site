@@ -1,20 +1,10 @@
 import { NextResponse } from 'next/server';
-import { fetchCloudRegistrations, updateCloudRegistration, CloudStoreRecord } from '@/lib/cloudStore';
 import { prisma } from '@/lib/db';
+import { getEventSettings, parseTimeToMinutes, formatMinutesTo12Hour } from '@/lib/slotAllocator';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-interface ScheduledJob {
-  id: string;
-  registrationId: string;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-  startedAt?: string;
-  updatedAt?: string;
-  attempts?: number;
-}
-
-// In-memory / persistent job claim lock for serverless execution safety
 let schedulerLock: Promise<any> = Promise.resolve();
 
 function withSchedulerLock<T>(fn: () => Promise<T>): Promise<T> {
@@ -36,7 +26,7 @@ async function handleSchedulerExecution(req: Request) {
     const authHeader = req.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
-    // Optional secret verification if CRON_SECRET is set in environment
+    // Verify secret if CRON_SECRET is configured
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       const url = new URL(req.url);
       const querySecret = url.searchParams.get('secret');
@@ -50,80 +40,79 @@ async function handleSchedulerExecution(req: Request) {
 
     let processedCount = 0;
     let recoveredCount = 0;
-    let syncedCount = 0;
+    let rescheduledCount = 0;
 
     try {
-      // 1. Fetch current cloud registrations & local DB records
-      const cloudRecords = await fetchCloudRegistrations();
-      
-      let dbRecords: any[] = [];
-      try {
-        dbRecords = await prisma.registration.findMany();
-      } catch (dbErr) {
-        // Prisma DB fallback
-      }
+      // 1. Read event settings from PostgreSQL
+      const settings = await getEventSettings(prisma);
 
-      // 2. Audit and sync DB <-> Cloud records atomically
-      const cloudMap = new Map<string, CloudStoreRecord>();
-      cloudRecords.forEach((r) => cloudMap.set(r.registrationId, r));
+      // 2. Fetch all active registrations ordered by queuePosition
+      const registrations = await prisma.registration.findMany({
+        orderBy: { queuePosition: 'asc' }
+      });
 
-      for (const dbRec of dbRecords) {
-        if (!cloudMap.has(dbRec.registrationId)) {
-          // Sync missing DB record into Cloud store
-          await updateCloudRegistration(dbRec.registrationId, {
-            id: dbRec.registrationId,
-            registrationId: dbRec.registrationId,
-            teamLeaderName: dbRec.teamLeaderName,
-            rollNo: dbRec.rollNo,
-            department: dbRec.department,
-            year: dbRec.year,
-            format: dbRec.format,
-            numberOfMembers: dbRec.numberOfMembers,
-            eventCategory: dbRec.eventCategory,
-            performanceName: dbRec.performanceName,
-            performanceDuration: dbRec.performanceDuration,
-            slotStartTime: dbRec.slotStartTime,
-            slotEndTime: dbRec.slotEndTime,
-            email: dbRec.email,
-            phone: dbRec.phone,
-            membersList: dbRec.membersList,
-            queuePosition: dbRec.queuePosition,
-            status: dbRec.status || 'REGISTERED',
-            createdAt: dbRec.createdAt?.toISOString() || now.toISOString()
+      // 3. Process stale records & re-verify slot timings against event settings
+      let currentEndMinutes = parseTimeToMinutes(settings.eventStartTime);
+      let expectedQueuePosition = 1;
+
+      for (const reg of registrations) {
+        const updatedAtTime = new Date(reg.updatedAt || reg.createdAt).getTime();
+
+        // Stale job recovery
+        if (reg.status === 'PROCESSING' && now.getTime() - updatedAtTime > STALE_THRESHOLD_MS) {
+          await prisma.registration.update({
+            where: { id: reg.id },
+            data: { status: 'REGISTERED' }
           });
-          syncedCount++;
-        }
-      }
-
-      // 3. Process registration state machine & recover stale jobs
-      for (const record of cloudRecords) {
-        const recordTime = new Date(record.createdAt || 0).getTime();
-
-        // Stale job detection: If status is PROCESSING and stuck > 5 mins, recover to REGISTERED
-        if (record.status === 'PROCESSING') {
-          if (now.getTime() - recordTime > STALE_THRESHOLD_MS) {
-            await updateCloudRegistration(record.registrationId, {
-              status: 'REGISTERED'
-            });
-            recoveredCount++;
-          }
+          recoveredCount++;
         }
 
-        if (record.status === 'REGISTERED') {
+        if (reg.status === 'REGISTERED') {
           processedCount++;
+
+          // Recalculate expected start & end times
+          const duration = reg.performanceDuration && reg.performanceDuration > 0
+            ? reg.performanceDuration
+            : (reg.eventCategory?.toUpperCase() === 'DANCE' ? settings.danceDuration : settings.musicDuration);
+
+          const expectedStartMinutes = currentEndMinutes;
+          const expectedEndMinutes = expectedStartMinutes + duration;
+
+          const expectedSlotStart = formatMinutesTo12Hour(expectedStartMinutes);
+          const expectedSlotEnd = formatMinutesTo12Hour(expectedEndMinutes);
+
+          // If timing or queue position drifted, align with source of truth
+          if (
+            reg.slotStartTime !== expectedSlotStart ||
+            reg.slotEndTime !== expectedSlotEnd ||
+            reg.queuePosition !== expectedQueuePosition
+          ) {
+            await prisma.registration.update({
+              where: { id: reg.id },
+              data: {
+                slotStartTime: expectedSlotStart,
+                slotEndTime: expectedSlotEnd,
+                queuePosition: expectedQueuePosition
+              }
+            });
+            rescheduledCount++;
+          }
+
+          currentEndMinutes = expectedEndMinutes + settings.setupGap;
+          expectedQueuePosition++;
         }
       }
 
       return NextResponse.json(
         {
           success: true,
-          message: 'Registration scheduler executed successfully',
+          message: 'Registration scheduler executed successfully against PostgreSQL',
           timestamp: now.toISOString(),
           metrics: {
             processedRegistrations: processedCount,
             recoveredStaleJobs: recoveredCount,
-            syncedDatabaseRecords: syncedCount,
-            totalActiveRecords: cloudRecords.length
+            rescheduledSlots: rescheduledCount,
+            totalRecords: registrations.length
           }
         },
         {

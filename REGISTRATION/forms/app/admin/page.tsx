@@ -5,7 +5,7 @@ import Link from 'next/link';
 import StatsPanel from '@/src/components/Admin/StatsPanel';
 import SettingsForm from '@/src/components/Admin/SettingsForm';
 import AdminTable, { RegistrationRecord } from '@/src/components/Admin/AdminTable';
-import { ShieldCheck, ArrowLeft, Lock, LogOut, KeyRound, User, Radio } from 'lucide-react';
+import { ShieldCheck, Lock, LogOut, KeyRound, User } from 'lucide-react';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -15,25 +15,36 @@ export default function AdminPage() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   const [data, setData] = useState<RegistrationRecord[]>([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 25,
+    total: 0,
+    totalPages: 1
+  });
+
   const [stats, setStats] = useState({
     total: 0,
+    registered: 0,
+    scheduled: 0,
+    completed: 0,
+    cancelled: 0,
     music: 0,
-    dance: 0,
-    cancelled: 0
+    dance: 0
   });
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const [lastUpdated, setLastUpdated] = useState<string>('');
-
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const fetchData = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
       const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('limit', '25');
       if (search) params.append('search', search);
       if (categoryFilter !== 'ALL') params.append('category', categoryFilter);
       if (statusFilter !== 'ALL') params.append('status', statusFilter);
@@ -47,8 +58,9 @@ export default function AdminPage() {
 
       const json = await resData.json();
       if (json.success) {
-        setData(json.data);
-        setStats(json.stats);
+        setData(json.data || json.registrations || []);
+        if (json.pagination) setPagination(json.pagination);
+        if (json.stats) setStats(json.stats);
         setLastUpdated(new Date().toLocaleTimeString());
       } else if (resData.status === 401) {
         setIsAuthenticated(false);
@@ -60,10 +72,8 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Error fetching admin data:', err);
-    } finally {
-      setLoading(false);
     }
-  }, [isAuthenticated, search, categoryFilter, statusFilter]);
+  }, [isAuthenticated, search, categoryFilter, statusFilter, page]);
 
   // Initial fetch and 3-second live auto-polling interval
   useEffect(() => {
@@ -108,15 +118,6 @@ export default function AdminPage() {
     setPassword('');
     setData([]);
   };
-
-  // Loading Session State
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-[#1b1226] flex items-center justify-center text-amber-300 font-mono text-sm">
-        Authenticating Admin Session...
-      </div>
-    );
-  }
 
   // Admin Login Screen
   if (!isAuthenticated) {
@@ -224,7 +225,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <p className="text-xs text-amber-200/60 font-mono mt-0.5">
-                Real-time updates {lastUpdated && `(Last updated: ${lastUpdated})`}
+                Real-time PostgreSQL sync {lastUpdated && `(Last updated: ${lastUpdated})`}
               </p>
             </div>
           </div>
@@ -249,13 +250,13 @@ export default function AdminPage() {
         {/* Event Settings Panel */}
         <SettingsForm />
 
-        {/* Live Admin Audit & Update Log Section */}
+        {/* Live Admin Audit Log Section */}
         <div className="bg-zinc-950/90 border border-amber-500/30 rounded-2xl p-6 shadow-2xl space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
             <div className="flex items-center gap-2">
               <span className="text-lg">📜</span>
               <h2 className="text-base font-extrabold text-white font-serif tracking-tight">
-                ADMIN <span className="text-amber-400">UPDATE & ACTIVITY LOGS</span>
+                ADMIN <span className="text-amber-400">AUDIT & ACTIVITY LOGS</span>
               </h2>
               <span className="text-[10px] bg-amber-950/80 border border-amber-800/60 text-amber-300 px-2 py-0.5 rounded-full font-mono">
                 {auditLogs.length} Events Logged
@@ -304,9 +305,10 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Registrations Management Table */}
+        {/* Registrations Management Table with Pagination */}
         <AdminTable
           data={data}
+          pagination={pagination}
           onRefresh={fetchData}
           search={search}
           setSearch={setSearch}
@@ -314,6 +316,8 @@ export default function AdminPage() {
           setCategoryFilter={setCategoryFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
+          page={page}
+          setPage={setPage}
         />
       </main>
     </div>

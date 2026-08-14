@@ -1,10 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
 import { prisma } from './db';
-import { fetchCloudRegistrations } from './cloudStore';
-
-const TMP_FILE = path.join(os.tmpdir(), 'onam_serverless_queue.json');
 
 export interface QueueStoreData {
   counter: number;
@@ -12,57 +6,17 @@ export interface QueueStoreData {
   registrations: Record<string, any>;
 }
 
+// Backward-compatible stubs (PostgreSQL is now the single source of truth)
 export function getPersistentQueueStore(): QueueStoreData {
-  try {
-    if (fs.existsSync(TMP_FILE)) {
-      const raw = fs.readFileSync(TMP_FILE, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (typeof parsed.counter === 'number' && typeof parsed.lastEndMinutes === 'number') {
-        return {
-          counter: parsed.counter || 0,
-          lastEndMinutes: parsed.lastEndMinutes || 14 * 60,
-          registrations: parsed.registrations || {},
-          isReset: parsed.isReset || false
-        } as any;
-      }
-    }
-  } catch (e) {
-    // Ignore read errors
-  }
   return { counter: 0, lastEndMinutes: 14 * 60, registrations: {} };
 }
 
-export function savePersistentQueueStore(counter: number, lastEndMinutes: number, regData?: any) {
-  try {
-    const store = getPersistentQueueStore();
-    const isReset = (store as any).isReset || (globalThis as any).isResetActive;
-
-    if (isReset) {
-      store.counter = counter;
-      store.lastEndMinutes = lastEndMinutes;
-      store.registrations = {};
-      delete (store as any).isReset;
-      (globalThis as any).isResetActive = false;
-    } else {
-      store.counter = Math.max(store.counter, counter);
-      store.lastEndMinutes = Math.max(store.lastEndMinutes, lastEndMinutes);
-    }
-
-    if (regData && regData.registrationId) {
-      store.registrations[regData.registrationId] = regData;
-    }
-    fs.writeFileSync(TMP_FILE, JSON.stringify(store, null, 2), 'utf-8');
-  } catch (e) {
-    // Ignore write errors
-  }
+export function savePersistentQueueStore(_counter: number, _lastEndMinutes: number, _regData?: any) {
+  // No-op: Data persistence is managed centrally by PostgreSQL via Prisma
 }
 
 export function clearPersistentQueueStore() {
-  try {
-    (globalThis as any).isResetActive = true;
-    const resetStore = { counter: 0, lastEndMinutes: 14 * 60, registrations: {}, isReset: true };
-    fs.writeFileSync(TMP_FILE, JSON.stringify(resetStore, null, 2), 'utf-8');
-  } catch (e) {}
+  // No-op: Data persistence is managed centrally by PostgreSQL via Prisma
 }
 
 export function parseTimeToMinutes(timeStr: string): number {
@@ -70,7 +24,7 @@ export function parseTimeToMinutes(timeStr: string): number {
 
   const trimmed = timeStr.trim();
   
-  // If timeStr is a range like "2:38 PM – 2:43 PM", extract the end time "2:43 PM"
+  // Extract end time if timeStr is a range like "2:38 PM – 2:43 PM"
   const parts = trimmed.split(/[-–—]/);
   const target = parts[parts.length - 1].trim();
 
@@ -109,7 +63,7 @@ export function formatMinutesTo12Hour(totalMinutes: number): string {
   return `${hours}:${minutesStr} ${period}`;
 }
 
-// In-memory settings cache to avoid DB reads on every registration
+// In-memory settings cache to optimize database queries
 let cachedSettings: {
   eventStartTime: string;
   musicDuration: number;
@@ -158,112 +112,63 @@ export async function getEventSettings(dbClient: any = prisma) {
   }
 }
 
-let slotLock: Promise<any> = Promise.resolve();
-
-function withSlotLock<T>(fn: () => Promise<T>): Promise<T> {
-  const next = slotLock.then(fn, fn);
-  slotLock = next.catch(() => {});
-  return next;
-}
-
 export async function allocateSlot(
   category: string,
   requestedDuration?: number,
-  clientQueuePos?: number,
-  clientEndMins?: number,
+  _clientQueuePos?: number,
+  _clientEndMins?: number,
   dbClient: any = prisma
 ) {
-  return withSlotLock(async () => {
-    const settings = await getEventSettings(dbClient);
-    const categoryUpper = category.toUpperCase();
+  const settings = await getEventSettings(dbClient);
+  const categoryUpper = category.toUpperCase();
 
-    let duration = requestedDuration && requestedDuration > 0
-      ? requestedDuration
-      : (categoryUpper === 'DANCE' ? settings.danceDuration : settings.musicDuration);
+  const duration = requestedDuration && requestedDuration > 0
+    ? requestedDuration
+    : (categoryUpper === 'DANCE' ? settings.danceDuration : settings.musicDuration);
 
-    const store = getPersistentQueueStore();
-    const isResetActive = (store as any).isReset || (globalThis as any).isResetActive;
+  let lastQueuePosition = 0;
+  let lastEndMinutes = 0;
 
-    let lastQueuePosition = 0;
-    let lastEndMinutes = 0;
+  // Query database for the latest registered participant ordered by queuePosition
+  try {
+    const previousRegistration = await dbClient.registration.findFirst({
+      where: { status: 'REGISTERED' },
+      orderBy: { queuePosition: 'desc' },
+      select: { slotEndTime: true, queuePosition: true }
+    });
 
-    if (!isResetActive) {
-      // 1. Check Cloud Persistent Store first for existing queue state
-      try {
-        const cloudRegistrations = await fetchCloudRegistrations();
-        if (cloudRegistrations && cloudRegistrations.length > 0) {
-          cloudRegistrations.forEach((reg) => {
-            if (reg.queuePosition && reg.queuePosition > lastQueuePosition) {
-              lastQueuePosition = reg.queuePosition;
-            }
-            if (reg.slotEndTime) {
-              const endMins = parseTimeToMinutes(reg.slotEndTime);
-              if (endMins > lastEndMinutes) {
-                lastEndMinutes = endMins;
-              }
-            }
-          });
-        }
-      } catch (cloudErr) {
-        console.warn('Cloud slot check warning:', cloudErr);
-      }
-
-      // 2. Check local DB as fallback
-      try {
-        const previousRegistration = await dbClient.registration.findFirst({
-          where: { status: 'REGISTERED' },
-          orderBy: { createdAt: 'desc' },
-          select: { slotEndTime: true, queuePosition: true }
-        });
-
-        if (previousRegistration) {
-          if (previousRegistration.queuePosition > lastQueuePosition) {
-            lastQueuePosition = previousRegistration.queuePosition;
-          }
-          const dbEndMins = parseTimeToMinutes(previousRegistration.slotEndTime);
-          if (dbEndMins > lastEndMinutes) {
-            lastEndMinutes = dbEndMins;
-          }
-        }
-      } catch (e) {
-        // DB offline fallback
-      }
+    if (previousRegistration) {
+      lastQueuePosition = previousRegistration.queuePosition;
+      lastEndMinutes = parseTimeToMinutes(previousRegistration.slotEndTime);
     }
+  } catch (e) {
+    // Database fallback if uninitialized
+  }
 
-    // If reset is active, IGNORE any previous store counters, client queue positions, and old DB records
-    const effectiveStoreCounter = isResetActive ? 0 : store.counter;
-    const effectiveStoreEndMins = isResetActive ? 0 : store.lastEndMinutes;
-    const effectiveClientQueuePos = isResetActive ? 0 : (clientQueuePos || 0);
-    const effectiveClientEndMins = isResetActive ? 0 : (clientEndMins || 0);
+  let startMinutes: number;
+  if (lastQueuePosition === 0) {
+    startMinutes = parseTimeToMinutes(settings.eventStartTime); // Default 14:00 (840 mins)
+  } else {
+    startMinutes = lastEndMinutes + settings.setupGap;
+  }
 
-    const maxQueuePosition = Math.max(lastQueuePosition, effectiveStoreCounter, effectiveClientQueuePos);
-    const maxEndMinutes = Math.max(lastEndMinutes, effectiveStoreEndMins, effectiveClientEndMins);
+  const endMinutes = startMinutes + duration;
 
-    let startMinutes: number;
-    if (maxQueuePosition === 0) {
-      startMinutes = parseTimeToMinutes(settings.eventStartTime); // 14:00 (2:00 PM IST = 840 mins)
-    } else {
-      startMinutes = maxEndMinutes + settings.setupGap; // setup gap mins
-    }
+  const CUTOFF_MINUTES = 15 * 60 + 30; // 3:30 PM IST (930 minutes)
+  if (endMinutes > CUTOFF_MINUTES) {
+    throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
+  }
 
-    const endMinutes = startMinutes + duration;
+  const nextQueuePosition = lastQueuePosition + 1;
+  const slotStartTime = formatMinutesTo12Hour(startMinutes);
+  const slotEndTime = formatMinutesTo12Hour(endMinutes);
 
-    const CUTOFF_MINUTES = 15 * 60 + 30; // 3:30 PM IST (930 minutes)
-    if (endMinutes > CUTOFF_MINUTES) {
-      throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
-    }
-
-    const nextQueuePosition = maxQueuePosition + 1;
-    const slotStartTime = formatMinutesTo12Hour(startMinutes);
-    const slotEndTime = formatMinutesTo12Hour(endMinutes);
-
-    return {
-      slotStartTime,
-      slotEndTime,
-      startMinutes,
-      endMinutes,
-      nextQueuePosition,
-      lastQueuePosition: maxQueuePosition
-    };
-  });
+  return {
+    slotStartTime,
+    slotEndTime,
+    startMinutes,
+    endMinutes,
+    nextQueuePosition,
+    lastQueuePosition
+  };
 }

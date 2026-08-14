@@ -170,16 +170,13 @@
 
   <script>
     const frame = document.getElementById('reg-app-frame');
-    if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      fetch('http://localhost:3001/', { mode: 'no-cors' }).then(() => {
-        frame.src = 'http://localhost:3001/';
-      }).catch(() => {
-        fetch('http://localhost:3000/', { mode: 'no-cors' }).then(() => {
-          frame.src = 'http://localhost:3000/';
-        });
-      });
-    } else {
-      frame.src = 'https://aarambham2026registration.vercel.app/';
+    if (window.location.protocol !== 'file:') {
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocal) {
+        frame.src = window.location.origin + '/forms/';
+      } else {
+        frame.src = 'https://aarambham2026registration.vercel.app/';
+      }
     }
   </script>
 
