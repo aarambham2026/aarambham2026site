@@ -17,38 +17,20 @@ class PorscheExperience {
   initCarDisplay() {
     const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
-    const posterCanvas = document.getElementById('car-poster-canvas');
     const videoSrc = 'bmwgif.mp4';
     const gifSrc = 'bmwgif.gif';
 
     if (carVideo) {
       carVideo.src = videoSrc;
       carVideo.preload = 'auto';
-    }
-    if (carGif) {
+      carVideo.currentTime = 0;
+      try {
+        carVideo.pause();
+      } catch (e) {}
+      carVideo.style.display = 'block';
+    } else if (carGif) {
       carGif.src = gifSrc;
-    }
-
-    if (posterCanvas) {
-      const renderPosterFrame = (source) => {
-        const ctx = posterCanvas.getContext('2d');
-        if (!ctx) return;
-        posterCanvas.width = source.videoWidth || source.naturalWidth || 900;
-        posterCanvas.height = source.videoHeight || source.naturalHeight || 450;
-        try {
-          ctx.drawImage(source, 0, 0, posterCanvas.width, posterCanvas.height);
-        } catch (e) {}
-      };
-
-      if (carVideo) {
-        carVideo.onloadeddata = () => renderPosterFrame(carVideo);
-        carVideo.onseeked = () => renderPosterFrame(carVideo);
-        carVideo.currentTime = 0.1;
-      }
-
-      const img = new Image();
-      img.src = gifSrc;
-      img.onload = () => renderPosterFrame(img);
+      carGif.style.display = 'block';
     }
   }
 
@@ -57,7 +39,6 @@ class PorscheExperience {
     const statusText = document.getElementById('engine-status-text');
     const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
-    const posterCanvas = document.getElementById('car-poster-canvas');
 
     if (!igniteBtn) return;
 
@@ -65,8 +46,6 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        if (posterCanvas) posterCanvas.style.display = 'none';
-
         // Play audio engine sound synthesis if available
         if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
           window.soundEngine.playEngineRev();
@@ -77,10 +56,9 @@ class PorscheExperience {
           this.scene.triggerEngineIgnition();
         }
 
-        // Play video directly without reloading src
+        // Start video playback on IGNITE click
         if (carVideo) {
           carVideo.style.display = 'block';
-          carVideo.currentTime = 0;
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
             playPromise
@@ -112,21 +90,17 @@ class PorscheExperience {
         }
 
       } else {
-        // Return to standby
+        // Return to static standby preview
         if (carVideo) {
           try {
             carVideo.pause();
+            carVideo.currentTime = 0;
           } catch (e) {}
-          carVideo.style.display = 'none';
+          carVideo.style.display = 'block';
         }
 
         if (carGif) {
-          carGif.style.display = 'none';
-        }
-
-        if (posterCanvas) {
-          posterCanvas.style.display = 'block';
-          posterCanvas.style.opacity = '1';
+          carGif.style.display = 'block';
         }
 
         igniteBtn.classList.remove('ignited');
