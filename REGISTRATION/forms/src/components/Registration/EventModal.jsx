@@ -49,7 +49,7 @@ const EventModal = ({ selectedEvent, onClose }) => {
       setRegistrationResult(result);
       setModalState('SUCCESS');
     } catch (err) {
-      alert('Registration submission failed. Please try submitting again.');
+      alert(err?.message || 'Registration submission failed. Please try submitting again.');
     } finally {
       setIsSubmitting(false);
     }

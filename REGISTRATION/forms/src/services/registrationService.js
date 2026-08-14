@@ -111,79 +111,30 @@ export const submitRegistration = async (registrationData) => {
       throw new Error(json.error || 'Registration failed');
     }
 
-    if (json.success) {
-      try {
-        localStorage.setItem('onam_festival_queue_state', JSON.stringify({
-          pos: json.queuePosition || clientQueuePos + 1,
-          endMins: json.lastEndMinutes || clientEndMins + performanceDuration
-        }));
-      } catch (e) {}
+    try {
+      localStorage.setItem('onam_festival_queue_state', JSON.stringify({
+        pos: json.queuePosition || clientQueuePos + 1,
+        endMins: json.lastEndMinutes || clientEndMins + performanceDuration
+      }));
+    } catch (e) {}
 
-      return {
-        success: true,
-        registrationId: json.registrationId,
-        slotStart: json.slotStart,
-        slotEnd: json.slotEnd,
-        ticketUrl: json.ticketUrl,
-        timestamp: new Date().toISOString(),
-        details: {
-          event: registrationData.event,
-          format: registrationData.format,
-          primaryContact: primaryName,
-          performanceName: performanceName,
-          membersCount: memberCount
-        }
-      };
-    }
+    return {
+      success: true,
+      registrationId: json.registrationId,
+      slotStart: json.slotStart,
+      slotEnd: json.slotEnd,
+      ticketUrl: json.ticketUrl,
+      timestamp: new Date().toISOString(),
+      details: {
+        event: registrationData.event,
+        format: registrationData.format,
+        primaryContact: primaryName,
+        performanceName: performanceName,
+        membersCount: memberCount
+      }
+    };
   } catch (err) {
-    if (err.message && err.message.includes('3:30 PM')) {
-      throw err;
-    }
-    console.warn('API Registration Notice, issuing client queue pass:', err);
+    console.error('API Registration Error:', err);
+    throw err;
   }
-
-  // Fallback Queue Calculator
-  clientQueuePos++;
-  const startMins = clientQueuePos === 1 ? 14 * 60 : (clientEndMins || 14 * 60) + 2;
-  const endMins = startMins + performanceDuration;
-  
-  if (endMins > 15 * 60 + 30) {
-    throw new Error('All available performance slots up to 3:30 PM have been fully allocated.');
-  }
-
-  try {
-    localStorage.setItem('onam_festival_queue_state', JSON.stringify({
-      pos: clientQueuePos,
-      endMins: endMins
-    }));
-  } catch (e) {}
-
-  const formatMin = (m) => {
-    let h = Math.floor(m / 60) % 24;
-    const min = m % 60;
-    const p = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return `${h}:${min < 10 ? '0' + min : min} ${p}`;
-  };
-
-  const regId = `EVT-${String(clientQueuePos).padStart(4, '0')}`;
-  const slotStart = formatMin(startMins);
-  const slotEnd = formatMin(endMins);
-  const ticketUrl = `/api/ticket/${regId}?name=${encodeURIComponent(primaryName)}&members=${memberCount}&slotStart=${encodeURIComponent(slotStart)}&slotEnd=${encodeURIComponent(slotEnd)}&event=${encodeURIComponent(category)}`;
-
-  return {
-    success: true,
-    registrationId: regId,
-    slotStart,
-    slotEnd,
-    ticketUrl,
-    timestamp: new Date().toISOString(),
-    details: {
-      event: registrationData.event,
-      format: registrationData.format,
-      primaryContact: primaryName,
-      performanceName: performanceName,
-      membersCount: memberCount
-    }
-  };
 };

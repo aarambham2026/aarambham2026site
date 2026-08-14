@@ -22,6 +22,14 @@ export interface CloudStoreRecord {
   createdAt: string;
 }
 
+let cloudLock: Promise<any> = Promise.resolve();
+
+function withCloudLock<T>(fn: () => Promise<T>): Promise<T> {
+  const next = cloudLock.then(fn, fn);
+  cloudLock = next.catch(() => {});
+  return next;
+}
+
 export async function fetchCloudRegistrations(): Promise<CloudStoreRecord[]> {
   try {
     const res = await fetch(KVDB_URL, {
@@ -43,74 +51,82 @@ export async function fetchCloudRegistrations(): Promise<CloudStoreRecord[]> {
 }
 
 export async function saveCloudRegistration(record: CloudStoreRecord): Promise<CloudStoreRecord[]> {
-  try {
-    const current = await fetchCloudRegistrations();
-    const filtered = current.filter((r) => r.registrationId !== record.registrationId);
-    const updated = [...filtered, record];
-    updated.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
+  return withCloudLock(async () => {
+    try {
+      const current = await fetchCloudRegistrations();
+      const filtered = current.filter((r) => r.registrationId !== record.registrationId);
+      const updated = [...filtered, record];
+      updated.sort((a, b) => (a.queuePosition || 0) - (b.queuePosition || 0));
 
-    await fetch(KVDB_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated)
-    });
-    return updated;
-  } catch (err) {
-    console.error('Cloud store save error:', err);
-    return [];
-  }
+      await fetch(KVDB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      return updated;
+    } catch (err) {
+      console.error('Cloud store save error:', err);
+      return [];
+    }
+  });
 }
 
 export async function updateCloudRegistration(
   registrationId: string,
   patchData: Partial<CloudStoreRecord>
 ): Promise<CloudStoreRecord[]> {
-  try {
-    const current = await fetchCloudRegistrations();
-    const updated = current.map((item) => {
-      if (item.registrationId === registrationId) {
-        return { ...item, ...patchData };
-      }
-      return item;
-    });
+  return withCloudLock(async () => {
+    try {
+      const current = await fetchCloudRegistrations();
+      const updated = current.map((item) => {
+        if (item.registrationId === registrationId) {
+          return { ...item, ...patchData };
+        }
+        return item;
+      });
 
-    await fetch(KVDB_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated)
-    });
-    return updated;
-  } catch (err) {
-    console.error('Cloud store update error:', err);
-    return [];
-  }
+      await fetch(KVDB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      return updated;
+    } catch (err) {
+      console.error('Cloud store update error:', err);
+      return [];
+    }
+  });
 }
 
 export async function deleteCloudRegistration(registrationId: string): Promise<CloudStoreRecord[]> {
-  try {
-    const current = await fetchCloudRegistrations();
-    const updated = current.filter((item) => item.registrationId !== registrationId);
+  return withCloudLock(async () => {
+    try {
+      const current = await fetchCloudRegistrations();
+      const updated = current.filter((item) => item.registrationId !== registrationId);
 
-    await fetch(KVDB_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated)
-    });
-    return updated;
-  } catch (err) {
-    console.error('Cloud store delete error:', err);
-    return [];
-  }
+      await fetch(KVDB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      return updated;
+    } catch (err) {
+      console.error('Cloud store delete error:', err);
+      return [];
+    }
+  });
 }
 
 export async function resetCloudRegistrations(): Promise<void> {
-  try {
-    await fetch(KVDB_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify([])
-    });
-  } catch (err) {
-    console.error('Cloud store reset error:', err);
-  }
+  return withCloudLock(async () => {
+    try {
+      await fetch(KVDB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([])
+      });
+    } catch (err) {
+      console.error('Cloud store reset error:', err);
+    }
+  });
 }

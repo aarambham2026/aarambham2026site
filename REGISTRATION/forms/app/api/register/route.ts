@@ -41,6 +41,32 @@ export async function POST(req: Request) {
       : 10;
     const perfName = validated.performanceName ? sanitizeInput(validated.performanceName) : null;
 
+    const sanitizedEmail = sanitizeInput(validated.email).toLowerCase();
+    const sanitizedPhone = sanitizeInput(validated.phone);
+
+    // Duplicate submission check against persistent store
+    try {
+      const { fetchCloudRegistrations } = await import('@/lib/cloudStore');
+      const existingCloud = await fetchCloudRegistrations();
+      const duplicate = existingCloud.find(
+        (r) =>
+          r.eventCategory?.toUpperCase() === categoryUpper &&
+          (r.email?.toLowerCase() === sanitizedEmail || r.phone === sanitizedPhone) &&
+          r.status === 'REGISTERED'
+      );
+      if (duplicate) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `A registration for ${categoryUpper} already exists for this email/phone (ID: ${duplicate.registrationId}).`
+          },
+          { status: 409 }
+        );
+      }
+    } catch (dupCheckErr) {
+      // Continue if duplicate check fetch warning
+    }
+
     try {
       const slot = await allocateSlot(
         categoryUpper,
@@ -66,8 +92,8 @@ export async function POST(req: Request) {
         eventCategory: categoryUpper,
         performanceName: perfName,
         performanceDuration: requestedDuration,
-        email: sanitizeInput(validated.email).toLowerCase(),
-        phone: sanitizeInput(validated.phone),
+        email: sanitizedEmail,
+        phone: sanitizedPhone,
         membersList: sanitizeInput(validated.membersList) || '',
         queuePosition,
         slotStartTime,
@@ -75,25 +101,33 @@ export async function POST(req: Request) {
         status: 'REGISTERED'
       };
 
+      let dbSaved = false;
       try {
         await prisma.registration.create({ data: regRecord });
+        dbSaved = true;
       } catch (dbErr) {
-        // Ignore DB save error on serverless read-only SQLite
+        console.warn('Prisma DB save warning:', dbErr);
       }
 
       // Save to persistent queue store
       savePersistentQueueStore(queuePosition, slot.endMinutes, regRecord);
 
       // Save to 24/7 cloud persistent store so page reloads on Vercel NEVER lose data
+      let cloudSaved = false;
       try {
         const { saveCloudRegistration } = await import('@/lib/cloudStore');
-        await saveCloudRegistration({
+        const resRecords = await saveCloudRegistration({
           id: registrationId,
           ...regRecord,
           createdAt: new Date().toISOString()
         });
+        if (resRecords && resRecords.length > 0) cloudSaved = true;
       } catch (cloudErr) {
         console.warn('Cloud store async save warning:', cloudErr);
+      }
+
+      if (!dbSaved && !cloudSaved) {
+        throw new Error('Database persistence temporary failure. Please retry your submission.');
       }
 
       const buildTicketUrl = (id: string, name: string, members: number, start: string, end: string, cat: string) => 
