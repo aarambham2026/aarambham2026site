@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const sanitizedEmail = sanitizeInput(validated.email).toLowerCase();
     const sanitizedPhone = sanitizeInput(validated.phone);
 
-    // Atomic duplicate check and registration creation inside Prisma transaction
+    // Atomic duplicate check, slot allocation, and registration creation inside Prisma transaction
     const result = await prisma.$transaction(async (tx) => {
       const duplicate = await tx.registration.findFirst({
         where: {
@@ -95,6 +95,22 @@ export async function POST(req: Request) {
       };
 
       const created = await tx.registration.create({ data: regRecord });
+
+      // Create persistent database AuditLog entry
+      await tx.auditLog.create({
+        data: {
+          action: 'REGISTRATION_CREATED',
+          actor: 'user',
+          targetId: registrationId,
+          description: `New registration ${registrationId} created for ${sanitizeInput(validated.teamLeaderName)} (${categoryUpper})`,
+          details: JSON.stringify({
+            email: sanitizedEmail,
+            queuePosition,
+            slotStartTime,
+            slotEndTime
+          })
+        }
+      });
 
       return {
         created,

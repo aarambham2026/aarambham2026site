@@ -5,7 +5,6 @@ import {
   Search,
   Download,
   Ban,
-  CheckCircle,
   RefreshCw,
   FileSpreadsheet,
   RotateCcw,
@@ -17,7 +16,8 @@ import {
   CalendarCheck,
   X,
   List,
-  Calendar
+  Calendar,
+  AlertTriangle
 } from 'lucide-react';
 
 export interface RegistrationRecord {
@@ -62,6 +62,7 @@ interface AdminTableProps {
   setStatusFilter: (v: string) => void;
   page: number;
   setPage: (p: number) => void;
+  apiError?: string | null;
 }
 
 export default function AdminTable({
@@ -75,7 +76,8 @@ export default function AdminTable({
   statusFilter,
   setStatusFilter,
   page,
-  setPage
+  setPage,
+  apiError
 }: AdminTableProps) {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -171,6 +173,23 @@ export default function AdminTable({
 
   return (
     <div className="bg-zinc-950/90 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+      {/* Explicit API Error Banner */}
+      {apiError && (
+        <div className="p-4 bg-rose-950/90 border border-rose-700/80 rounded-xl text-rose-200 text-xs font-semibold flex items-center gap-3 shadow-lg">
+          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+          <div className="flex-1">
+            <p className="font-extrabold text-sm text-white">Database / API Synchronization Alert</p>
+            <p className="text-rose-300 mt-0.5">{apiError}</p>
+          </div>
+          <button
+            onClick={onRefresh}
+            className="px-3 py-1.5 bg-rose-900 hover:bg-rose-800 border border-rose-700 text-white rounded-lg text-xs font-bold transition-all"
+          >
+            Retry Connection
+          </button>
+        </div>
+      )}
+
       {/* Header Bar with View Mode Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
         <div>
@@ -306,7 +325,9 @@ export default function AdminTable({
               {data.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-zinc-500">
-                    No registrations found matching your filter criteria.
+                    {apiError
+                      ? '⚠️ Could not load records due to API connection error.'
+                      : 'No registrations found matching your filter criteria.'}
                   </td>
                 </tr>
               ) : (

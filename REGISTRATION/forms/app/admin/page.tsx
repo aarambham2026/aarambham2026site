@@ -9,10 +9,12 @@ import { ShieldCheck, Lock, LogOut, KeyRound, User } from 'lucide-react';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authChecking, setAuthChecking] = useState<boolean>(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const [data, setData] = useState<RegistrationRecord[]>([]);
   const [pagination, setPagination] = useState({
@@ -39,6 +41,27 @@ export default function AdminPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
+  // 1. Session check on page mount
+  useEffect(() => {
+    async function checkAuthSession() {
+      try {
+        const res = await fetch('/api/admin/check', { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.authenticated) {
+            setIsAuthenticated(true);
+          }
+        }
+      } catch (err) {
+        console.error('Initial admin session check failed:', err);
+      } finally {
+        setAuthChecking(false);
+      }
+    }
+    checkAuthSession();
+  }, []);
+
+  // 2. Fetch live registrations & audit logs directly from PostgreSQL
   const fetchData = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
@@ -56,22 +79,35 @@ export default function AdminPage() {
         fetch(`/api/admin/logs?_t=${now}`, { cache: 'no-store' })
       ]);
 
-      const json = await resData.json();
-      if (json.success) {
-        setData(json.data || json.registrations || []);
-        if (json.pagination) setPagination(json.pagination);
-        if (json.stats) setStats(json.stats);
-        setLastUpdated(new Date().toLocaleTimeString());
+      if (resData.ok) {
+        const json = await resData.json();
+        if (json.success) {
+          setData(json.data || json.registrations || []);
+          if (json.pagination) setPagination(json.pagination);
+          if (json.stats) setStats(json.stats);
+          setLastUpdated(new Date().toLocaleTimeString());
+          setApiError(null);
+        } else {
+          setApiError(json.error || 'Failed to parse database records');
+        }
       } else if (resData.status === 401) {
         setIsAuthenticated(false);
+        setApiError('Admin session expired or unauthenticated. Please log in again.');
+      } else if (resData.status === 403) {
+        setApiError('You do not have permission to access registration data.');
+      } else if (resData.status === 500) {
+        setApiError('Registration database could not be reached (HTTP 500 server error).');
+      } else {
+        setApiError(`API connection error (Status ${resData.status}).`);
       }
 
       if (resLogs.ok) {
         const jsonLogs = await resLogs.json();
         if (jsonLogs.success) setAuditLogs(jsonLogs.logs || []);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching admin data:', err);
+      setApiError(`Network connection error: ${err.message || 'Failed to reach API'}`);
     }
   }, [isAuthenticated, search, categoryFilter, statusFilter, page]);
 
@@ -101,6 +137,7 @@ export default function AdminPage() {
       const json = await res.json();
       if (res.ok && json.success) {
         setIsAuthenticated(true);
+        setApiError(null);
       } else {
         setLoginError(json.error || 'Invalid credentials');
       }
@@ -118,6 +155,16 @@ export default function AdminPage() {
     setPassword('');
     setData([]);
   };
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#1b1226] flex items-center justify-center p-4">
+        <div className="text-center font-mono text-amber-300 animate-pulse text-sm">
+          ⏳ Verifying admin session credentials...
+        </div>
+      </div>
+    );
+  }
 
   // Admin Login Screen
   if (!isAuthenticated) {
@@ -305,7 +352,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Registrations Management Table with Pagination */}
+        {/* Registrations Management Table with Pagination & Diagnostic Alert */}
         <AdminTable
           data={data}
           pagination={pagination}
@@ -318,6 +365,7 @@ export default function AdminPage() {
           setStatusFilter={setStatusFilter}
           page={page}
           setPage={setPage}
+          apiError={apiError}
         />
       </main>
     </div>

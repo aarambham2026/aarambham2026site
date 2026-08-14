@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isRequestAuthorized } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(req: Request) {
   try {
+    const authorized = await isRequestAuthorized();
+    if (!authorized) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized admin access. Session expired or missing.' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search')?.trim().toLowerCase() || '';
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
@@ -95,6 +104,9 @@ export async function GET(req: Request) {
     );
   } catch (error: any) {
     console.error('Get Registrations Error:', error);
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch registrations' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch registrations from database' },
+      { status: 500 }
+    );
   }
 }
