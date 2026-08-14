@@ -23,6 +23,7 @@ class PorscheExperience {
 
     if (carVideo) {
       carVideo.src = videoSrc;
+      carVideo.preload = 'auto';
     }
     if (carGif) {
       carGif.src = gifSrc;
@@ -41,6 +42,7 @@ class PorscheExperience {
 
       if (carVideo) {
         carVideo.onloadeddata = () => renderPosterFrame(carVideo);
+        carVideo.onseeked = () => renderPosterFrame(carVideo);
         carVideo.currentTime = 0.1;
       }
 
@@ -56,8 +58,6 @@ class PorscheExperience {
     const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
     const posterCanvas = document.getElementById('car-poster-canvas');
-    const videoSrc = 'bmwgif.mp4';
-    const gifSrc = 'bmwgif.gif';
 
     if (!igniteBtn) return;
 
@@ -67,38 +67,36 @@ class PorscheExperience {
       if (this.isIgnited) {
         if (posterCanvas) posterCanvas.style.display = 'none';
 
-        let playedVideo = false;
+        // Play audio engine sound synthesis if available
+        if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
+          window.soundEngine.playEngineRev();
+        }
 
+        // Trigger WebGL particles engine pulse
+        if (this.scene && typeof this.scene.triggerEngineIgnition === 'function') {
+          this.scene.triggerEngineIgnition();
+        }
+
+        // Play video directly without reloading src
         if (carVideo) {
-          carVideo.src = videoSrc;
           carVideo.style.display = 'block';
           carVideo.currentTime = 0;
-          const promise = carVideo.play();
-          if (promise !== undefined) {
-            promise
+          const playPromise = carVideo.play();
+          if (playPromise !== undefined) {
+            playPromise
               .then(() => {
-                playedVideo = true;
                 if (carGif) carGif.style.display = 'none';
               })
               .catch(() => {
-                // Fallback to img if video autoplay blocked
                 if (carGif) {
-                  carGif.src = gifSrc;
                   carGif.style.display = 'block';
                   carGif.style.opacity = '1';
                 }
               });
           }
-        }
-
-        if (!playedVideo && carGif) {
-          carGif.src = gifSrc;
+        } else if (carGif) {
           carGif.style.display = 'block';
           carGif.style.opacity = '1';
-        }
-
-        if (this.scene) {
-          this.scene.triggerEngineIgnition();
         }
 
         igniteBtn.classList.add('ignited');
@@ -116,7 +114,9 @@ class PorscheExperience {
       } else {
         // Return to standby
         if (carVideo) {
-          carVideo.pause();
+          try {
+            carVideo.pause();
+          } catch (e) {}
           carVideo.style.display = 'none';
         }
 
