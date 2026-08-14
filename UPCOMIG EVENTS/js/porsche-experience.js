@@ -17,7 +17,7 @@ class PorscheExperience {
   initCarDisplay() {
     const carGif = document.getElementById('car-gif');
     const posterCanvas = document.getElementById('car-poster-canvas');
-    const gifSrc = 'Caranimation-ezgif.com-censor.gif';
+    const gifSrc = 'bmwgif.gif';
 
     if (carGif && posterCanvas) {
       // Draw first frame onto poster canvas for static standby
@@ -37,7 +37,7 @@ class PorscheExperience {
     const statusText = document.getElementById('engine-status-text');
     const carGif = document.getElementById('car-gif');
     const posterCanvas = document.getElementById('car-poster-canvas');
-    const gifSrc = 'Caranimation-ezgif.com-censor.gif';
+    const gifSrc = 'bmwgif.gif';
 
     if (!igniteBtn) return;
 
