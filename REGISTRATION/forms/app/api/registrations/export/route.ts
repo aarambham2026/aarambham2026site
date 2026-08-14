@@ -37,8 +37,9 @@ export async function GET(req: Request) {
       'Email Address': reg.email || 'N/A',
       'Phone Number': reg.phone || 'N/A',
       'Team Members Roster': reg.membersList || 'N/A',
-      'Registration Date & Time': reg.createdAt
-        ? new Date(reg.createdAt).toLocaleString('en-US', {
+      'Registration Date & Time (IST)': reg.createdAt
+        ? new Date(reg.createdAt).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
             dateStyle: 'medium',
             timeStyle: 'short'
           })

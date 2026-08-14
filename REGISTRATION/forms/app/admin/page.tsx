@@ -85,7 +85,7 @@ export default function AdminPage() {
           setData(json.data || json.registrations || []);
           if (json.pagination) setPagination(json.pagination);
           if (json.stats) setStats(json.stats);
-          setLastUpdated(new Date().toLocaleTimeString());
+          setLastUpdated(new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
           setApiError(null);
         } else {
           setApiError(json.error || 'Failed to parse database records');
@@ -344,7 +344,7 @@ export default function AdminPage() {
                   </div>
 
                   <span className="text-[10px] text-zinc-500 shrink-0">
-                    {new Date(log.timestamp).toLocaleTimeString()} · {new Date(log.timestamp).toLocaleDateString()}
+                    {new Date(log.timestamp).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })} · {new Date(log.timestamp).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                   </span>
                 </div>
               ))

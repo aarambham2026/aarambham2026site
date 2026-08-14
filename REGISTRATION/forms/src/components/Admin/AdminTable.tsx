@@ -516,7 +516,7 @@ export default function AdminTable({
                 <h3 className="text-lg font-extrabold text-white font-serif">
                   REGISTRATION DETAILS — <span className="text-orange-400">{selectedRecord.registrationId}</span>
                 </h3>
-                <p className="text-xs text-zinc-400">Created: {new Date(selectedRecord.createdAt).toLocaleString()}</p>
+                <p className="text-xs text-zinc-400">Created: {new Date(selectedRecord.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })} IST</p>
               </div>
             </div>
 
