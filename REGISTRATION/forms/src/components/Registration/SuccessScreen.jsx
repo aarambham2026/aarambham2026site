@@ -51,7 +51,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
       </h2>
 
       <p style={{ color: 'rgba(255, 248, 231, 0.85)', fontSize: '0.95rem', margin: '0 0 1rem 0' }}>
-        Your stage performance slot for <strong>{eventCategory}</strong> is confirmed.
+        Your stage performance for <strong>{eventCategory}</strong> is confirmed.
       </p>
 
       {/* Badges Row */}
