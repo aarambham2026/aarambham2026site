@@ -193,10 +193,6 @@ export default function CoordinatorsPage() {
       {/* HERO SECTION */}
       <section className="hero-section">
         <div className="brand">
-          <div className="brand-logo">
-            <img src="/assets/onam-logo.png" alt="Onam'26 Logo" />
-          </div>
-          <div className="brand-line"></div>
           <span>ONAM'26</span>
         </div>
 
@@ -232,18 +228,18 @@ export default function CoordinatorsPage() {
         <div className="memory-gallery-section">
           <div className="photo-label">
             <span className="label-dot"></span>
-            ONAM'26 MEMORIES
+            AARAMBHAM'25 MEMORIES
             <span className="label-dot"></span>
           </div>
 
           <div className="memory-gallery" id="memoryGallery">
-            <img src="/assets/photo-5.jpg" alt="Onam'26 memory 01" loading="eager" />
-            <img src="/assets/photo-4.jpg" alt="Onam'26 memory 02" loading="lazy" />
-            <img src="/assets/photo-2.jpg" alt="Onam'26 memory 03" loading="lazy" />
-            <img src="/assets/photo-1.jpg" alt="Onam'26 memory 04" loading="lazy" />
-            <img src="/assets/photo-3.jpg" alt="Onam'26 memory 05" loading="lazy" />
-            <img src="/assets/photo-6.jpg" alt="Onam'26 memory 06" loading="lazy" />
-            <img src="/assets/photo-7.jpg" alt="Onam'26 memory 07" loading="lazy" />
+            <img src="/assets/photo-5.jpg" alt="Aarambham'25 memory 01" loading="eager" />
+            <img src="/assets/photo-4.jpg" alt="Aarambham'25 memory 02" loading="lazy" />
+            <img src="/assets/photo-2.jpg" alt="Aarambham'25 memory 03" loading="lazy" />
+            <img src="/assets/photo-1.jpg" alt="Aarambham'25 memory 04" loading="lazy" />
+            <img src="/assets/photo-3.jpg" alt="Aarambham'25 memory 05" loading="lazy" />
+            <img src="/assets/photo-6.jpg" alt="Aarambham'25 memory 06" loading="lazy" />
+            <img src="/assets/photo-7.jpg" alt="Aarambham'25 memory 07" loading="lazy" />
           </div>
 
           <div className="memory-gallery-caption">
