@@ -194,22 +194,17 @@ html, body {
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-family: var(--font-serif-luxury);
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: #fff;
+  gap: 0;
+  font-family: 'Playfair Display', 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #F2C94C;
   text-decoration: none;
 }
 
 .nav-brand-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--theme-color);
-  box-shadow: 0 0 12px var(--theme-color);
-  transition: background 0.5s ease;
+  display: none;
 }
 
 .nav-links-wrap {

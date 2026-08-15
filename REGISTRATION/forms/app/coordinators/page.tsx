@@ -179,9 +179,8 @@ export default function CoordinatorsPage() {
 
       {/* Top Navigation Header */}
       <header className="top-navbar">
-        <a href="/" className="top-nav-brand">
-          <img src="/assets/onam-logo.png" alt="Onam'26 Logo" />
-          <span>ONAM '26</span>
+        <a href="/" className="top-nav-brand" style={{ textDecoration: 'none' }}>
+          THAKRITHI'26
         </a>
         <nav className="top-nav-links">
           <a href="/">Home</a>

@@ -101,10 +101,9 @@ export default function HomePage() {
 
         {/* ── HEADER ────────────────────────────────────────────── */}
         <header id="header" role="banner">
-          <div className="header-logo">
-            <div className="header-logo-dot"></div>
-            ONAM 2026
-          </div>
+          <a href="/" className="header-logo" style={{ textDecoration: 'none' }}>
+            THAKRITHI'26
+          </a>
 
           <nav aria-label="Primary navigation">
             <ul className="header-nav" role="list">

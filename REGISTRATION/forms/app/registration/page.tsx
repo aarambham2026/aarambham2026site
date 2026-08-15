@@ -90,19 +90,11 @@ export default function RegistrationPage() {
       <div className="min-h-screen bg-[#1b1226] text-zinc-100 flex flex-col font-sans selection:bg-[#F2C94C]/30 selection:text-[#F2C94C]">
         {/* Top Navigation Bar */}
         <header className="border-b border-[#F2C94C]/20 bg-[#1b1226]/95 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#9B111E] to-[#F2C94C] flex items-center justify-center font-serif text-white font-black text-sm shadow-md shadow-[#9B111E]/40 border border-[#F2C94C]/30">
-              O'26
-            </div>
-            <div>
-              <div className="font-serif font-bold text-sm tracking-wide text-white">
-                AMRITA VISHWA VIDYAPEETHAM
-              </div>
-              <div className="text-[11px] text-[#F2C94C] font-semibold tracking-wider uppercase">
-                Onam Cultural Fest 2026 • Registration & E-Ticket Module
-              </div>
-            </div>
-          </div>
+          <a href="/" className="flex items-center gap-3 no-underline">
+            <span className="font-serif font-extrabold text-xl tracking-wider text-[#F2C94C]" style={{ fontFamily: "'Playfair Display', 'Cinzel', serif" }}>
+              THAKRITHI'26
+            </span>
+          </a>
 
           {/* Top-Level Cross-Application Sibling Navigation */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-amber-100/80">

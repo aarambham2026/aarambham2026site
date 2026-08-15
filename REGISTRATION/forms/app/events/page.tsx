@@ -78,9 +78,8 @@ export default function EventsPage() {
 
       {/* NAVBAR */}
       <header className="navbar">
-        <a href="/" className="nav-brand">
-          <div className="nav-brand-dot"></div>
-          ONAM '26
+        <a href="/" className="nav-brand" style={{ textDecoration: 'none' }}>
+          THAKRITHI'26
         </a>
         <nav className="nav-links-wrap">
           <a href="/">Home</a>
