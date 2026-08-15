@@ -14,61 +14,70 @@ export interface ImageElementConfig {
 }
 
 export const ticketConfig = {
-  // Path to custom font in /public/fonts/ (with fallback to HelveticaBold)
+  // Path to custom Montserrat ExtraBold font in /public/fonts/
   fontPath: process.env.TICKET_FONT_PATH || '/fonts/EventFont.ttf',
 
-  // PDF Page Dimensions: 1134 x 807 (Origin [0,0] is Bottom-Left in pdf-lib)
+  // Canvas Dimensions: 241 x 754 (Portrait Thakrithi Ticket Background)
 
-  // Team Leader Name overlay
+  // Line 1: Event Name overlay (Gold)
+  eventName: {
+    x: 16,
+    y: 330,
+    fontSize: 11,
+    label: "EVENT:",
+    color: { r: 0.95, g: 0.79, b: 0.3 } // Bright Gold
+  } as TextElementConfig,
+
+  // Line 2: Team Leader Name overlay (White)
   teamLeaderName: {
-    x: 280,
-    y: 520,
-    fontSize: 24,
+    x: 16,
+    y: 308,
+    fontSize: 11,
     label: "TEAM LEADER:",
-    color: { r: 1, g: 1, b: 1 } // Pure white
+    color: { r: 1, g: 1, b: 1 } // Pure White
   } as TextElementConfig,
 
-  // Number of Members overlay
+  // Line 3: Number of Members overlay (White)
   numberOfMembers: {
-    x: 280,
-    y: 440,
-    fontSize: 20,
+    x: 16,
+    y: 286,
+    fontSize: 11,
     label: "NO. OF MEMBERS:",
-    color: { r: 0.9, g: 0.9, b: 0.9 } // Soft white
+    color: { r: 1, g: 1, b: 1 } // Pure White
   } as TextElementConfig,
 
-  // Slot Time overlay
+  // Line 4: Slot Time overlay (Disabled / Hidden)
   slotTime: {
-    x: 280,
-    y: 360,
-    fontSize: 22,
+    x: 16,
+    y: 264,
+    fontSize: 11,
     label: "SLOT TIME:",
-    color: { r: 0.96, g: 0.62, b: 0.08 } // Bright amber gold
+    color: { r: 0.95, g: 0.79, b: 0.3 }
   } as TextElementConfig,
 
-  // Registration ID overlay
+  // Line 5: Registration ID overlay (Orange)
   registrationId: {
-    x: 280,
-    y: 280,
-    fontSize: 20,
+    x: 16,
+    y: 264,
+    fontSize: 11,
     label: "REGISTRATION ID:",
-    color: { r: 0.93, g: 0.35, b: 0.05 } // Energetic orange
+    color: { r: 0.95, g: 0.38, b: 0.1 } // Energetic Orange
   } as TextElementConfig,
 
-  // QR Code placement on the right ticket area
+  // QR Code placement centered in the bottom white space area
   qrCode: {
-    x: 880,
-    y: 320,
-    width: 170,
-    height: 170
+    x: 45.5,
+    y: 40,
+    width: 150,
+    height: 150
   } as ImageElementConfig,
 
-  // Success text inside the left white stub area
+  // Success text centered below QR code in the bottom white space area
   successText: {
-    x: 35,
-    y: 400,
-    fontSize: 16,
+    x: 120.5, // Centered horizontally (width 241 / 2)
+    y: 18,
+    fontSize: 8.5,
     label: "SUCCESSFULLY REGISTERED",
-    color: { r: 0.1, g: 0.1, b: 0.1 } // Dark charcoal text on white background
+    color: { r: 0.08, g: 0.08, b: 0.08 }
   } as TextElementConfig
 };
