@@ -129,23 +129,24 @@ export default function EventsPage() {
 
             <div className="car-display-container">
               <div className="car-media-wrap">
+                <video
+                  id="car-video"
+                  className="car-gif-img"
+                  src="/events-assets/bmwgif.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                ></video>
                 <img
                   id="car-gif"
                   className="car-gif-img"
                   src="/events-assets/bmwgif.gif"
                   alt="BMW M5 Showcase"
-                  style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <video
-                  id="car-video"
-                  className="car-gif-img"
-                  src="/events-assets/bmwgif.mp4"
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
                   style={{ display: 'none', width: '100%', height: '100%', objectFit: 'cover' }}
-                ></video>
+                />
               </div>
               <div className="car-display-overlay">
                 <button className="ignite-engine-btn" id="ignite-engine-btn">

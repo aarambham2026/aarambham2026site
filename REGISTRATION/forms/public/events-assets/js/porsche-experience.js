@@ -19,18 +19,29 @@ class PorscheExperience {
     const videoSrc = '/events-assets/bmwgif.mp4';
     const gifSrc = '/events-assets/bmwgif.gif';
 
-    if (carGif) {
-      carGif.src = gifSrc;
-      carGif.style.display = 'block';
-    }
-
     if (carVideo) {
       carVideo.src = videoSrc;
       carVideo.preload = 'auto';
-      carVideo.currentTime = 0;
-      try {
-        carVideo.pause();
-      } catch (e) {}
+      carVideo.style.display = 'block';
+
+      // Play muted autoplay loop immediately so the media box is NEVER black
+      const playPromise = carVideo.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            if (carGif) carGif.style.display = 'none';
+          })
+          .catch(() => {
+            // Fallback to animated GIF if video autoplay is restricted
+            if (carGif) {
+              carGif.src = gifSrc;
+              carGif.style.display = 'block';
+            }
+          });
+      }
+    } else if (carGif) {
+      carGif.src = gifSrc;
+      carGif.style.display = 'block';
     }
   }
 
@@ -59,6 +70,7 @@ class PorscheExperience {
         // Start video playback on IGNITE click
         if (carVideo) {
           carVideo.style.display = 'block';
+          carVideo.muted = false;
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
             playPromise
@@ -90,17 +102,8 @@ class PorscheExperience {
         }
 
       } else {
-        // Return to static standby preview / animated GIF
         if (carVideo) {
-          try {
-            carVideo.pause();
-            carVideo.currentTime = 0;
-          } catch (e) {}
-          carVideo.style.display = 'none';
-        }
-        if (carGif) {
-          carGif.style.display = 'block';
-          carGif.style.opacity = '1';
+          carVideo.muted = true;
         }
 
         igniteBtn.classList.remove('ignited');
