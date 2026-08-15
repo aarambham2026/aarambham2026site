@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1b1226" />
   <title>Amrita Vishwa Vidyapeetham — Onam Cultural Event Registration & E-Ticket</title>
-  
-  <script>
-    if (window.location.protocol !== 'file:' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
-      window.location.replace('https://aarambham2026registration.vercel.app/');
-    }
-  </script>
-  <meta http-equiv="refresh" content="0; url=https://aarambham2026registration.vercel.app/">
 
   <!-- Google Fonts for Make A Ton Onam Theme -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -162,15 +155,15 @@
     <ul class="nav-links">
       <li><a href="https://thakrithi.vercel.app/">Home</a></li>
       <li><a href="https://thakrithi.vercel.app/UPCOMIG%20EVENTS/index.html">Upcoming Events</a></li>
-      <li><a href="https://aarambham2026registration.vercel.app/" class="active">Registration</a></li>
+      <li><a href="https://thakrithi.vercel.app/REGISTRATION/index.html" class="active">Registration</a></li>
       <li><a href="https://thakrithi.vercel.app/MEET%20THE%20CORRDINATES/index.html">Meet the Coordinators</a></li>
     </ul>
   </header>
 
-  <!-- LIVE NEXT.JS REGISTRATION APP IFRAME -->
+  <!-- LIVE AUTHORITATIVE NEXT.JS REGISTRATION APP IFRAME (SAME ORIGIN) -->
   <iframe 
     id="reg-app-frame" 
-    src="https://aarambham2026registration.vercel.app/" 
+    src="/" 
     class="app-viewport"
     title="Amrita Vishwa Vidyapeetham Onam Cultural Event Registration & E-Ticket"
   ></iframe>
@@ -178,12 +171,7 @@
   <script>
     const frame = document.getElementById('reg-app-frame');
     if (window.location.protocol !== 'file:') {
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      if (isLocal) {
-        frame.src = window.location.origin + '/forms/';
-      } else {
-        frame.src = 'https://aarambham2026registration.vercel.app/';
-      }
+      frame.src = window.location.origin + '/';
     }
   </script>
 

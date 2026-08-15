@@ -241,7 +241,7 @@ export default function AdminPage() {
             <a href="https://thakrithi.vercel.app/" className="text-amber-400 hover:text-amber-300 font-extrabold tracking-wider uppercase underline">
               ← BACK TO MAIN WEBSITE
             </a>
-            <a href="https://aarambham2026registration.vercel.app/" className="text-zinc-400 hover:text-white font-semibold">
+            <a href="https://thakrithi.vercel.app/REGISTRATION/index.html" className="text-zinc-400 hover:text-white font-semibold">
               ← BACK TO REGISTRATION
             </a>
           </div>
@@ -290,7 +290,7 @@ export default function AdminPage() {
             </a>
 
             <a
-              href="https://aarambham2026registration.vercel.app/"
+              href="https://thakrithi.vercel.app/REGISTRATION/index.html"
               className="px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full transition-all uppercase"
               title="Return to Registration Page"
             >

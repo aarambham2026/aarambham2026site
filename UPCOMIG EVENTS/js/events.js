@@ -65,7 +65,7 @@ class EventSystem {
 
   async fetchLiveSettings() {
     try {
-      const res = await fetch('https://aarambham2026registration.vercel.app/api/settings');
+      const res = await fetch('/api/settings');
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
@@ -186,7 +186,7 @@ class EventSystem {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.closeModal());
     document.getElementById('modal-register-btn')?.addEventListener('click', () => {
-      window.location.href = 'https://aarambham2026registration.vercel.app/';
+      window.location.href = '../REGISTRATION/index.html';
     });
   }
 
