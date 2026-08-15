@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/upcoming-events", "destination": "/UPCOMIG EVENTS/index.html" },
+    { "source": "/coordinators", "destination": "/MEET THE CORRDINATES/index.html" }
+  ]
+}

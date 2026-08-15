@@ -1,34 +1,426 @@
 <!DOCTYPE html>
 <html lang="en" style="background-color: #161022;">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ONAM 2026 — University Cultural Festival</title>
-  <meta name="theme-color" content="#1b1226">
-  <script>
-    window.location.replace('./HOME%20PAGE/index.html');
-  </script>
-  <meta http-equiv="refresh" content="0; url=./HOME%20PAGE/index.html">
-  <style>
-    body {
-      background-color: #161022;
-      color: #fff5ec;
-      font-family: system-ui, -apple-system, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    a {
-      color: #F2C94C;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onam 2026 — University Cultural Festival</title>
+  <meta name="description" content="Celebrate the grand Onam 2026 university cultural festival. Experience the magic of Kerala's most beloved festival with pookalam, sadya, performances and more." />
+  <meta name="theme-color" content="#1b1226" />
+  <meta property="og:title" content="Onam 2026 — University Cultural Festival" />
+  <meta property="og:description" content="A modern digital experience built around the soul of Kerala's Onam." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="HOME%20PAGE/css/globals.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/loading-header.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/hero.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/about.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/snapshot.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/sections.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/cursor.css" />
+  <link rel="stylesheet" href="HOME%20PAGE/css/preloader.css" />
 </head>
 <body style="background-color: #161022;">
-  <p>Entering Onam 2026 Festival Portal... <a href="./HOME%20PAGE/index.html">Click here if not redirected</a>.</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOADING SCREEN
+     ═══════════════════════════════════════════════════════════ -->
+<div id="loading-screen" role="status" aria-label="Loading Onam Cultural Fest Portal">
+  <div class="loader-container">
+    
+    <!-- Central Theyyam / Kathakali Art Card -->
+    <div class="loader-art-card">
+      <img
+        src="HOME%20PAGE/resources/loading/Theyyam stick.gif"
+        alt="Onam Cultural Fest Mascot"
+        class="loader-art-img"
+      />
+    </div>
+
+    <!-- University Name -->
+    <div class="loader-university-title">
+      AMRITA VISHWA VIDYAPEETHAM
+    </div>
+
+    <!-- Loading Status with Spinner -->
+    <div class="loader-status-wrap">
+      <span class="loader-spinner"></span>
+      <span class="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+    </div>
+
+    <!-- 6-Segment Block Progress Bar -->
+    <div class="loader-progress-bar" id="loader-progress-bar">
+      <span class="bar-segment"></span>
+      <span class="bar-segment"></span>
+      <span class="bar-segment"></span>
+      <span class="bar-segment"></span>
+      <span class="bar-segment"></span>
+      <span class="bar-segment"></span>
+    </div>
+
+  </div><!-- /loader-container -->
+</div><!-- /loading-screen -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN SITE (hidden until loading screen fades)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="main-site" style="opacity:0; transition: opacity 0.5s ease;">
+
+  <!-- ── SIDEBAR OVERLAY ──────────────────────────────────── -->
+  <div id="sidebar-overlay" role="presentation"></div>
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+  <aside id="sidebar" role="navigation" aria-label="Site navigation">
+    <div class="sidebar-deco"></div>
+
+    <button id="sidebar-close" class="sidebar-close" aria-label="Close menu">✕</button>
+
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">ONAM 2026</div>
+      <div class="sidebar-brand-sub">University Cultural Festival</div>
+    </div>
+
+    <ul class="sidebar-nav" role="list">
+      <li>
+        <a href="#home">
+          <span class="sidebar-nav-num">01</span>
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="UPCOMIG%20EVENTS/index.html">
+          <span class="sidebar-nav-num">02</span>
+          Upcoming Events
+        </a>
+      </li>
+      <li>
+        <a href="https://aarambham2026registration.vercel.app/">
+          <span class="sidebar-nav-num">03</span>
+          Registration
+        </a>
+      </li>
+      <li>
+        <a href="MEET%20THE%20CORRDINATES/index.html">
+          <span class="sidebar-nav-num">04</span>
+          Meet the Coordinators
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <p class="sidebar-footer-text">Onam 2026 · August 22</p>
+    </div>
+  </aside>
+
+  <!-- ── HEADER ────────────────────────────────────────────── -->
+  <header id="header" role="banner">
+    <div class="header-logo">
+      <div class="header-logo-dot"></div>
+      ONAM 2026
+    </div>
+
+    <nav aria-label="Primary navigation">
+      <ul class="header-nav" role="list">
+        <li><a href="#home">Home</a></li>
+        <li><a href="UPCOMIG%20EVENTS/index.html">Upcoming Events</a></li>
+        <li><a href="https://aarambham2026registration.vercel.app/">Registration</a></li>
+        <li><a href="MEET%20THE%20CORRDINATES/index.html">Meet the Coordinators</a></li>
+      </ul>
+    </nav>
+
+    <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 1 — HOME / HERO
+       ════════════════════════════════════════════════════════ -->
+  <section id="home" aria-label="Hero section">
+
+    <!-- Background (drop hero-bg.jpg into assets/hero/) -->
+    <div class="hero-bg" role="img" aria-label="Onam festival background">
+      <!-- Shown as fallback if no hero-bg.jpg -->
+      <div class="hero-bg-placeholder"></div>
+    </div>
+    <div class="hero-pattern" aria-hidden="true"></div>
+
+
+
+    <!-- Hero content -->
+    <div class="hero-content">
+      <span class="hero-label">University Cultural Festival · August 22, 2026</span>
+
+      <!-- HEADING GIF VIDEO -->
+      <div class="hero-heading-wrap">
+        <img
+          id="heading-gif"
+          src="HOME%20PAGE/resources/heading/THAKRITHI FINAL gif.gif"
+          alt="THAKRITHI Onam 2026 Heading Animation"
+          class="hero-heading-img"
+        />
+        <!-- Fallback text shown if image fails to load -->
+        <div class="hero-heading-fallback" id="heading-fallback" style="display:none;">
+          THAKRITHI ONAM 2026
+        </div>
+      </div>
+
+      <!-- Event details strip -->
+      <div class="hero-sub">
+        <span class="hero-sub-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          August 22, 2026
+        </span>
+        <div class="hero-sub-dot" aria-hidden="true"></div>
+        <span class="hero-sub-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          University Grounds
+        </span>
+        <div class="hero-sub-dot" aria-hidden="true"></div>
+        <span class="hero-sub-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          All Are Welcome
+        </span>
+      </div>
+
+      <!-- Realistic 3D Animated Countdown timer -->
+      <div id="countdown-wrap" class="countdown-wrap" role="timer" aria-live="polite" aria-label="Countdown to Onam 2026">
+        
+        <div class="countdown-card" id="cd-days-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-top-half"><span class="flip-top-num">00</span></div>
+            <div class="flip-card-bot-half"><span class="flip-bot-num">00</span></div>
+            <div class="flip-card-divider"></div>
+            <span class="countdown-number" id="cd-days">00</span>
+          </div>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+
+        <div class="countdown-card" id="cd-hours-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-top-half"><span class="flip-top-num">00</span></div>
+            <div class="flip-card-bot-half"><span class="flip-bot-num">00</span></div>
+            <div class="flip-card-divider"></div>
+            <span class="countdown-number" id="cd-hours">00</span>
+          </div>
+          <span class="countdown-label">Hours</span>
+        </div>
+
+        <div class="countdown-separator" aria-hidden="true">:</div>
+
+        <div class="countdown-card" id="cd-minutes-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-top-half"><span class="flip-top-num">00</span></div>
+            <div class="flip-card-bot-half"><span class="flip-bot-num">00</span></div>
+            <div class="flip-card-divider"></div>
+            <span class="countdown-number" id="cd-minutes">00</span>
+          </div>
+          <span class="countdown-label">Minutes</span>
+        </div>
+
+        <div class="countdown-separator" aria-hidden="true">:</div>
+
+        <div class="countdown-card" id="cd-seconds-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-top-half"><span class="flip-top-num">00</span></div>
+            <div class="flip-card-bot-half"><span class="flip-bot-num">00</span></div>
+            <div class="flip-card-divider"></div>
+            <span class="countdown-number" id="cd-seconds">00</span>
+          </div>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
+      <div id="countdown-over" class="countdown-over" style="display:none;" aria-live="assertive">
+        ✦ THE WAIT IS OVER ✦
+      </div>
+
+    </div><!-- /hero-content -->
+
+    <!-- Scroll hint -->
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+
+  </section><!-- /home -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 2 — ABOUT US
+       ════════════════════════════════════════════════════════ -->
+  <section id="about" aria-labelledby="about-title">
+    <div class="about-inner">
+
+      <header class="about-header reveal">
+        <span class="section-label">Our Story</span>
+        <h2 class="section-title" id="about-title">
+          About
+        </h2>
+      </header>
+
+      <!-- Glass container -->
+      <div class="about-glass-outer">
+        <div class="about-glass reveal-scale">
+
+          <div class="about-grid">
+
+            <!-- Character column -->
+            <div class="about-character-col">
+              <div class="about-character-frame">
+                <video
+                  class="about-character-img"
+                  src="HOME%20PAGE/resources/about us/Kathakali load.mp4"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  id="about-character-video"
+                ></video>
+                <div class="character-glow" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- Text column -->
+            <div class="about-text-col">
+              <div class="about-text-inner">
+                <div class="about-accent-bar" aria-hidden="true"></div>
+                <div class="about-content-wrapper">
+                  <h3 class="about-title">
+                    ABOUT THE<br />
+                    <span>EVENT</span>
+                  </h3>
+                  <div class="about-body-text" id="about-body">
+                    <p>Thakrithi ’26 is the grand Onam celebration of Amrita Vishwa Vidyapeetham, Nagercoil Campus, bringing together students, faculty, and the campus community to celebrate the spirit, traditions, and vibrant culture of Kerala.</p>
+                    <p>The event is designed as a lively celebration of Onam, blending traditional elements with a modern campus experience. From the grandeur of Maveli’s arrival and Chenda Melam to the beauty of Pookalam, traditional decorations, Onam games, music, and cultural activities, Thakrithi ’26 aims to create an atmosphere of joy, togetherness, and celebration.</p>
+                    <p>More than just an event, Thakrithi ’26 is a celebration of unity and belonging, where everyone comes together beyond classrooms and departments to experience the colours, traditions, and festive spirit of Onam.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /about-grid -->
+
+        </div><!-- /about-glass -->
+      </div><!-- /about-glass-outer -->
+
+    </div><!-- /about-inner -->
+  </section><!-- /about -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 3 — SNAPSHOT / GALLERY
+       ════════════════════════════════════════════════════════ -->
+  <section id="snapshot" aria-labelledby="snapshot-title">
+    <div class="snapshot-inner">
+
+      <header class="snapshot-header reveal">
+        <span class="section-label">Memories</span>
+        <h2 class="section-title" id="snapshot-title">
+          Snapshot<span class="gold-text">s</span>
+        </h2>
+        <p>A living wall of Onam memories</p>
+      </header>
+
+      <!-- Three film roll columns (built by snapshot.js) -->
+      <div class="film-rolls-container" aria-label="Photo gallery in film strip style">
+        <div class="film-strip" id="film-col-1" aria-hidden="true"></div>
+        <div class="film-strip" id="film-col-2" aria-hidden="true"></div>
+        <div class="film-strip" id="film-col-3" aria-hidden="true"></div>
+      </div>
+
+    </div>
+  </section><!-- /snapshot -->
+
+
+  <!-- ── FOOTER ─────────────────────────────────────────────── -->
+  <footer id="footer" role="contentinfo">
+    <div class="footer-logo">ONAM 2026</div>
+    <p class="footer-sub">University Cultural Festival · August 22</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#home" onclick="event.preventDefault(); document.querySelector('#home').scrollIntoView({behavior:'smooth'})">Home</a>
+      <a href="#about" onclick="event.preventDefault(); document.querySelector('#about').scrollIntoView({behavior:'smooth'})">About</a>
+      <a href="#snapshot" onclick="event.preventDefault(); document.querySelector('#snapshot').scrollIntoView({behavior:'smooth'})">Snapshot</a>
+    </nav>
+    <p class="footer-copy">
+      © 2026 Onam Cultural Festival · Crafted with ♥ for Kerala's greatest celebration
+    </p>
+  </footer>
+
+</div><!-- /main-site -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS (order matters)
+     ═══════════════════════════════════════════════════════════ -->
+<script src="HOME%20PAGE/js/data.js"></script>
+<script src="HOME%20PAGE/js/header.js"></script>
+<script src="HOME%20PAGE/js/countdown.js"></script>
+<script src="HOME%20PAGE/js/snapshot.js"></script>
+<script src="HOME%20PAGE/js/sections.js"></script>
+<script src="HOME%20PAGE/js/about-tilt.js"></script>
+<script src="HOME%20PAGE/js/scroll-reveal.js"></script>
+
+<!-- Inline: heading video fallback + GIF placeholder detection -->
+<script>
+(function() {
+  // Heading video fallback
+  const headingVideo = document.getElementById('heading-video');
+  const headingFallback = document.getElementById('heading-fallback');
+  if (headingVideo && headingFallback) {
+    headingVideo.addEventListener('error', function() {
+      headingVideo.style.display = 'none';
+      headingFallback.style.display = 'block';
+    });
+    // If src is missing/empty
+    if (!headingVideo.src || headingVideo.src === window.location.href) {
+      headingVideo.style.display = 'none';
+      headingFallback.style.display = 'block';
+    }
+  }
+
+  // About GIF placeholder
+  const charImg = document.getElementById('about-character-img');
+  const charPh  = document.getElementById('about-char-placeholder');
+  if (charImg && charPh) {
+    charImg.addEventListener('error', function() {
+      charImg.style.display = 'none';
+      charPh.style.display  = 'flex';
+    });
+  }
+
+  // Hero bg fallback (CSS handles it, but ensure placeholder is visible)
+  const heroBg = document.querySelector('.hero-bg');
+  if (heroBg) {
+    const testImg = new Image();
+    testImg.src = 'HOME%20PAGE/assets/hero/hero-bg.jpg';
+    testImg.onload = function() {
+      heroBg.style.backgroundImage = "url('HOME%20PAGE/assets/hero/hero-bg.jpg')";
+    };
+  }
+})();
+</script>
+
+<script src="HOME%20PAGE/js/cursor.js"></script>
+<script src="HOME%20PAGE/js/preloader.js"></script>
 </body>
 </html>

@@ -88,15 +88,15 @@ window.eventData = {
   // Add paths like: "assets/snapshots/photo1.jpg"
   // Leave empty → placeholder tiles are shown
   snapshots: [
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.00 AM.jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM.jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM (1).jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM (2).jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM.jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM (1).jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM (2).jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.03 AM.jpeg",
-    "resources/snap/WhatsApp Image 2026-08-13 at 12.16.03 AM (1).jpeg"
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.00 AM.jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM.jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM (1).jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.01 AM (2).jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM.jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM (1).jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.02 AM (2).jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.03 AM.jpeg",
+    (typeof window !== 'undefined' && (!window.location.pathname.includes('HOME%20PAGE') && !window.location.pathname.includes('HOME PAGE')) ? 'HOME%20PAGE/' : '') + "resources/snap/WhatsApp Image 2026-08-13 at 12.16.03 AM (1).jpeg"
   ],
 
   // ── ABOUT TEXT ─────────────────────────────────────────────
