@@ -24,6 +24,25 @@ export default function CustomCursor() {
     setIsMounted(true);
   }, []);
 
+  // Clean up duplicate legacy cursor/glow DOM nodes created by static HTML scripts
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return;
+
+    const cursors = document.querySelectorAll('.custom-cursor');
+    cursors.forEach((el) => {
+      if (el !== cursorRef.current) {
+        el.remove();
+      }
+    });
+
+    const glows = document.querySelectorAll('.mouse-glow');
+    glows.forEach((el) => {
+      if (el !== glowRef.current) {
+        el.remove();
+      }
+    });
+  }, [pathname, isMounted]);
+
   // 1. Single global physical pointer listener attached to window once
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -57,7 +76,6 @@ export default function CustomCursor() {
       ringYRef.current = globalY;
       isVisibleRef.current = true;
 
-      // Direct DOM update with zero React re-render delay
       if (cursorRef.current) {
         cursorRef.current.style.transform = `translate3d(${globalX}px, ${globalY}px, 0)`;
         cursorRef.current.style.opacity = '1';
@@ -76,7 +94,6 @@ export default function CustomCursor() {
   useEffect(() => {
     if (!isMounted || typeof window === 'undefined') return;
 
-    // Suppress on touch / coarse pointer devices
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
       return;
     }
@@ -103,7 +120,6 @@ export default function CustomCursor() {
       if (glowRef.current) glowRef.current.style.opacity = '0';
     };
 
-    // Direct DOM class toggle on hover (zero React re-render latency)
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target || !target.closest) return;
@@ -134,7 +150,6 @@ export default function CustomCursor() {
 
     lastTimeRef.current = performance.now();
 
-    // Frame-rate independent delta-time Lerp loop
     function animate(now: number) {
       const dt = Math.min((now - lastTimeRef.current) / 1000, 0.1);
       lastTimeRef.current = now;
@@ -146,7 +161,6 @@ export default function CustomCursor() {
         cursorRef.current.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
       }
 
-      // Smooth framerate-independent easing factor
       const factor = 1 - Math.pow(1 - 0.28, dt * 60);
 
       ringXRef.current += (mx - ringXRef.current) * factor;
@@ -179,7 +193,6 @@ export default function CustomCursor() {
     };
   }, [isMounted]);
 
-  // Suppress rendering on SSR, coarse touch, or embedded iframes
   if (
     !isMounted ||
     (typeof window !== 'undefined' &&
@@ -194,7 +207,13 @@ export default function CustomCursor() {
         ref={glowRef}
         className="mouse-glow"
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '280px',
+          height: '280px',
           opacity: 0,
+          zIndex: 9999998,
           willChange: 'transform, opacity',
           pointerEvents: 'none'
         }}
@@ -203,7 +222,13 @@ export default function CustomCursor() {
         ref={cursorRef}
         className="custom-cursor"
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
           opacity: 0,
+          zIndex: 9999999,
           willChange: 'transform, opacity',
           pointerEvents: 'none'
         }}
