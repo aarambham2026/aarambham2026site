@@ -186,8 +186,7 @@ class EventSystem {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.closeModal());
     document.getElementById('modal-register-btn')?.addEventListener('click', () => {
-      alert(`Registration confirmed for ${ev.name}! We look forward to seeing you at Onam 2026.`);
-      this.closeModal();
+      window.location.href = 'https://aarambham2026registration.vercel.app/';
     });
   }
 
