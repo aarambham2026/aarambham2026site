@@ -2,6 +2,20 @@
 const nextConfig = {
   serverExternalPackages: ['pdf-lib', 'qrcode'],
   devIndicators: false,
+  async rewrites() {
+    return [
+      { source: '/REGISTRATION/index.html', destination: '/registration' },
+      { source: '/REGISTRATION', destination: '/registration' },
+      { source: '/HOME%20PAGE/index.html', destination: '/' },
+      { source: '/HOME PAGE/index.html', destination: '/' },
+      { source: '/UPCOMIG%20EVENTS/index.html', destination: '/events' },
+      { source: '/UPCOMIG EVENTS/index.html', destination: '/events' },
+      { source: '/MEET%20THE%20CORRDINATES/index.html', destination: '/coordinators' },
+      { source: '/MEET THE CORRDINATES/index.html', destination: '/coordinators' },
+      { source: '/REGISTRATION/admin', destination: '/admin' },
+      { source: '/REGISTRATION/admin/', destination: '/admin' }
+    ];
+  },
   async headers() {
     return [
       {

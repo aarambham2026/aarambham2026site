@@ -1,0 +1,319 @@
+/* ============================================================
+   ONAM FEST — ABOUT SECTION
+   ============================================================ */
+
+#about {
+  position: relative;
+  padding: var(--space-2xl) var(--space-sm);
+  background: linear-gradient(180deg, var(--near-black) 0%, #0e2219 50%, var(--near-black) 100%);
+  overflow: hidden;
+}
+
+/* Background decorative texture */
+#about::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(31, 92, 66, 0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+/* Decorative Kerala Kolam pattern on edges */
+#about::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 0%, var(--kasavu-gold) 50%, transparent 100%);
+  opacity: 0.4;
+}
+
+.about-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Section header */
+.about-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+.about-header .section-label { display: block; margin-bottom: 0.75rem; }
+
+/* ── 3D GLASS CONTAINER ───────────────────────────────────── */
+.about-glass-outer {
+  perspective: 1200px;
+  perspective-origin: 50% 40%;
+}
+
+.about-glass {
+  background: rgba(255, 248, 231, 0.05);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 28px;
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 1px 0 rgba(212, 175, 55, 0.2) inset;
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.15s ease;
+  will-change: transform;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2rem, 5vw, 4rem);
+}
+
+/* Inner glass shimmer */
+.about-glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  pointer-events: none;
+  transition: left 0.6s ease;
+}
+.about-glass:hover::before { left: 150%; }
+
+/* Glass top edge highlight */
+.about-glass::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 5%; right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), rgba(255,255,255,0.15), rgba(212, 175, 55, 0.4), transparent);
+  pointer-events: none;
+}
+
+/* Two-column layout */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+/* ── CHARACTER SIDE ───────────────────────────────────────── */
+.about-character-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.about-character-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Gold corner accents */
+.about-character-frame::before,
+.about-character-frame::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-color: var(--kasavu-gold);
+  border-style: solid;
+  opacity: 0.5;
+  z-index: 1;
+}
+.about-character-frame::before {
+  top: 12px; left: 12px;
+  border-width: 2px 0 0 2px;
+  border-radius: 4px 0 0 0;
+}
+.about-character-frame::after {
+  bottom: 12px; right: 12px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 4px 0;
+}
+
+.about-character-img {
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+  max-height: 580px;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 48px rgba(0,0,0,0.5));
+  position: relative;
+  z-index: 0;
+}
+
+/* Placeholder when no GIF */
+.about-character-placeholder {
+  width: 100%;
+  min-height: 480px;
+  background: rgba(31, 92, 66, 0.15);
+  border: 1px dashed rgba(212, 175, 55, 0.25);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(255, 248, 231, 0.3);
+}
+.about-character-placeholder svg {
+  width: 60px;
+  height: 60px;
+  opacity: 0.4;
+}
+.about-character-placeholder p {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Glow under character */
+.character-glow {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 60px;
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+  filter: blur(15px);
+  pointer-events: none;
+  animation: charGlow 3s ease-in-out infinite alternate;
+}
+@keyframes charGlow {
+  from { opacity: 0.5; transform: translateX(-50%) scale(0.9); }
+  to   { opacity: 1;   transform: translateX(-50%) scale(1.1); }
+}
+
+/* ── ABOUT TEXT SIDE ──────────────────────────────────────── */
+.about-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.about-text-inner {
+  position: relative;
+}
+
+/* Gold left accent bar */
+.about-accent-bar {
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  left: -1.5rem;
+  top: 0;
+  background: linear-gradient(180deg, var(--kasavu-gold), rgba(212, 175, 55, 0.1));
+  border-radius: 2px;
+}
+
+.about-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  line-height: 1.2;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+.about-title span { color: var(--kasavu-gold); }
+
+.about-intro {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: rgba(255, 248, 231, 0.8);
+  font-weight: 300;
+  line-height: 1.75;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  border-left: 2px solid rgba(212, 175, 55, 0.4);
+  padding-left: 1rem;
+}
+
+.about-body {
+  font-size: 0.9rem;
+  line-height: 1.85;
+  color: rgba(255, 248, 231, 0.65);
+  white-space: pre-line;
+}
+
+/* Mission box */
+.about-mission {
+  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.about-mission::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--kasavu-gold), transparent);
+}
+.about-mission-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--kasavu-gold);
+  margin-bottom: 0.5rem;
+}
+.about-mission-text {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: rgba(255, 248, 231, 0.7);
+}
+
+/* Stats row */
+.about-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.about-stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--kasavu-gold);
+  line-height: 1;
+}
+.about-stat-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 248, 231, 0.4);
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-character-frame {
+    max-width: 380px;
+    min-height: 320px;
+    margin: 0 auto;
+  }
+  .about-accent-bar { display: none; }
+}

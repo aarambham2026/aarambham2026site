@@ -1,146 +1,336 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import RegistrationSection from '../src/components/Registration/RegistrationSection';
-import { Ticket, Loader2 } from 'lucide-react';
+import React from 'react';
+import Script from 'next/script';
 
 export default function HomePage() {
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
-  const [activeBlocks, setActiveBlocks] = useState(0);
-
-  useEffect(() => {
-    const isEmbedded = typeof window !== 'undefined' && window.self !== window.top;
-    
-    // If embedded inside parent window iframe, suppress internal splash loader
-    if (isEmbedded) {
-      setIsInitialLoading(false);
-      return;
-    }
-
-    setIsInitialLoading(true);
-
-    // Block by block loading progress animation
-    const blockInterval = setInterval(() => {
-      setActiveBlocks((prev) => {
-        if (prev < 6) return prev + 1;
-        return prev;
-      });
-    }, 220);
-
-    // Fade out splash loader on completion
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 1800);
-
-    return () => {
-      clearInterval(blockInterval);
-      clearTimeout(timer);
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#1b1226] text-[#fff5ec] relative">
-      {/* Initial Loading Splash Overlay (Suppressed when embedded in iframe) */}
-      {isInitialLoading && (
-        <div
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#1b1226] transition-opacity duration-500 p-4"
-          style={{ opacity: isInitialLoading ? 1 : 0 }}
-        >
-          <div className="relative flex items-center justify-center mb-4 max-w-sm w-full">
-            {/* Pulsating Golden Background Glow */}
-            <div className="absolute w-64 h-64 rounded-full bg-amber-500/15 blur-2xl animate-pulse"></div>
+    <>
+      {/* Stylesheets for Main Home Page */}
+      <link rel="stylesheet" href="/home-assets/css/globals.css" />
+      <link rel="stylesheet" href="/home-assets/css/loading-header.css" />
+      <link rel="stylesheet" href="/home-assets/css/hero.css" />
+      <link rel="stylesheet" href="/home-assets/css/about.css" />
+      <link rel="stylesheet" href="/home-assets/css/snapshot.css" />
+      <link rel="stylesheet" href="/home-assets/css/sections.css" />
+      <link rel="stylesheet" href="/home-assets/css/cursor.css" />
+      <link rel="stylesheet" href="/home-assets/css/preloader.css" />
 
-            {/* Complete Theyyam Animated GIF */}
-            <div
-              className="relative z-10 flex items-center justify-center"
-              style={{
-                WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 98%)',
-                maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 98%)'
-              }}
-            >
-              <img
-                src="/loading.gif"
-                alt="Theyyam Loading Animation"
-                className="max-h-72 w-auto object-contain block"
-              />
-            </div>
+      {/* ═══════════════════════════════════════════════════════════
+           LOADING SCREEN
+           ═══════════════════════════════════════════════════════════ */}
+      <div id="loading-screen" role="status" aria-label="Loading Onam Cultural Fest Portal">
+        <div className="loader-container">
+          <div className="loader-art-card">
+            <img
+              src="/resources/loading/Theyyam stick.gif"
+              alt="Onam Cultural Fest Mascot"
+              className="loader-art-img"
+            />
           </div>
 
-          <h2
-            className="text-2xl font-extrabold tracking-widest text-amber-400 mb-2 font-serif text-center px-4"
-            style={{ fontFamily: "'Cinzel', serif", textShadow: '0 0 20px rgba(242, 201, 76, 0.4)' }}
-          >
+          <div className="loader-university-title">
             AMRITA VISHWA VIDYAPEETHAM
-          </h2>
+          </div>
 
-          <p className="text-xs text-amber-100/90 font-mono tracking-wider uppercase mb-5 flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-            Loading Onam Cultural Fest Portal...
+          <div className="loader-status-wrap">
+            <span className="loader-spinner"></span>
+            <span className="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+          </div>
+
+          <div className="loader-progress-bar" id="loader-progress-bar">
+            <span className="bar-segment"></span>
+            <span className="bar-segment"></span>
+            <span className="bar-segment"></span>
+            <span className="bar-segment"></span>
+            <span className="bar-segment"></span>
+            <span className="bar-segment"></span>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════
+           MAIN SITE (hidden until loading screen fades)
+           ═══════════════════════════════════════════════════════════ */}
+      <div id="main-site" style={{ opacity: 0, transition: 'opacity 0.5s ease' }}>
+
+        {/* ── SIDEBAR OVERLAY ──────────────────────────────────── */}
+        <div id="sidebar-overlay" role="presentation"></div>
+
+        {/* ── SIDEBAR ──────────────────────────────────────────── */}
+        <aside id="sidebar" role="navigation" aria-label="Site navigation">
+          <div className="sidebar-deco"></div>
+          <button id="sidebar-close" className="sidebar-close" aria-label="Close menu">✕</button>
+
+          <div className="sidebar-brand">
+            <div className="sidebar-brand-name">ONAM 2026</div>
+            <div className="sidebar-brand-sub">University Cultural Festival</div>
+          </div>
+
+          <ul className="sidebar-nav" role="list">
+            <li>
+              <a href="/">
+                <span className="sidebar-nav-num">01</span>
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="/events">
+                <span className="sidebar-nav-num">02</span>
+                Upcoming Events
+              </a>
+            </li>
+            <li>
+              <a href="/registration">
+                <span className="sidebar-nav-num">03</span>
+                Registration
+              </a>
+            </li>
+            <li>
+              <a href="/coordinators">
+                <span className="sidebar-nav-num">04</span>
+                Meet the Coordinators
+              </a>
+            </li>
+          </ul>
+
+          <div className="sidebar-footer">
+            <p className="sidebar-footer-text">Onam 2026 · August 22</p>
+          </div>
+        </aside>
+
+        {/* ── HEADER ────────────────────────────────────────────── */}
+        <header id="header" role="banner">
+          <div className="header-logo">
+            <div className="header-logo-dot"></div>
+            ONAM 2026
+          </div>
+
+          <nav aria-label="Primary navigation">
+            <ul className="header-nav" role="list">
+              <li><a href="/">Home</a></li>
+              <li><a href="/events">Upcoming Events</a></li>
+              <li><a href="/registration">Registration</a></li>
+              <li><a href="/coordinators">Meet the Coordinators</a></li>
+            </ul>
+          </nav>
+
+          <button id="menu-btn" className="menu-btn" aria-label="Open menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </header>
+
+        {/* ════════════════════════════════════════════════════════
+             SECTION 1 — HOME / HERO
+             ════════════════════════════════════════════════════════ */}
+        <section id="home" aria-label="Hero section">
+          <div className="hero-bg" role="img" aria-label="Onam festival background">
+            <div className="hero-bg-placeholder"></div>
+          </div>
+          <div className="hero-pattern" aria-hidden="true"></div>
+
+          <div className="hero-content">
+            <span className="hero-label">University Cultural Festival · August 22, 2026</span>
+
+            <div className="hero-heading-wrap">
+              <img
+                id="heading-gif"
+                src="/resources/heading/THAKRITHI FINAL gif.gif"
+                alt="THAKRITHI Onam 2026 Heading Animation"
+                className="hero-heading-img"
+              />
+              <div className="hero-heading-fallback" id="heading-fallback" style={{ display: 'none' }}>
+                THAKRITHI ONAM 2026
+              </div>
+            </div>
+
+            <div className="hero-sub">
+              <span className="hero-sub-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                August 22, 2026
+              </span>
+              <div className="hero-sub-dot" aria-hidden="true"></div>
+              <span className="hero-sub-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                University Grounds
+              </span>
+              <div className="hero-sub-dot" aria-hidden="true"></div>
+              <span className="hero-sub-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                All Are Welcome
+              </span>
+            </div>
+
+            <div id="countdown-wrap" className="countdown-wrap" role="timer" aria-live="polite" aria-label="Countdown to Onam 2026">
+              <div className="countdown-card" id="cd-days-card">
+                <div className="flip-card-inner">
+                  <div className="flip-card-top-half"><span className="flip-top-num">00</span></div>
+                  <div className="flip-card-bot-half"><span className="flip-bot-num">00</span></div>
+                  <div className="flip-card-divider"></div>
+                  <span className="countdown-number" id="cd-days">00</span>
+                </div>
+                <span className="countdown-label">Days</span>
+              </div>
+              <div className="countdown-separator" aria-hidden="true">:</div>
+
+              <div className="countdown-card" id="cd-hours-card">
+                <div className="flip-card-inner">
+                  <div className="flip-card-top-half"><span className="flip-top-num">00</span></div>
+                  <div className="flip-card-bot-half"><span className="flip-bot-num">00</span></div>
+                  <div className="flip-card-divider"></div>
+                  <span className="countdown-number" id="cd-hours">00</span>
+                </div>
+                <span className="countdown-label">Hours</span>
+              </div>
+
+              <div className="countdown-separator" aria-hidden="true">:</div>
+
+              <div className="countdown-card" id="cd-minutes-card">
+                <div className="flip-card-inner">
+                  <div className="flip-card-top-half"><span className="flip-top-num">00</span></div>
+                  <div className="flip-card-bot-half"><span className="flip-bot-num">00</span></div>
+                  <div className="flip-card-divider"></div>
+                  <span className="countdown-number" id="cd-minutes">00</span>
+                </div>
+                <span className="countdown-label">Minutes</span>
+              </div>
+
+              <div className="countdown-separator" aria-hidden="true">:</div>
+
+              <div className="countdown-card" id="cd-seconds-card">
+                <div className="flip-card-inner">
+                  <div className="flip-card-top-half"><span className="flip-top-num">00</span></div>
+                  <div className="flip-card-bot-half"><span className="flip-bot-num">00</span></div>
+                  <div className="flip-card-divider"></div>
+                  <span className="countdown-number" id="cd-seconds">00</span>
+                </div>
+                <span className="countdown-label">Seconds</span>
+              </div>
+            </div>
+            <div id="countdown-over" className="countdown-over" style={{ display: 'none' }} aria-live="assertive">
+              ✦ THE WAIT IS OVER ✦
+            </div>
+
+          </div>
+
+          <div className="hero-scroll-hint" aria-hidden="true">
+            <span>Scroll</span>
+            <div className="scroll-arrow"></div>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════
+             SECTION 2 — ABOUT US
+             ════════════════════════════════════════════════════════ */}
+        <section id="about" aria-labelledby="about-title">
+          <div className="about-inner">
+            <header className="about-header reveal">
+              <span className="section-label">Our Story</span>
+              <h2 className="section-title" id="about-title">About</h2>
+            </header>
+
+            <div className="about-glass-outer">
+              <div className="about-glass reveal-scale">
+                <div className="about-grid">
+                  <div className="about-character-col">
+                    <div className="about-character-frame">
+                      <video
+                        className="about-character-img"
+                        src="/resources/about us/Kathakali load.mp4"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        id="about-character-video"
+                      ></video>
+                      <div className="character-glow" aria-hidden="true"></div>
+                    </div>
+                  </div>
+
+                  <div className="about-text-col">
+                    <div className="about-text-inner">
+                      <div className="about-accent-bar" aria-hidden="true"></div>
+                      <div className="about-content-wrapper">
+                        <h3 className="about-title">
+                          ABOUT THE<br />
+                          <span>EVENT</span>
+                        </h3>
+                        <div className="about-body-text" id="about-body">
+                          <p>Thakrithi ’26 is the grand Onam celebration of Amrita Vishwa Vidyapeetham, Nagercoil Campus, bringing together students, faculty, and the campus community to celebrate the spirit, traditions, and vibrant culture of Kerala.</p>
+                          <p>The event is designed as a lively celebration of Onam, blending traditional elements with a modern campus experience. From the grandeur of Maveli’s arrival and Chenda Melam to the beauty of Pookalam, traditional decorations, Onam games, music, and cultural activities, Thakrithi ’26 aims to create an atmosphere of joy, togetherness, and celebration.</p>
+                          <p>More than just an event, Thakrithi ’26 is a celebration of unity and belonging, where everyone comes together beyond classrooms and departments to experience the colours, traditions, and festive spirit of Onam.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════
+             SECTION 3 — SNAPSHOT / GALLERY
+             ════════════════════════════════════════════════════════ */}
+        <section id="snapshot" aria-labelledby="snapshot-title">
+          <div className="snapshot-inner">
+            <header className="snapshot-header reveal">
+              <span className="section-label">Memories</span>
+              <h2 className="section-title" id="snapshot-title">
+                Snapshot<span className="gold-text">s</span>
+              </h2>
+              <p>A living wall of Onam memories</p>
+            </header>
+
+            <div className="film-rolls-container" aria-label="Photo gallery in film strip style">
+              <div className="film-strip" id="film-col-1" aria-hidden="true"></div>
+              <div className="film-strip" id="film-col-2" aria-hidden="true"></div>
+              <div className="film-strip" id="film-col-3" aria-hidden="true"></div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOOTER ─────────────────────────────────────────────── */}
+        <footer id="footer" role="contentinfo">
+          <div className="footer-logo">ONAM 2026</div>
+          <p className="footer-sub">University Cultural Festival · August 22</p>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <a href="/">Home</a>
+            <a href="/events">Upcoming Events</a>
+            <a href="/registration">Registration</a>
+            <a href="/coordinators">Meet the Coordinators</a>
+          </nav>
+          <p className="footer-copy">
+            © 2026 Onam Cultural Festival · Crafted with ♥ for Kerala's greatest celebration
           </p>
+        </footer>
+      </div>
 
-          {/* Block-by-Block Loading Progress Indicator */}
-          <div className="flex items-center gap-2 justify-center">
-            {[0, 1, 2, 3, 4, 5].map((idx) => {
-              const isActive = idx <= activeBlocks;
-              return (
-                <div
-                  key={idx}
-                  className={`w-6 h-2.5 rounded-sm transition-all duration-300 ${
-                    isActive
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_10px_rgba(242,201,76,0.8)] scale-105'
-                      : 'bg-zinc-800/80 border border-amber-500/20'
-                  }`}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Top Header Banner */}
-      <header
-        className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-amber-500/30 backdrop-blur-md shadow-2xl"
-        style={{ background: 'rgba(27, 18, 38, 0.95)' }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-white shadow-lg shadow-amber-950/50">
-            <Ticket className="w-5 h-5" />
-          </div>
-          <div>
-            <div
-              className="font-extrabold tracking-widest text-sm text-white"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              AMRITA VISHWA VIDYAPEETHAM
-            </div>
-            <div className="text-[11px] text-[#F2C94C] font-semibold tracking-wider uppercase">
-              Onam Cultural Fest 2026 • Registration & E-Ticket Module
-            </div>
-          </div>
-        </div>
-
-        {/* Top-Level Cross-Application Sibling Navigation */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-amber-100/80">
-          <a href="https://thakrithi.vercel.app/" className="hover:text-amber-400 transition-colors">Home</a>
-          <a href="https://thakrithi.vercel.app/UPCOMIG%20EVENTS/index.html" className="hover:text-amber-400 transition-colors">Upcoming Events</a>
-          <a href="https://thakrithi.vercel.app/REGISTRATION/index.html" className="text-amber-400 font-extrabold border-b-2 border-amber-400 pb-0.5">Registration</a>
-          <a href="https://thakrithi.vercel.app/MEET%20THE%20CORRDINATES/index.html" className="hover:text-amber-400 transition-colors">Meet the Coordinators</a>
-        </nav>
-      </header>
-
-      {/* Main Registration Content */}
-      <main className="flex-1">
-        <RegistrationSection />
-      </main>
-
-      {/* Footer */}
-      <footer
-        className="text-center py-6 px-4 border-t border-amber-500/20 text-xs text-amber-100/70"
-        style={{ background: 'rgba(27, 18, 38, 0.95)' }}
-      >
-        Amrita Vishwa Vidyapeetham • Onam Cultural Registration & Automatic Slot Allocation System
-      </footer>
-    </div>
+      {/* SCRIPTS */}
+      <Script src="/home-assets/js/data.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/header.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/countdown.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/snapshot.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/sections.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/about-tilt.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/scroll-reveal.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/cursor.js" strategy="afterInteractive" />
+      <Script src="/home-assets/js/preloader.js" strategy="afterInteractive" />
+    </>
   );
 }

@@ -1,0 +1,674 @@
+/* ============================================================
+   ONAM 2026 -> PORSCHE MICROSITE — SPLIT PORTAL & PRELOADER
+   ============================================================ */
+
+:root {
+  /* Onam Gradient Tokens */
+  --onam-grad-top: #240a15;
+  --onam-grad-mid: #78181f;
+  --onam-grad-coral: #d84e37;
+  --onam-card-dark: #1d0914;
+  --onam-card-mid: #360c18;
+  --onam-card-bottom: #5e111d;
+
+  /* Porsche Color Tokens */
+  --porsche-red: #e11d48;
+  --porsche-red-glow: #f43f5e;
+  --porsche-neon: #ff003c;
+  --porsche-black: #050505;
+
+  /* Typography */
+  --font-serif-luxury: 'Playfair Display', 'Cormorant Garamond', 'Cinzel', serif;
+  --font-display: 'Cinzel', 'Playfair Display', serif;
+  --font-tech: 'Syncopate', 'Outfit', 'Montserrat', sans-serif;
+  --font-body: 'Outfit', 'Inter', system-ui, sans-serif;
+
+  --split-pos: 50%;
+  --theme-color: #d84e37;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #050505;
+  color: #f8fafc;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3D WebGL Canvas Background */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   PRELOADER (MATCHING UPLOADED REFERENCE SCREENSHOT & SEGMENTED DASH LOADER)
+   ============================================================ */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at 50% 40%, #1d0916 0%, #11070e 70%, #080307 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+  pointer-events: auto;
+  padding: 2rem;
+}
+
+#preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Theyyam GIF Media Container */
+.preloader-media-card {
+  width: 340px;
+  height: 190px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 197, 66, 0.35);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(245, 197, 66, 0.15);
+  margin-bottom: 1.75rem;
+  background: #000000;
+}
+
+.preloader-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preloader-title {
+  font-family: var(--font-serif-luxury);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #f5c542;
+  text-shadow: 0 0 15px rgba(245, 197, 66, 0.4);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.preloader-sub {
+  font-family: var(--font-tech);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Segmented Dash Loading Animation (Exact Match to Uploaded Screenshot) */
+.preloader-segmented-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+.preloader-segment {
+  width: 24px;
+  height: 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.preloader-segment.active {
+  background: #f59e0b;
+  border-color: #fbbf24;
+  box-shadow: 0 0 12px #f59e0b, 0 0 20px rgba(245, 158, 11, 0.6);
+}
+
+.preloader-segment.current {
+  background: #fbbf24;
+  border-color: #ffffff;
+  box-shadow: 0 0 16px #fbbf24, 0 0 30px rgba(251, 191, 36, 0.9);
+  animation: segmentPulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes segmentPulse {
+  from { transform: scale(1); filter: brightness(1); }
+  to { transform: scale(1.12); filter: brightness(1.3); }
+}
+
+.enter-btn {
+  padding: 0.85rem 2.4rem;
+  background: linear-gradient(135deg, #d84e37 0%, #761822 100%);
+  color: #ffffff;
+  font-family: var(--font-tech);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  border: 1px solid #f5c542;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(216, 78, 55, 0.5);
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.enter-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 0 35px rgba(245, 197, 66, 0.7);
+  border-color: #ffffff;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.25rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 500;
+  pointer-events: auto;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-serif-luxury);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--theme-color);
+  box-shadow: 0 0 12px var(--theme-color);
+  transition: background 0.5s ease;
+}
+
+.nav-links-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+}
+
+.nav-links-wrap a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.nav-links-wrap a:hover,
+.nav-links-wrap a.active {
+  color: var(--gold-light, #fbbf24);
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* Split Portal Layout */
+.portal-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 5;
+}
+
+/* World 1 Layer: Onam Mode (Left Side of Split) */
+.world-layer.onam-world {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: radial-gradient(ellipse at 50% 30%, #3e0c18 0%, #761822 45%, #b43026 80%, #d84e37 100%);
+  clip-path: inset(0 calc(100% - var(--split-pos)) 0 0);
+  will-change: clip-path;
+  transform: translate3d(0, 0, 0);
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+.onam-viewport {
+  padding: 7rem 4rem 4rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.onam-hero-tag {
+  font-family: var(--font-serif-luxury);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: #f5ab99;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.onam-hero-title {
+  font-family: var(--font-serif-luxury);
+  font-size: 5.2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(216, 78, 55, 0.4);
+  margin-bottom: 1rem;
+}
+
+.onam-hero-desc {
+  max-width: 640px;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: rgba(255, 245, 235, 0.9);
+  margin-bottom: 3rem;
+}
+
+.section-divider {
+  font-family: var(--font-serif-luxury);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: #ffffff;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #f5ab99, transparent);
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+  perspective: 1000px;
+  margin-bottom: 4rem;
+}
+
+.event-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(29, 9, 20, 0.92) 0%, rgba(54, 12, 24, 0.95) 50%, rgba(94, 17, 29, 0.98) 100%);
+  border: 1px solid rgba(245, 171, 153, 0.25);
+  border-radius: 20px;
+  padding: 2.2rem;
+  backdrop-filter: blur(16px);
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+.event-card:hover {
+  border-color: #f5ab99;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 0 0 35px rgba(216, 78, 55, 0.4);
+}
+
+.event-tag {
+  display: inline-block;
+  font-family: var(--font-serif-luxury);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f5ab99;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 171, 153, 0.3);
+  margin-bottom: 1.25rem;
+}
+
+.event-name {
+  font-family: var(--font-serif-luxury);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.event-desc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(255, 245, 235, 0.85);
+  margin-bottom: 1.5rem;
+}
+
+.event-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  color: rgba(255, 245, 235, 0.7);
+}
+
+.event-action {
+  font-weight: 700;
+  color: #f5ab99;
+}
+
+/* World 2: Porsche Experience (Right Side) */
+.world-layer.porsche-world {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: radial-gradient(circle at 80% 40%, #111115 0%, #050505 100%);
+  clip-path: inset(0 0 0 var(--split-pos));
+  will-change: clip-path;
+  transform: translate3d(0, 0, 0);
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+.portal-slider-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split-pos);
+  width: 4px;
+  background: #ffffff;
+  box-shadow: 0 0 15px #ffffff, 0 0 30px var(--porsche-red);
+  z-index: 300;
+  transform: translateX(-50%);
+  cursor: ew-resize;
+  pointer-events: auto;
+  touch-action: none;
+  will-change: left;
+}
+
+.portal-slider-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #000000;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 40px var(--porsche-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-tech);
+  font-size: 1.1rem;
+  font-weight: 900;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+
+.portal-slider-bar:hover .portal-slider-handle,
+.portal-slider-bar:active .portal-slider-handle {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.slider-mode-tags {
+  position: absolute;
+  top: 1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tag-left {
+  color: #f5ab99;
+  text-shadow: 0 0 10px #d84e37;
+}
+
+.tag-right {
+  color: var(--porsche-red);
+  text-shadow: 0 0 10px var(--porsche-red);
+}
+
+.porsche-viewport {
+  padding: 7rem 4rem 4rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.upside-down-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-tech);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--porsche-red);
+  background: rgba(225, 29, 72, 0.12);
+  border: 1px solid var(--porsche-red);
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(225, 29, 72, 0.3);
+}
+
+.porsche-main-title {
+  font-family: var(--font-tech);
+  font-size: 5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 0.95;
+  color: #000000;
+  -webkit-text-stroke: 2px var(--porsche-red);
+  text-shadow: 0 0 20px var(--porsche-red), 0 0 40px rgba(225, 29, 72, 0.6);
+  margin-bottom: 0.75rem;
+}
+
+.porsche-tagline {
+  font-family: var(--font-tech);
+  font-size: 1.1rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.car-display-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000000;
+  border: 2px solid rgba(225, 29, 72, 0.4);
+  box-shadow: 0 0 40px rgba(225, 29, 72, 0.3);
+  margin-bottom: 2.5rem;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.car-media-wrap {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+}
+
+.car-poster-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.car-gif-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.car-display-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(5,5,5,0.92) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+}
+
+.ignite-engine-btn {
+  align-self: flex-start;
+  padding: 1rem 2.4rem;
+  background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+  font-family: var(--font-tech);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 0 30px var(--porsche-red), inset 0 0 15px rgba(255,255,255,0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.ignite-engine-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 50px var(--porsche-red), 0 0 80px rgba(225, 29, 72, 0.8);
+}
+
+.ignite-engine-btn:active {
+  transform: scale(0.96);
+}
+
+.ignite-engine-btn.ignited {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  border-color: #86efac;
+  box-shadow: 0 0 35px #22c55e;
+}
+
+.engine-status-text {
+  font-family: var(--font-tech);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(5, 5, 8, 0.88);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  padding: 2rem;
+  pointer-events: auto;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%);
+  border: 1px solid rgba(225, 29, 72, 0.4);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 1rem 1.5rem;
+  }
+  .onam-viewport, .porsche-viewport {
+    padding: 6rem 1.5rem 4rem 1.5rem;
+  }
+  .onam-hero-title, .porsche-main-title {
+    font-size: 3rem;
+  }
+  .car-media-wrap {
+    height: 300px;
+  }
+  .preloader-media-card {
+    width: 280px;
+    height: 160px;
+  }
+}

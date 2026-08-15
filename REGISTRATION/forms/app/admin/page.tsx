@@ -238,10 +238,10 @@ export default function AdminPage() {
           </form>
 
           <div className="flex flex-col items-center gap-2 pt-2 text-xs">
-            <a href="https://thakrithi.vercel.app/" className="text-amber-400 hover:text-amber-300 font-extrabold tracking-wider uppercase underline">
+            <a href="/" className="text-amber-400 hover:text-amber-300 font-extrabold tracking-wider uppercase underline">
               ← BACK TO MAIN WEBSITE
             </a>
-            <a href="https://thakrithi.vercel.app/REGISTRATION/index.html" className="text-zinc-400 hover:text-white font-semibold">
+            <a href="/registration" className="text-zinc-400 hover:text-white font-semibold">
               ← BACK TO REGISTRATION
             </a>
           </div>
@@ -282,7 +282,7 @@ export default function AdminPage() {
 
           <div className="flex items-center gap-3">
             <a
-              href="https://thakrithi.vercel.app/"
+              href="/"
               className="px-3.5 py-2 text-xs font-extrabold tracking-wider text-amber-300 hover:text-white bg-amber-950/80 hover:bg-amber-900 border border-amber-800/60 rounded-full transition-all uppercase"
               title="Return to Main Thakrithi Website"
             >
@@ -290,7 +290,7 @@ export default function AdminPage() {
             </a>
 
             <a
-              href="https://thakrithi.vercel.app/REGISTRATION/index.html"
+              href="/registration"
               className="px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full transition-all uppercase"
               title="Return to Registration Page"
             >
