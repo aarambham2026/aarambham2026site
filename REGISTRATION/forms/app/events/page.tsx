@@ -131,7 +131,6 @@ export default function EventsPage() {
       <Script src="/events-assets/js/slider.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/events.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/porsche-experience.js" strategy="afterInteractive" />
-      <Script src="/events-assets/js/cursor.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/preloader.js" strategy="afterInteractive" />
 
       <Script id="init-events-script" strategy="lazyOnload">

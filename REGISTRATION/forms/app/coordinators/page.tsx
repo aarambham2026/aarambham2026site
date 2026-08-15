@@ -38,13 +38,6 @@ export default function CoordinatorsPage() {
         </div>
       </div>
 
-      {/* CUSTOM CURSOR */}
-      <div className="custom-cursor">
-        <div className="cursor-dot"></div>
-        <div className="cursor-ring"></div>
-      </div>
-      <div className="mouse-glow"></div>
-
       {/* Top Navigation Header */}
       <header className="top-navbar">
         <a href="/" className="top-nav-brand">

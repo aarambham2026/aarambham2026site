@@ -1,99 +1,186 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function CustomCursor() {
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
-  const [pos, setPos] = useState({ x: -200, y: -200 });
   const [hoverState, setHoverState] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const ringRef = useRef<HTMLDivElement | null>(null);
+  const glowRef = useRef<HTMLDivElement | null>(null);
+
+  const mouseXRef = useRef<number>(-200);
+  const mouseYRef = useRef<number>(-200);
+  const ringXRef = useRef<number>(-200);
+  const ringYRef = useRef<number>(-200);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Set up global physical pointer listener once on window
   useEffect(() => {
-    if (!isMounted) return;
+    if (typeof window === 'undefined') return;
 
-    const isEmbedded = window.self !== window.top;
+    if (!(window as any).__ONAM_POINTER_LISTENER_SET__) {
+      (window as any).__ONAM_POINTER_LISTENER_SET__ = true;
 
-    const handleMove = (e: MouseEvent | PointerEvent) => {
-      const target = e.target as HTMLElement | null;
-      let hover = '';
+      const updateGlobalPointer = (e: MouseEvent | PointerEvent) => {
+        (window as any).__ONAM_POINTER_X__ = e.clientX;
+        (window as any).__ONAM_POINTER_Y__ = e.clientY;
+        (window as any).__ONAM_POINTER_ACTIVE__ = true;
+      };
 
-      if (target) {
-        if (target.closest('.onam-reg-card, .onam-reg-format-card, .onam-reg-modal-backdrop')) {
-          hover = 'cursor-card';
-        } else if (
-          target.closest(
-            'button, a, input, select, option, textarea, label, [role="button"], [role="option"], .onam-reg-badge, .onam-reg-pill-btn, .onam-reg-back-btn, .onam-reg-input, .onam-reg-select'
-          )
-        ) {
-          hover = 'cursor-hover';
-        }
-      }
+      window.addEventListener('pointermove', updateGlobalPointer, { capture: true, passive: true });
+      window.addEventListener('mousemove', updateGlobalPointer, { capture: true, passive: true });
+    }
+  }, []);
 
-      if (isEmbedded) {
-        window.parent.postMessage(
-          {
-            type: 'MASTER_CURSOR_MOVE',
-            x: e.clientX,
-            y: e.clientY + 65,
-            hoverState: hover
-          },
-          '*'
-        );
-        return;
-      }
+  // Synchronize pointer position immediately when pathname / route changes
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return;
 
-      setPos({ x: e.clientX, y: e.clientY });
-      setHoverState(hover);
+    const globalX = (window as any).__ONAM_POINTER_X__;
+    const globalY = (window as any).__ONAM_POINTER_Y__;
+    const isActive = (window as any).__ONAM_POINTER_ACTIVE__;
+
+    if (typeof globalX === 'number' && typeof globalY === 'number' && isActive) {
+      mouseXRef.current = globalX;
+      mouseYRef.current = globalY;
+      ringXRef.current = globalX;
+      ringYRef.current = globalY;
       setIsVisible(true);
+
+      // Force immediate DOM transform sync on route mount
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${globalX}px, ${globalY}px, 0)`;
+      }
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(0px, 0px, 0)`;
+      }
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate3d(${globalX}px, ${globalY}px, 0) translate(-50%, -50%)`;
+      }
+    }
+  }, [pathname, isMounted]);
+
+  // Main high-performance GPU animation loop
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return;
+
+    // Check touchscreen / coarse pointer
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+      return;
+    }
+
+    const handlePointerMove = (e: MouseEvent | PointerEvent) => {
+      mouseXRef.current = e.clientX;
+      mouseYRef.current = e.clientY;
+      (window as any).__ONAM_POINTER_X__ = e.clientX;
+      (window as any).__ONAM_POINTER_Y__ = e.clientY;
+      (window as any).__ONAM_POINTER_ACTIVE__ = true;
+
+      if (!isVisible) {
+        setIsVisible(true);
+      }
     };
 
     const handleMouseLeave = () => {
-      if (isEmbedded) {
-        window.parent.postMessage({ type: 'MASTER_CURSOR_LEAVE' }, '*');
+      setIsVisible(false);
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target || !target.closest) return;
+
+      if (
+        target.closest(
+          'a, button, input, select, option, textarea, label, [role="button"], [role="option"], .card, .btn, .interactive, .hub-card, .event-card, .team-card, .social, .back-to-top, .onam-reg-card, .onam-reg-pill-btn'
+        )
+      ) {
+        document.body.classList.add('cursor-hover');
+        setHoverState('cursor-hover');
       } else {
-        setIsVisible(false);
+        document.body.classList.remove('cursor-hover');
+        setHoverState('');
       }
     };
 
-    window.addEventListener('mousemove', handleMove, { capture: true });
-    window.addEventListener('pointermove', handleMove, { capture: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener('pointermove', handlePointerMove, { capture: true, passive: true });
+    window.addEventListener('mousemove', handlePointerMove, { capture: true, passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+    document.addEventListener('mouseover', handleMouseOver, { passive: true });
+
+    function animate() {
+      const mx = mouseXRef.current;
+      const my = mouseYRef.current;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+      }
+
+      ringXRef.current += (mx - ringXRef.current) * 0.22;
+      ringYRef.current += (my - ringYRef.current) * 0.22;
+
+      const rx = ringXRef.current;
+      const ry = ringYRef.current;
+
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(${rx - mx}px, ${ry - my}px, 0)`;
+      }
+
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+      }
+
+      rafRef.current = requestAnimationFrame(animate);
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMove, { capture: true });
-      window.removeEventListener('pointermove', handleMove, { capture: true });
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      window.removeEventListener('pointermove', handlePointerMove, { capture: true });
+      window.removeEventListener('mousemove', handlePointerMove, { capture: true });
       document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [isMounted]);
+  }, [isMounted, isVisible]);
 
-  // Don't render on SSR to ensure client/server HTML match 100%, and suppress if embedded in iframe
-  if (!isMounted || (typeof window !== 'undefined' && window.self !== window.top)) {
+  // Suppress rendering on SSR, coarse touch, or embedded iframes
+  if (
+    !isMounted ||
+    (typeof window !== 'undefined' &&
+      (window.self !== window.top || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)))
+  ) {
     return null;
   }
 
   return (
     <>
       <div
+        ref={glowRef}
         className="mouse-glow"
         style={{
-          left: `${pos.x}px`,
-          top: `${pos.y}px`,
           opacity: isVisible ? 1 : 0
         }}
       />
       <div
+        ref={cursorRef}
         className={`custom-cursor ${hoverState}`}
         style={{
-          transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
           opacity: isVisible ? 1 : 0
         }}
       >
         <div className="cursor-dot" />
-        <div className="cursor-ring" />
+        <div ref={ringRef} className="cursor-ring" />
       </div>
     </>
   );

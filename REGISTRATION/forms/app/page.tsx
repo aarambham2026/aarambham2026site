@@ -329,7 +329,6 @@ export default function HomePage() {
       <Script src="/home-assets/js/sections.js" strategy="afterInteractive" />
       <Script src="/home-assets/js/about-tilt.js" strategy="afterInteractive" />
       <Script src="/home-assets/js/scroll-reveal.js" strategy="afterInteractive" />
-      <Script src="/home-assets/js/cursor.js" strategy="afterInteractive" />
       <Script src="/home-assets/js/preloader.js" strategy="afterInteractive" />
     </>
   );

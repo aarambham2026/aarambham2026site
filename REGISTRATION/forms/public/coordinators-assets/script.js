@@ -71,28 +71,7 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   CUSTOM CURSOR
-========================================================= */
-
-function updateCursor() {
-    if (!cursor) {
-        return;
-    }
-
-    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-
-    ringX += (mouseX - ringX) * 0.18;
-    ringY += (mouseY - ringY) * 0.18;
-
-    if (cursorRing) {
-        cursorRing.style.transform = `translate3d(${ringX - mouseX}px, ${ringY - mouseY}px, 0)`;
-    }
-
-    requestAnimationFrame(updateCursor);
-}
-
-updateCursor();
+/* Custom cursor managed globally by RootLayout CustomCursor */
 
 
 /* =========================================================
