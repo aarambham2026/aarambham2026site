@@ -136,7 +136,7 @@ const coordinatorsData = [
     id: "17",
     name: "Pranav M Biju",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Pranav_M_Biju.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Pranav_M_Biju_v2.jpeg",
     instagram: "https://www.instagram.com/pran4vvvvv/",
     delay: ".48s"
   }
