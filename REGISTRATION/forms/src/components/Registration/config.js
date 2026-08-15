@@ -63,17 +63,6 @@ export const EVENT_CONFIG = {
       'Other Custom Performance'
     ],
     iconType: 'others'
-  },
-
-  games: {
-    id: 'games',
-    title: 'GAMES',
-    subtitle: 'Onakalikal Heritage',
-    scriptSub: "Traditional Onam Fun",
-    tagline: 'Vadam Vali Tug of War, Sundari Kk Pottu Thottal & Games',
-    badge: 'Category 04',
-    comingSoon: true,
-    iconType: 'games'
   }
 };
 
