@@ -45,15 +45,24 @@ export const EVENT_CONFIG = {
     iconType: 'dance'
   },
 
-  games: {
-    id: 'games',
-    title: 'GAMES',
-    subtitle: 'Onakalikal Heritage',
-    scriptSub: "Traditional Onam Fun",
-    tagline: 'Vadam Vali Tug of War, Sundari Kk Pottu Thottal & Games',
+  others: {
+    id: 'others',
+    title: 'OTHERS',
+    subtitle: 'Special Cultural Acts',
+    scriptSub: "Creative & Custom Acts",
+    tagline: 'Drama, Skits, Fashion Show, Mime, Chenda Melam & Custom Acts',
     badge: 'Category 03',
-    comingSoon: true,
-    iconType: 'games'
+    formats: ['solo', 'duo', 'group'],
+    comingSoon: false,
+    otherTypes: [
+      'Drama / Skit',
+      'Fashion Show / Ramp Walk',
+      'Mime / Silent Act',
+      'Chenda Melam / Percussion',
+      'Standup Comedy',
+      'Other Custom Performance'
+    ],
+    iconType: 'others'
   }
 };
 
@@ -76,23 +85,14 @@ export const FORMAT_DESCRIPTIONS = {
 };
 
 export const DEPARTMENTS = [
-  'Computer Science & Engineering',
-  'Information Technology',
-  'Electronics & Communication',
-  'Electrical & Electronics',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Biotechnology',
-  'Chemical Engineering',
-  'Management Studies (MBA)',
-  'Humanities & Basic Sciences',
-  'Other'
+  'Artificial Intelligence and Data Science',
+  'Computer Science and Engineering',
+  'Electronics and Communication'
 ];
 
 export const ACADEMIC_YEARS = [
   '1st Year / Sem 1-2',
   '2nd Year / Sem 3-4',
   '3rd Year / Sem 5-6',
-  '4th Year / Sem 7-8',
-  'Post Graduate (M.Tech/MBA/MCA)'
+  '4th Year / Sem 7-8'
 ];
