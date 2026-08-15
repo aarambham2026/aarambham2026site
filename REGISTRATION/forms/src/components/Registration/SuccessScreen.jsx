@@ -68,20 +68,6 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
           {regId}
         </div>
 
-        <div style={{
-          background: 'rgba(242, 201, 76, 0.15)',
-          border: '1px solid rgba(242, 201, 76, 0.45)',
-          borderRadius: '50px',
-          padding: '0.45rem 1.2rem',
-          fontSize: '0.9rem',
-          fontWeight: 800,
-          color: 'var(--onam-gold-warm)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem'
-        }}>
-          <Calendar size={16} /> Slot: {slotStart} - {slotEnd}
-        </div>
       </div>
 
       {/* INSTANT VISUAL TICKET CARD (Matching Printed PDF Ticket 100%) */}
