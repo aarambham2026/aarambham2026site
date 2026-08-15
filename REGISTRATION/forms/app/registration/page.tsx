@@ -111,14 +111,7 @@ export default function RegistrationPage() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-[#F2C94C]/20 py-6 px-4 text-center text-xs text-zinc-500 bg-[#150d1e]">
-          <p className="font-medium">
-            Official Cultural Event Registration Portal • Amrita Vishwa Vidyapeetham
-          </p>
-          <p className="mt-1 text-[11px] text-zinc-600">
-            Built for Onam 2026 • Real-time Sequential Queue Allocation & Database Verification
-          </p>
-        </footer>
+        <footer className="border-t border-[#F2C94C]/20 py-6 px-4 text-center text-xs text-zinc-500 bg-[#150d1e]" />
       </div>
     </>
   );

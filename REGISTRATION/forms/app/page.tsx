@@ -306,17 +306,12 @@ export default function HomePage() {
 
         {/* ── FOOTER ─────────────────────────────────────────────── */}
         <footer id="footer" role="contentinfo">
-          <div className="footer-logo">ONAM 2026</div>
-          <p className="footer-sub">University Cultural Festival · August 22</p>
           <nav className="footer-links" aria-label="Footer navigation">
             <a href="/">Home</a>
             <a href="/events">Upcoming Events</a>
             <a href="/registration">Registration</a>
             <a href="/coordinators">Meet the Coordinators</a>
           </nav>
-          <p className="footer-copy">
-            © 2026 Onam Cultural Festival · Crafted with ♥ for Kerala's greatest celebration
-          </p>
         </footer>
       </div>
 
