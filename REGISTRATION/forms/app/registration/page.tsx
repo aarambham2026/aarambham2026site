@@ -1,36 +1,91 @@
 'use client';
 
-import React from 'react';
-import Script from 'next/script';
+import React, { useEffect, useState } from 'react';
 import RegistrationSection from '@/src/components/Registration/RegistrationSection';
 
 export default function RegistrationPage() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Animate the 6 Theyyam preloader progress segments on registration mount
+    const totalSteps = 6;
+    const interval = setInterval(() => {
+      setActiveStep((prev) => {
+        if (prev < totalSteps) {
+          return prev + 1;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            setIsFading(true);
+            setTimeout(() => {
+              setIsLoaded(true);
+            }, 800);
+          }, 300);
+          return prev;
+        }
+      });
+    }, 280);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       {/* Unified Theyyam Preloader Stylesheet */}
       <link rel="stylesheet" href="/coordinators-assets/preloader.css" />
 
       {/* UNIFIED THEYAM PRELOADER */}
-      <div id="loading-screen" className="unified-preloader" role="status" aria-label="Loading Onam Cultural Fest Portal">
-        <div className="loader-container">
-          <div className="loader-art-card">
-            <img src="/coordinators-assets/Theyyam stick.gif" alt="Onam Cultural Fest Mascot" className="loader-art-img" />
-          </div>
-          <div className="loader-university-title">AMRITA VISHWA VIDYAPEETHAM</div>
-          <div className="loader-status-wrap">
-            <span className="loader-spinner"></span>
-            <span className="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
-          </div>
-          <div className="loader-progress-bar">
-            <span className="bar-segment"></span>
-            <span className="bar-segment"></span>
-            <span className="bar-segment"></span>
-            <span className="bar-segment"></span>
-            <span className="bar-segment"></span>
-            <span className="bar-segment"></span>
+      {!isLoaded && (
+        <div
+          id="loading-screen"
+          className={`unified-preloader ${isFading ? 'fade-out' : ''}`}
+          role="status"
+          aria-label="Loading Onam Cultural Fest Portal"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 999999,
+            background: '#161022',
+            backgroundImage: 'radial-gradient(circle at 50% 40%, #1d0916 0%, #11070e 70%, #080307 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease',
+            opacity: isFading ? 0 : 1,
+            visibility: isFading ? 'hidden' : 'visible',
+            pointerEvents: isFading ? 'none' : 'auto'
+          }}
+        >
+          <div className="loader-container">
+            <div className="loader-art-card">
+              <img
+                src="/coordinators-assets/Theyyam stick.gif"
+                alt="Onam Cultural Fest Mascot"
+                className="loader-art-img"
+              />
+            </div>
+            <div className="loader-university-title">AMRITA VISHWA VIDYAPEETHAM</div>
+            <div className="loader-status-wrap">
+              <span className="loader-spinner"></span>
+              <span className="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+            </div>
+            <div className="loader-progress-bar">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <span
+                  key={index}
+                  className={`bar-segment ${index < activeStep ? 'active' : ''}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="min-h-screen bg-[#1b1226] text-zinc-100 flex flex-col font-sans selection:bg-[#F2C94C]/30 selection:text-[#F2C94C]">
         {/* Top Navigation Bar */}
@@ -73,9 +128,6 @@ export default function RegistrationPage() {
           </p>
         </footer>
       </div>
-
-      {/* Preloader Script */}
-      <Script src="/coordinators-assets/preloader.js" strategy="afterInteractive" />
     </>
   );
 }
