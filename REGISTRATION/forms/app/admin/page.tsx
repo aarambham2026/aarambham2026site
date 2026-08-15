@@ -149,7 +149,11 @@ export default function AdminPage() {
   };
 
   const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' });
+    try {
+      await fetch('/api/admin/logout', { method: 'POST', cache: 'no-store' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
     setIsAuthenticated(false);
     setUsername('');
     setPassword('');
