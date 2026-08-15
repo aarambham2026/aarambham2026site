@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { addAuditLog } from '@/lib/security';
 
-export async function POST() {
-  await addAuditLog('ADMIN_LOGOUT', 'Admin session terminated');
-
+async function performLogout() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('admin_session');
@@ -39,4 +37,13 @@ export async function POST() {
   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   return response;
+}
+
+export async function POST() {
+  await addAuditLog('ADMIN_LOGOUT', 'Admin session terminated');
+  return performLogout();
+}
+
+export async function GET() {
+  return performLogout();
 }

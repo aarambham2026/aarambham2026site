@@ -41,24 +41,19 @@ export default function AdminPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
-  // 1. Session check on page mount
+  // 1. Force session invalidation on page entry so credentials are ALWAYS requested
   useEffect(() => {
-    async function checkAuthSession() {
+    async function invalidateOnEntry() {
       try {
-        const res = await fetch('/api/admin/check', { cache: 'no-store' });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.authenticated) {
-            setIsAuthenticated(true);
-          }
-        }
+        await fetch('/api/admin/logout', { method: 'POST', cache: 'no-store' });
       } catch (err) {
-        console.error('Initial admin session check failed:', err);
+        // ignore
       } finally {
+        setIsAuthenticated(false);
         setAuthChecking(false);
       }
     }
-    checkAuthSession();
+    invalidateOnEntry();
 
     const handlePageHide = () => {
       if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
