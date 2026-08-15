@@ -98,7 +98,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
         <div style={{
           position: 'relative',
           width: '100%',
-          aspectRatio: '267 / 822',
+          aspectRatio: '241 / 754',
           backgroundImage: 'url(/templates/ticket-bg.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -110,7 +110,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
           {/* Line 1: EVENT: MUSIC */}
           <div style={{
             position: 'absolute',
-            top: '52.5%',
+            top: '56.2%',
             left: '6.7%',
             right: '6.7%',
             fontSize: '0.78rem',
@@ -124,7 +124,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
           {/* Line 2: TEAM LEADER: Gautham Suresh */}
           <div style={{
             position: 'absolute',
-            top: '55.5%',
+            top: '59.1%',
             left: '6.7%',
             right: '6.7%',
             fontSize: '0.78rem',
@@ -138,7 +138,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
           {/* Line 3: NO. OF MEMBERS: 1 */}
           <div style={{
             position: 'absolute',
-            top: '58.5%',
+            top: '62.0%',
             left: '6.7%',
             right: '6.7%',
             fontSize: '0.74rem',
@@ -152,7 +152,7 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
           {/* Line 5: REGISTRATION ID: EVT-0002 */}
           <div style={{
             position: 'absolute',
-            top: '64.5%',
+            top: '64.9%',
             left: '6.7%',
             right: '6.7%',
             fontSize: '0.78rem',
