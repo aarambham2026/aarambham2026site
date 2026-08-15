@@ -1,8 +1,8 @@
 /**
  * ============================================================
  *  ONAM -> BMW M5 MICROSITE — BMW M5 SHOWCASE & IGNITION
- *  State 1: Visible Standby Preview (No Autoplay)
- *  State 2: Active Animation & Sound on "IGNITE THE ENGINE" Click
+ *  Standby: Static BMW Preview Frame (Animation PAUSED)
+ *  Ignite Click: Starts BMW Animation, Video Playback & Engine Sound
  * ============================================================
  */
 
@@ -21,21 +21,25 @@ class PorscheExperience {
     const videoSrc = '/events-assets/bmwgif.mp4';
     const gifSrc = '/events-assets/bmwgif.gif';
 
-    // State 1 (Standby): Display visual preview immediately so media container is NEVER black
-    if (carGif) {
-      carGif.src = gifSrc;
-      carGif.style.display = 'block';
-      carGif.style.opacity = '1';
-    }
-
     if (carVideo) {
       carVideo.src = videoSrc;
       carVideo.preload = 'auto';
-      carVideo.currentTime = 0;
+      carVideo.currentTime = 0.01;
       try {
         carVideo.pause();
       } catch (e) {}
-      carVideo.style.display = 'none';
+      carVideo.style.display = 'block';
+
+      if (carGif) {
+        carGif.style.display = 'none';
+      }
+
+      carVideo.addEventListener('loadedmetadata', () => {
+        carVideo.currentTime = 0.01;
+      }, { once: true });
+    } else if (carGif) {
+      carGif.src = gifSrc;
+      carGif.style.display = 'block';
     }
   }
 
@@ -51,21 +55,20 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        // 1. Sound synthesis engine rev
+        // 1. Play audio engine sound synthesis
         if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
           window.soundEngine.playEngineRev();
         }
 
-        // 2. WebGL 3D particle pulse
+        // 2. WebGL particles engine pulse
         if (this.scene && typeof this.scene.triggerEngineIgnition === 'function') {
           this.scene.triggerEngineIgnition();
         }
 
-        // 3. State 2: Activate Video Animation on button click
+        // 3. START ANIMATION ON CLICK
         if (carVideo) {
           carVideo.style.display = 'block';
           carVideo.muted = false;
-          carVideo.currentTime = 0;
 
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
@@ -74,19 +77,19 @@ class PorscheExperience {
                 if (carGif) carGif.style.display = 'none';
               })
               .catch(() => {
-                // If browser blocks unmuted audio playback, fallback to muted loop video or GIF
+                // If browser policy requires muted playback
                 carVideo.muted = true;
                 carVideo.play().catch(() => {
                   if (carGif) {
+                    carGif.src = '/events-assets/bmwgif.gif';
                     carGif.style.display = 'block';
-                    carGif.style.opacity = '1';
                   }
                 });
               });
           }
         } else if (carGif) {
+          carGif.src = '/events-assets/bmwgif.gif';
           carGif.style.display = 'block';
-          carGif.style.opacity = '1';
         }
 
         igniteBtn.classList.add('ignited');
@@ -102,18 +105,14 @@ class PorscheExperience {
         }
 
       } else {
-        // Return to State 1 (Standby Preview)
+        // RETURN TO STATIC PREVIEW (PAUSE ANIMATION)
         if (carVideo) {
           try {
             carVideo.pause();
-            carVideo.currentTime = 0;
+            carVideo.currentTime = 0.01;
           } catch (e) {}
-          carVideo.style.display = 'none';
-        }
-
-        if (carGif) {
-          carGif.style.display = 'block';
-          carGif.style.opacity = '1';
+          carVideo.style.display = 'block';
+          if (carGif) carGif.style.display = 'none';
         }
 
         igniteBtn.classList.remove('ignited');
