@@ -111,7 +111,7 @@ class EventSystem {
         <h3 class="event-name">${ev.name}</h3>
         <p class="event-desc">${ev.shortDesc}</p>
         <div class="event-meta">
-          <span>${ev.date} · ${ev.time}</span>
+          <span>${ev.date}</span>
           <span class="event-action">EXPLORE &rarr;</span>
         </div>
       </div>
@@ -168,7 +168,7 @@ class EventSystem {
       <p style="font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 1.5rem;">${ev.fullDesc}</p>
       
       <div style="background: rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.12);">
-        <p style="font-size: 0.85rem; color: #ffc4b8; margin-bottom: 0.4rem;"><strong>DATE & TIME:</strong> ${ev.date} (${ev.time})</p>
+        <p style="font-size: 0.85rem; color: #ffc4b8; margin-bottom: 0.4rem;"><strong>DATE:</strong> ${ev.date}</p>
         <p style="font-size: 0.85rem; color: #fff;"><strong>VENUE:</strong> ${ev.venue}</p>
       </div>
 

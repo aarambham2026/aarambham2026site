@@ -107,7 +107,7 @@ export default function EventsPage() {
         <section className="world-layer onam-world" id="onam-world">
           <div className="onam-viewport">
             <p className="onam-hero-tag">Amrita Vishwa Vidyapeetham · Cultural Festival 2026</p>
-            <h1 className="onam-hero-title">ONAM '26</h1>
+            <h1 className="onam-hero-title">THAKRITHI'26</h1>
             <p className="onam-hero-desc">
               The grand festival of tradition, rhythm & celebration. Experience the traditional lineup of dance, music fusion, Onam games, and floral art championships.
             </p>
