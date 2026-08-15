@@ -1,6 +1,8 @@
 /**
  * ============================================================
- *  ONAM -> BMW M5 MICROSITE — INSTANT BMW M5 IGNITION & MEDIA
+ *  ONAM -> BMW M5 MICROSITE — BMW M5 SHOWCASE & IGNITION
+ *  State 1: Visible Standby Preview (No Autoplay)
+ *  State 2: Active Animation & Sound on "IGNITE THE ENGINE" Click
  * ============================================================
  */
 
@@ -19,29 +21,21 @@ class PorscheExperience {
     const videoSrc = '/events-assets/bmwgif.mp4';
     const gifSrc = '/events-assets/bmwgif.gif';
 
+    // State 1 (Standby): Display visual preview immediately so media container is NEVER black
+    if (carGif) {
+      carGif.src = gifSrc;
+      carGif.style.display = 'block';
+      carGif.style.opacity = '1';
+    }
+
     if (carVideo) {
       carVideo.src = videoSrc;
       carVideo.preload = 'auto';
-      carVideo.style.display = 'block';
-
-      // Play muted autoplay loop immediately so the media box is NEVER black
-      const playPromise = carVideo.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            if (carGif) carGif.style.display = 'none';
-          })
-          .catch(() => {
-            // Fallback to animated GIF if video autoplay is restricted
-            if (carGif) {
-              carGif.src = gifSrc;
-              carGif.style.display = 'block';
-            }
-          });
-      }
-    } else if (carGif) {
-      carGif.src = gifSrc;
-      carGif.style.display = 'block';
+      carVideo.currentTime = 0;
+      try {
+        carVideo.pause();
+      } catch (e) {}
+      carVideo.style.display = 'none';
     }
   }
 
@@ -57,20 +51,22 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        // Play audio engine sound synthesis if available
+        // 1. Sound synthesis engine rev
         if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
           window.soundEngine.playEngineRev();
         }
 
-        // Trigger WebGL particles engine pulse
+        // 2. WebGL 3D particle pulse
         if (this.scene && typeof this.scene.triggerEngineIgnition === 'function') {
           this.scene.triggerEngineIgnition();
         }
 
-        // Start video playback on IGNITE click
+        // 3. State 2: Activate Video Animation on button click
         if (carVideo) {
           carVideo.style.display = 'block';
           carVideo.muted = false;
+          carVideo.currentTime = 0;
+
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
             playPromise
@@ -78,10 +74,14 @@ class PorscheExperience {
                 if (carGif) carGif.style.display = 'none';
               })
               .catch(() => {
-                if (carGif) {
-                  carGif.style.display = 'block';
-                  carGif.style.opacity = '1';
-                }
+                // If browser blocks unmuted audio playback, fallback to muted loop video or GIF
+                carVideo.muted = true;
+                carVideo.play().catch(() => {
+                  if (carGif) {
+                    carGif.style.display = 'block';
+                    carGif.style.opacity = '1';
+                  }
+                });
               });
           }
         } else if (carGif) {
@@ -97,13 +97,23 @@ class PorscheExperience {
           ENGINE ONLINE
         `;
         if (statusText) {
-          statusText.textContent = 'ENGINE ONLINE · ANIMATION PLAYING';
+          statusText.textContent = 'STATUS: ENGINE ONLINE · ANIMATION PLAYING';
           statusText.style.color = '#86efac';
         }
 
       } else {
+        // Return to State 1 (Standby Preview)
         if (carVideo) {
-          carVideo.muted = true;
+          try {
+            carVideo.pause();
+            carVideo.currentTime = 0;
+          } catch (e) {}
+          carVideo.style.display = 'none';
+        }
+
+        if (carGif) {
+          carGif.style.display = 'block';
+          carGif.style.opacity = '1';
         }
 
         igniteBtn.classList.remove('ignited');
