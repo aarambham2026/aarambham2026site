@@ -88,7 +88,7 @@ export async function getEventSettings(dbClient: any = prisma) {
         data: {
           id: 'default',
           eventStartTime: '14:00',
-          eventEndTime: '17:30',
+          eventEndTime: '16:00',
           registrationOpen: true,
           musicDuration: 10,
           danceDuration: 10,
@@ -99,7 +99,7 @@ export async function getEventSettings(dbClient: any = prisma) {
 
     cachedSettings = {
       eventStartTime: settings.eventStartTime,
-      eventEndTime: settings.eventEndTime || '17:30',
+      eventEndTime: settings.eventEndTime || '16:00',
       registrationOpen: settings.registrationOpen ?? true,
       musicDuration: settings.musicDuration,
       danceDuration: settings.danceDuration,
@@ -110,7 +110,7 @@ export async function getEventSettings(dbClient: any = prisma) {
   } catch (e) {
     return {
       eventStartTime: '14:00',
-      eventEndTime: '17:30',
+      eventEndTime: '16:00',
       registrationOpen: true,
       musicDuration: 10,
       danceDuration: 10,

@@ -37,7 +37,7 @@ model Registration {
 model EventSettings {
   id               String   @id @default("default")
   eventStartTime   String   @default("14:00")
-  eventEndTime     String   @default("17:30")
+  eventEndTime     String   @default("16:00")
   registrationOpen Boolean  @default(true)
   musicDuration    Int      @default(10)
   danceDuration    Int      @default(10)
