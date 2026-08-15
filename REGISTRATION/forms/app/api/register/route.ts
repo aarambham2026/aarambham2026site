@@ -43,9 +43,12 @@ export async function POST(req: Request) {
     const sanitizedEmail = sanitizeInput(validated.email).toLowerCase();
     const sanitizedPhone = sanitizeInput(validated.phone);
 
+    console.log(`[REGISTRATION_INIT] Received registration request for category: ${categoryUpper}, email: ${sanitizedEmail}`);
+
     // Atomic duplicate check, slot allocation, and registration creation inside Prisma transaction
-    // AuditLog is written OUTSIDE the transaction so a missing table never kills a registration
     const result = await prisma.$transaction(async (tx) => {
+      console.log(`[REGISTRATION_TX_START] Commencing PostgreSQL transaction for ${sanitizedEmail}...`);
+
       const duplicate = await tx.registration.findFirst({
         where: {
           eventCategory: categoryUpper,
@@ -58,6 +61,7 @@ export async function POST(req: Request) {
       });
 
       if (duplicate) {
+        console.warn(`[REGISTRATION_DUPLICATE] Duplicate registration blocked for ${sanitizedEmail} (Existing ID: ${duplicate.registrationId})`);
         throw new Error(`DUPLICATE_REGISTRATION:${duplicate.registrationId}`);
       }
 
@@ -68,12 +72,15 @@ export async function POST(req: Request) {
       );
 
       const queuePosition = slot.nextQueuePosition;
-      // Independent registration ID (cryptographically generated, decoupled from queue position)
-      const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-      const registrationId = `A26-${randomSuffix}`;
+
+      // Server-side atomic sequential EVT-XXXX generation
+      const totalCount = await tx.registration.count();
+      const registrationId = `EVT-${String(totalCount + 1).padStart(4, '0')}`;
 
       const slotStartTime = slot.slotStartTime;
       const slotEndTime = slot.slotEndTime;
+
+      console.log(`[REGISTRATION_ALLOCATED] ID: ${registrationId}, Queue: #${queuePosition}, Slot: ${slotStartTime} - ${slotEndTime}`);
 
       const regRecord = {
         registrationId,
@@ -96,6 +103,7 @@ export async function POST(req: Request) {
       };
 
       const created = await tx.registration.create({ data: regRecord });
+      console.log(`[REGISTRATION_TX_SUCCESS] Record successfully inserted into PostgreSQL. ID: ${created.registrationId}, DB ID: ${created.id}`);
 
       return {
         created,
@@ -153,9 +161,10 @@ export async function POST(req: Request) {
       );
     }
 
+    console.error('[REGISTRATION_TX_ERROR] Unhandled exception during registration persistence:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Registration processing failed. Please try again.' },
-      { status: 400 }
+      { success: false, error: error.message || 'Database registration processing failed. Please try again.' },
+      { status: 500 }
     );
   }
 }
