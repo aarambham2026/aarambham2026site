@@ -3,6 +3,145 @@
 import React from 'react';
 import Script from 'next/script';
 
+const coordinatorsData = [
+  {
+    id: "01",
+    name: "Abhijith P",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Abhijith_P.jpeg",
+    instagram: "https://www.instagram.com/a6hi.exe/",
+    delay: "0s"
+  },
+  {
+    id: "02",
+    name: "Abhishek Krishna",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Abhishek_Krishna.jpeg",
+    instagram: "https://www.instagram.com/a6hizhekkk/",
+    delay: ".08s"
+  },
+  {
+    id: "03",
+    name: "Abiram",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Abiram.jpeg",
+    instagram: "https://www.instagram.com/nyt__foxy/",
+    delay: ".16s"
+  },
+  {
+    id: "04",
+    name: "Adhwaith Ashok",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adhwaith Ashok.jpeg",
+    instagram: "https://www.instagram.com/ashokaaahh/",
+    delay: ".24s"
+  },
+  {
+    id: "05",
+    name: "Adithyan V Pillai",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan V Pillai.jpeg",
+    instagram: "https://www.instagram.com/adi7hyan__/",
+    delay: ".08s"
+  },
+  {
+    id: "06",
+    name: "Adithyan A",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan_A.jpeg",
+    instagram: "https://www.instagram.com/who.tf_adithyan/",
+    delay: ".16s"
+  },
+  {
+    id: "07",
+    name: "Advaith S",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Advaith_S.jpeg",
+    instagram: "https://www.instagram.com/ad6iiiii/",
+    delay: ".24s"
+  },
+  {
+    id: "08",
+    name: "Adwaith A",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adwaith_A.jpeg",
+    instagram: "https://www.instagram.com/ad.waiiiithh/",
+    delay: ".32s"
+  },
+  {
+    id: "09",
+    name: "Akhil N",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Akhil N.jpeg",
+    instagram: "https://www.instagram.com/akhiiill.n/",
+    delay: ".40s"
+  },
+  {
+    id: "10",
+    name: "Arunima",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Arunima.jpeg",
+    instagram: "https://www.instagram.com/_arx.nxm.x_/",
+    delay: ".48s"
+  },
+  {
+    id: "11",
+    name: "Devika V G",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Devika_V_G.jpeg",
+    instagram: "https://www.instagram.com/__devika__.____/",
+    delay: ".56s"
+  },
+  {
+    id: "12",
+    name: "Gautham Suresh",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Gautham Suresh.jpeg",
+    instagram: "https://www.instagram.com/gauthamsuresh._/",
+    delay: ".08s"
+  },
+  {
+    id: "13",
+    name: "Kashinath S",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Kashinath S.jpeg",
+    instagram: "https://www.instagram.com/kashiiiiiiii_pvt/",
+    delay: ".16s"
+  },
+  {
+    id: "14",
+    name: "Kiran R",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Kiran R.jpeg",
+    instagram: "https://www.instagram.com/garudan014/",
+    delay: ".24s"
+  },
+  {
+    id: "15",
+    name: "Krishnanunni V",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Krishnanunni_V.jpeg",
+    instagram: "https://www.instagram.com/i.kichxu/",
+    delay: ".32s"
+  },
+  {
+    id: "16",
+    name: "Nandhan J S",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Nandhan J S.jpeg",
+    instagram: "https://www.instagram.com/nandhan_616/",
+    delay: ".40s"
+  },
+  {
+    id: "17",
+    name: "Pranav M Biju",
+    role: "Event Coordinator",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Pranav_M_Biju.jpeg",
+    instagram: "https://www.instagram.com/pran4vvvvv/",
+    delay: ".48s"
+  }
+];
+
 export default function CoordinatorsPage() {
   return (
     <>
@@ -140,236 +279,34 @@ export default function CoordinatorsPage() {
 
         {/* TEAM GRID */}
         <div className="team-grid">
-          {/* MEMBER 01: Abiram */}
-          <article className="team-card reveal" style={{ '--delay': '0s' } as React.CSSProperties}>
-            <div className="card-number">01</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Abiram.jpeg" alt="Abiram" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Abiram</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 02: Adhwaith Ashok */}
-          <article className="team-card reveal" style={{ '--delay': '.08s' } as React.CSSProperties}>
-            <div className="card-number">02</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Adhwaith_Ashok.jpeg" alt="Adhwaith Ashok" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Adhwaith Ashok</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 03: Adithyan A */}
-          <article className="team-card reveal" style={{ '--delay': '.16s' } as React.CSSProperties}>
-            <div className="card-number">03</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Adithyan_A.jpeg" alt="Adithyan A" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Adithyan A</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 04: Adithyan V Pillai */}
-          <article className="team-card reveal" style={{ '--delay': '.24s' } as React.CSSProperties}>
-            <div className="card-number">04</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Adithyan_V_Pillai.jpeg" alt="Adithyan V Pillai" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Adithyan V Pillai</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 05: Akhil N */}
-          <article className="team-card reveal" style={{ '--delay': '.08s' } as React.CSSProperties}>
-            <div className="card-number">05</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Akhil_N.jpeg" alt="Akhil N" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Akhil N</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 06: Arunima */}
-          <article className="team-card reveal" style={{ '--delay': '.16s' } as React.CSSProperties}>
-            <div className="card-number">06</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Arunima.jpeg" alt="Arunima" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Arunima</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 07: Gautham Suresh */}
-          <article className="team-card reveal" style={{ '--delay': '.24s' } as React.CSSProperties}>
-            <div className="card-number">07</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Gautham_Suresh.jpeg" alt="Gautham Suresh" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Gautham Suresh</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 08: Karthika S */}
-          <article className="team-card reveal" style={{ '--delay': '.32s' } as React.CSSProperties}>
-            <div className="card-number">08</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Karthika_S.jpeg" alt="Karthika S" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Karthika S</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 09: Kashinath S */}
-          <article className="team-card reveal" style={{ '--delay': '.40s' } as React.CSSProperties}>
-            <div className="card-number">09</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Kashinath_S.jpeg" alt="Kashinath S" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Kashinath S</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 10: Kiran R */}
-          <article className="team-card reveal" style={{ '--delay': '.48s' } as React.CSSProperties}>
-            <div className="card-number">10</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Kiran_R.jpeg" alt="Kiran R" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Kiran R</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
-
-          {/* MEMBER 11: Nandhan J S */}
-          <article className="team-card reveal" style={{ '--delay': '.56s' } as React.CSSProperties}>
-            <div className="card-number">11</div>
-            <div className="profile-image">
-              <img src="/assets/thakirthi_coordinator_photos/Nandhan_J_S.jpeg" alt="Nandhan J S" loading="lazy" />
-              <div className="portrait-overlay"></div>
-            </div>
-            <div className="member-info">
-              <h3>Nandhan J S</h3>
-              <p>Event Coordinator</p>
-            </div>
-            <div className="social-icons">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social instagram" aria-label="Instagram">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="social linkedin" aria-label="LinkedIn">
-                <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </article>
+          {coordinatorsData.map((member) => (
+            <article
+              key={member.id}
+              className="team-card reveal"
+              style={{ '--delay': member.delay } as React.CSSProperties}
+            >
+              <div className="card-number">{member.id}</div>
+              <div className="profile-image">
+                <img src={member.image} alt={member.name} loading="lazy" />
+                <div className="portrait-overlay"></div>
+              </div>
+              <div className="member-info">
+                <h3>{member.name}</h3>
+                <p>{member.role}</p>
+              </div>
+              <div className="social-icons">
+                <a
+                  href={member.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social instagram"
+                  aria-label={`Instagram for ${member.name}`}
+                >
+                  <i className="fa-brands fa-instagram"></i>
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
 
         {/* BOTTOM STATEMENT */}
