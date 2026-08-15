@@ -1,9 +1,50 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Script from 'next/script';
 
+declare const DualWorldScene: any;
+declare const ExperienceSlider: any;
+declare const EventSystem: any;
+declare const PorscheExperience: any;
+declare const PreloaderController: any;
+
 export default function EventsPage() {
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    function initEventsSystems() {
+      if (typeof window === 'undefined') return;
+
+      if (
+        typeof DualWorldScene !== 'undefined' &&
+        typeof ExperienceSlider !== 'undefined' &&
+        typeof EventSystem !== 'undefined' &&
+        typeof PorscheExperience !== 'undefined'
+      ) {
+        const scene3D = new DualWorldScene('webgl-canvas');
+        const slider = new ExperienceSlider((splitVal: number) => {
+          if (scene3D && typeof scene3D.setProgress === 'function') {
+            scene3D.setProgress(splitVal);
+          }
+        });
+        const eventSys = new EventSystem();
+        const porscheSys = new PorscheExperience(scene3D);
+        if (typeof PreloaderController !== 'undefined') {
+          const preloader = new PreloaderController();
+        }
+      } else {
+        timer = setTimeout(initEventsSystems, 100);
+      }
+    }
+
+    timer = setTimeout(initEventsSystems, 100);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+
   return (
     <>
       <link rel="stylesheet" href="/events-assets/css/styles.css" />
@@ -101,7 +142,7 @@ export default function EventsPage() {
               </div>
               <div className="car-display-overlay">
                 <button className="ignite-engine-btn" id="ignite-engine-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                   </svg>
@@ -132,32 +173,6 @@ export default function EventsPage() {
       <Script src="/events-assets/js/events.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/porsche-experience.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/preloader.js" strategy="afterInteractive" />
-
-      <Script id="init-events-script" strategy="lazyOnload">
-        {`
-          if (typeof window !== 'undefined') {
-            window.addEventListener('load', () => {
-              if (typeof DualWorldScene !== 'undefined') {
-                const scene3D = new DualWorldScene('webgl-canvas');
-                if (typeof ExperienceSlider !== 'undefined') {
-                  const slider = new ExperienceSlider((splitVal) => {
-                    scene3D.setProgress(splitVal);
-                  });
-                }
-                if (typeof EventSystem !== 'undefined') {
-                  const eventSys = new EventSystem();
-                }
-                if (typeof PorscheExperience !== 'undefined') {
-                  const porscheSys = new PorscheExperience(scene3D);
-                }
-                if (typeof PreloaderController !== 'undefined') {
-                  const preloader = new PreloaderController();
-                }
-              }
-            });
-          }
-        `}
-      </Script>
     </>
   );
 }

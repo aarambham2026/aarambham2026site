@@ -1,7 +1,7 @@
 /**
  * ============================================================
- *  ONAM -> PORSCHE MICROSITE — SPLIT PORTAL SLIDER CONTROLLER
- *  Reference: Upside Down Split Portal Interaction (makeaton.in)
+ *  ONAM -> BMW M5 MICROSITE — SPLIT PORTAL SLIDER CONTROLLER
+ *  High-Performance Container-Relative Drag & Touch Controller
  * ============================================================
  */
 
@@ -18,46 +18,112 @@ class ExperienceSlider {
   }
 
   initElements() {
+    this.container = document.querySelector('.portal-container') || document.body;
     this.sliderBar = document.getElementById('portal-slider-bar');
     this.sliderHandle = document.getElementById('portal-slider-handle');
     this.onamWorld = document.getElementById('onam-world');
     this.porscheWorld = document.getElementById('porsche-world');
+
+    // Ensure ONAM panel does not contain any link or redirect click behavior
+    if (this.onamWorld) {
+      this.onamWorld.addEventListener('click', (e) => {
+        // Prevent any unexpected parent anchor or redirect
+        const target = e.target;
+        if (target && target.closest && target.closest('.event-card')) {
+          // Event cards trigger modal popups via EventSystem, not redirects
+          return;
+        }
+      });
+    }
   }
 
   bindEvents() {
     if (!this.sliderBar) return;
 
+    const getClientX = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        return e.touches[0].clientX;
+      }
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        return e.changedTouches[0].clientX;
+      }
+      return e.clientX;
+    };
+
     const startDrag = (e) => {
       this.isDragging = true;
-      this.handleDrag(e);
+      this.handleDrag(getClientX(e));
       document.body.style.userSelect = 'none';
+      document.body.style.webkitUserSelect = 'none';
     };
 
     const doDrag = (e) => {
       if (!this.isDragging) return;
-      this.handleDrag(e);
+      this.handleDrag(getClientX(e));
     };
 
     const stopDrag = () => {
       if (!this.isDragging) return;
       this.isDragging = false;
       document.body.style.userSelect = '';
+      document.body.style.webkitUserSelect = '';
     };
 
-    this.sliderBar.addEventListener('mousedown', startDrag);
-    window.addEventListener('mousemove', doDrag, { passive: true });
-    window.addEventListener('mouseup', stopDrag);
+    // Pointer Events (Unified Mouse, Touch, Pen)
+    this.sliderBar.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      startDrag(e);
+    });
 
-    // Touch support for mobile
-    this.sliderBar.addEventListener('touchstart', (e) => startDrag(e.touches[0]), { passive: true });
-    window.addEventListener('touchmove', (e) => {
-      if (this.isDragging) doDrag(e.touches[0]);
+    window.addEventListener('pointermove', (e) => {
+      if (this.isDragging) doDrag(e);
     }, { passive: true });
-    window.addEventListener('touchend', stopDrag);
+
+    window.addEventListener('pointerup', stopDrag, { passive: true });
+    window.addEventListener('pointercancel', stopDrag, { passive: true });
+
+    // Touch Events Fallback
+    this.sliderBar.addEventListener('touchstart', (e) => {
+      startDrag(e);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (this.isDragging) doDrag(e);
+    }, { passive: true });
+
+    window.addEventListener('touchend', stopDrag, { passive: true });
+
+    // Mouse Events Fallback
+    this.sliderBar.addEventListener('mousedown', (e) => {
+      startDrag(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (this.isDragging) doDrag(e);
+    }, { passive: true });
+
+    window.addEventListener('mouseup', stopDrag, { passive: true });
+
+    // Click anywhere on portal container to move split smoothly
+    if (this.container) {
+      this.container.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target && target.closest && (target.closest('.event-card') || target.closest('.navbar') || target.closest('#ignite-engine-btn') || target.closest('.modal-card') || target.closest('.modal-overlay'))) {
+          return;
+        }
+        if (target === this.sliderBar || (this.sliderHandle && this.sliderHandle.contains(target))) {
+          return;
+        }
+      });
+    }
   }
 
-  handleDrag(e) {
-    let normVal = e.clientX / window.innerWidth;
+  handleDrag(clientX) {
+    if (typeof clientX !== 'number' || isNaN(clientX)) return;
+
+    const rect = this.container ? this.container.getBoundingClientRect() : { left: 0, width: window.innerWidth };
+    const relativeX = clientX - rect.left;
+    let normVal = relativeX / rect.width;
     normVal = Math.max(0.01, Math.min(0.99, normVal));
     this.targetSplitPos = normVal;
   }
