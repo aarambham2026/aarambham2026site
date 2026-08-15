@@ -32,23 +32,23 @@ const coordinatorsData = [
     id: "04",
     name: "Adhwaith Ashok",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Adhwaith Ashok.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adhwaith_Ashok.jpeg",
     instagram: "https://www.instagram.com/ashokaaahh/",
     delay: ".24s"
   },
   {
     id: "05",
-    name: "Adithyan V Pillai",
+    name: "Adithyan A",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan V Pillai.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan_A.jpeg",
     instagram: "https://www.instagram.com/adi7hyan__/",
     delay: ".08s"
   },
   {
     id: "06",
-    name: "Adithyan A",
+    name: "Adithyan V Pillai",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan_A.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Adithyan_V_Pillai.jpeg",
     instagram: "https://www.instagram.com/who.tf_adithyan/",
     delay: ".16s"
   },
@@ -72,7 +72,7 @@ const coordinatorsData = [
     id: "09",
     name: "Akhil N",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Akhil N.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Akhil_N.jpeg",
     instagram: "https://www.instagram.com/akhiiill.n/",
     delay: ".40s"
   },
@@ -96,7 +96,7 @@ const coordinatorsData = [
     id: "12",
     name: "Gautham Suresh",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Gautham Suresh.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Gautham_Suresh.jpeg",
     instagram: "https://www.instagram.com/gauthamsuresh._/",
     delay: ".08s"
   },
@@ -104,7 +104,7 @@ const coordinatorsData = [
     id: "13",
     name: "Kashinath S",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Kashinath S.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Kashinath_S.jpeg",
     instagram: "https://www.instagram.com/kashiiiiiiii_pvt/",
     delay: ".16s"
   },
@@ -112,7 +112,7 @@ const coordinatorsData = [
     id: "14",
     name: "Kiran R",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Kiran R.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Kiran_R.jpeg",
     instagram: "https://www.instagram.com/garudan014/",
     delay: ".24s"
   },
@@ -128,7 +128,7 @@ const coordinatorsData = [
     id: "16",
     name: "Nandhan J S",
     role: "Event Coordinator",
-    image: "/coordinators-assets/thakirthi_coordinator_photos/Nandhan J S.jpeg",
+    image: "/coordinators-assets/thakirthi_coordinator_photos/Nandhan_J_S.jpeg",
     instagram: "https://www.instagram.com/nandhan_616/",
     delay: ".40s"
   },
