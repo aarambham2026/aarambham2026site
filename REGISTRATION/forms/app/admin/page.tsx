@@ -59,6 +59,16 @@ export default function AdminPage() {
       }
     }
     checkAuthSession();
+
+    const handlePageHide = () => {
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/admin/logout');
+      }
+    };
+    window.addEventListener('pagehide', handlePageHide);
+    return () => {
+      window.removeEventListener('pagehide', handlePageHide);
+    };
   }, []);
 
   // 2. Fetch live registrations & audit logs directly from PostgreSQL
