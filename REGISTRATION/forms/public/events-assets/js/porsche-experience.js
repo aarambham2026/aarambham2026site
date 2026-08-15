@@ -1,7 +1,6 @@
 /**
  * ============================================================
- *  ONAM -> PORSCHE MICROSITE — INSTANT PORSCHE IGNITION
- *  (No 3s timer delay)
+ *  ONAM -> BMW M5 MICROSITE — INSTANT BMW M5 IGNITION & MEDIA
  * ============================================================
  */
 
@@ -17,8 +16,13 @@ class PorscheExperience {
   initCarDisplay() {
     const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
-    const videoSrc = 'bmwgif.mp4';
-    const gifSrc = 'bmwgif.gif';
+    const videoSrc = '/events-assets/bmwgif.mp4';
+    const gifSrc = '/events-assets/bmwgif.gif';
+
+    if (carGif) {
+      carGif.src = gifSrc;
+      carGif.style.display = 'block';
+    }
 
     if (carVideo) {
       carVideo.src = videoSrc;
@@ -27,10 +31,6 @@ class PorscheExperience {
       try {
         carVideo.pause();
       } catch (e) {}
-      carVideo.style.display = 'block';
-    } else if (carGif) {
-      carGif.src = gifSrc;
-      carGif.style.display = 'block';
     }
   }
 
@@ -90,16 +90,17 @@ class PorscheExperience {
         }
 
       } else {
-        // Return to static standby preview
+        // Return to static standby preview / animated GIF
         if (carVideo) {
           try {
             carVideo.pause();
             carVideo.currentTime = 0;
           } catch (e) {}
-          carVideo.style.display = 'block';
-          if (carGif) carGif.style.display = 'none';
-        } else if (carGif) {
+          carVideo.style.display = 'none';
+        }
+        if (carGif) {
           carGif.style.display = 'block';
+          carGif.style.opacity = '1';
         }
 
         igniteBtn.classList.remove('ignited');
@@ -111,7 +112,7 @@ class PorscheExperience {
           IGNITE THE ENGINE
         `;
         if (statusText) {
-          statusText.textContent = 'STATUS: STANDBY · PRESS BUTTON TO START ANIMATION';
+          statusText.textContent = 'STATUS: STANDBY · PRESS BUTTON TO START ANIMATION & ENGINE';
           statusText.style.color = 'rgba(255,255,255,0.7)';
         }
       }
