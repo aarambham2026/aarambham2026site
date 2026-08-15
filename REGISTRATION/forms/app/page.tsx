@@ -119,6 +119,14 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Top-Level Cross-Application Sibling Navigation */}
+        <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-amber-100/80">
+          <a href="https://thakrithi.vercel.app/" className="hover:text-amber-400 transition-colors">Home</a>
+          <a href="https://thakrithi.vercel.app/UPCOMIG%20EVENTS/index.html" className="hover:text-amber-400 transition-colors">Upcoming Events</a>
+          <a href="https://aarambham2026registration.vercel.app/" className="text-amber-400 font-extrabold border-b-2 border-amber-400 pb-0.5">Registration</a>
+          <a href="https://thakrithi.vercel.app/MEET%20THE%20CORRDINATES/index.html" className="hover:text-amber-400 transition-colors">Meet the Coordinators</a>
+        </nav>
       </header>
 
       {/* Main Registration Content */}

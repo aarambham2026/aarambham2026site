@@ -237,10 +237,13 @@ export default function AdminPage() {
             </button>
           </form>
 
-          <div className="text-center pt-2">
-            <Link href="/" className="text-xs text-amber-300/70 hover:text-white underline font-medium">
-              ← Return to Event Registration Page
-            </Link>
+          <div className="flex flex-col items-center gap-2 pt-2 text-xs">
+            <a href="https://thakrithi.vercel.app/" className="text-amber-400 hover:text-amber-300 font-extrabold tracking-wider uppercase underline">
+              ← BACK TO MAIN WEBSITE
+            </a>
+            <a href="https://aarambham2026registration.vercel.app/" className="text-zinc-400 hover:text-white font-semibold">
+              ← BACK TO REGISTRATION
+            </a>
           </div>
         </div>
       </div>
@@ -278,6 +281,22 @@ export default function AdminPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <a
+              href="https://thakrithi.vercel.app/"
+              className="px-3.5 py-2 text-xs font-extrabold tracking-wider text-amber-300 hover:text-white bg-amber-950/80 hover:bg-amber-900 border border-amber-800/60 rounded-full transition-all uppercase"
+              title="Return to Main Thakrithi Website"
+            >
+              ← MAIN WEBSITE
+            </a>
+
+            <a
+              href="https://aarambham2026registration.vercel.app/"
+              className="px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full transition-all uppercase"
+              title="Return to Registration Page"
+            >
+              REGISTRATION
+            </a>
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider text-rose-300 hover:text-white bg-rose-950/80 hover:bg-rose-900 border border-rose-800/60 rounded-full transition-all"
