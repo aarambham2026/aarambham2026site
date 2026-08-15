@@ -119,14 +119,7 @@ export async function generateTicketPdf(data: TicketData): Promise<Uint8Array> {
   const nm = ticketConfig.numberOfMembers;
   drawExtraBoldText(`${nm.label} ${data.numberOfMembers}`, nm.x, nm.y, nm.fontSize, toRgb(nm.color));
 
-  // Line 4: SLOT TIME: 2:15 PM - 2:25 PM
-  const st = ticketConfig.slotTime;
-  const slotLabel = `${st.label} `;
-  const slotVal = `${data.slotStartTime} - ${data.slotEndTime}`;
-  
-  drawExtraBoldText(slotLabel, st.x, st.y, st.fontSize, whiteColor);
-  const labelWidth = font.widthOfTextAtSize(slotLabel, st.fontSize);
-  drawExtraBoldText(slotVal, st.x + labelWidth, st.y, st.fontSize, goldColor);
+  // Line 4: SLOT TIME display removed per requirement
 
   // Line 5: REGISTRATION ID: EVT-0003
   const rid = ticketConfig.registrationId;

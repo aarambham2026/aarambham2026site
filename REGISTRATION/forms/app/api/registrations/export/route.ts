@@ -32,8 +32,6 @@ export async function GET(req: Request) {
       'Event Category': reg.eventCategory || 'N/A',
       'Performance Title': reg.performanceName || 'N/A',
       'Performance Duration': reg.performanceDuration || 10,
-      'Slot Start Time': reg.slotStartTime || 'N/A',
-      'Slot End Time': reg.slotEndTime || 'N/A',
       'Email Address': reg.email || 'N/A',
       'Phone Number': reg.phone || 'N/A',
       'Team Members Roster': reg.membersList || 'N/A',

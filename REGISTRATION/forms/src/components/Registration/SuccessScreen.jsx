@@ -149,20 +149,6 @@ const SuccessScreen = ({ registrationResult, onDone, eventTitle, formatTitle }) 
             NO. OF MEMBERS: {memberCount}
           </div>
 
-          {/* Line 4: SLOT TIME: 2:08 PM - 2:13 PM */}
-          <div style={{
-            position: 'absolute',
-            top: '61.5%',
-            left: '6.7%',
-            right: '6.7%',
-            fontSize: '0.78rem',
-            fontWeight: 900,
-            color: '#FFFFFF',
-            textShadow: '0 2px 4px rgba(0,0,0,0.85)'
-          }}>
-            SLOT TIME: <span style={{ color: '#F2C94C' }}>{slotStart} - {slotEnd}</span>
-          </div>
-
           {/* Line 5: REGISTRATION ID: EVT-0002 */}
           <div style={{
             position: 'absolute',

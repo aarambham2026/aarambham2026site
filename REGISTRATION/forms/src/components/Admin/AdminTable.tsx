@@ -337,7 +337,6 @@ export default function AdminTable({
                 <th className="px-4 py-3.5">Team Leader</th>
                 <th className="px-4 py-3.5">Members</th>
                 <th className="px-4 py-3.5">Category</th>
-                <th className="px-4 py-3.5">Allocated Slot</th>
                 <th className="px-4 py-3.5">Status</th>
                 <th className="px-4 py-3.5 text-right">Actions</th>
               </tr>
@@ -346,7 +345,7 @@ export default function AdminTable({
             <tbody className="divide-y divide-zinc-800/60 text-zinc-300 font-medium">
               {data.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-zinc-500">
+                  <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
                     {apiError
                       ? '⚠️ Could not load records due to API connection error.'
                       : 'No registrations found matching your filter criteria.'}
@@ -396,9 +395,6 @@ export default function AdminTable({
                       }`}>
                         {reg.eventCategory}
                       </span>
-                    </td>
-                    <td className="px-4 py-4 font-bold text-zinc-200">
-                      {reg.slotStartTime} - {reg.slotEndTime}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
@@ -492,9 +488,6 @@ export default function AdminTable({
 
                   <div className="flex items-center gap-4 sm:shrink-0 justify-between sm:justify-end">
                     <div className="text-right">
-                      <div className="text-xs font-bold text-amber-300 font-mono">
-                        ⏰ {reg.slotStartTime} – {reg.slotEndTime}
-                      </div>
                       <div className="text-[10px] text-zinc-500">
                         Duration: {reg.performanceDuration || 10} mins
                       </div>
@@ -598,12 +591,6 @@ export default function AdminTable({
                 <p className="text-xs font-bold text-zinc-200">{selectedRecord.phone}</p>
               </div>
 
-              <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 space-y-1 sm:col-span-2">
-                <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Allocated Slot & Duration</span>
-                <p className="text-sm font-bold text-emerald-400">
-                  {selectedRecord.slotStartTime} – {selectedRecord.slotEndTime} ({selectedRecord.performanceDuration || 10} minutes)
-                </p>
-              </div>
 
               {selectedRecord.membersList && (
                 <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 space-y-1 sm:col-span-2">

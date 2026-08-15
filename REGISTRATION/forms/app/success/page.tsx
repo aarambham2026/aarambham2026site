@@ -53,19 +53,9 @@ function SuccessContent() {
           </span>
         </div>
 
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-amber-400" />
-            Allocated Performance Slot
-          </span>
-          <span className="text-base font-bold text-amber-300">
-            {slotStart} - {slotEnd}
-          </span>
-        </div>
-
         <div className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 text-xs text-zinc-400 space-y-1">
           <p className="font-semibold text-zinc-300">Important Instructions:</p>
-          <p>• Please present your downloaded E-Ticket PDF at the stage entrance 15 minutes before your slot time.</p>
+          <p>• Please present your downloaded E-Ticket PDF at the stage entrance prior to your performance.</p>
           <p>• The ticket QR code scans as <span className="font-mono text-white font-bold">REGISTERED</span> for quick check-in verification.</p>
         </div>
 
