@@ -9,7 +9,8 @@ import { ShieldCheck, Lock, LogOut, KeyRound, User } from 'lucide-react';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [authChecking, setAuthChecking] = useState<boolean>(true);
+  const [adminToken, setAdminToken] = useState<string>('');
+  const [authChecking, setAuthChecking] = useState<boolean>(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -50,6 +51,7 @@ export default function AdminPage() {
         // ignore
       } finally {
         setIsAuthenticated(false);
+        setAdminToken('');
         setAuthChecking(false);
       }
     }
@@ -79,9 +81,14 @@ export default function AdminPage() {
       const now = Date.now();
       params.append('_t', now.toString());
 
+      const reqHeaders: Record<string, string> = {};
+      if (adminToken) {
+        reqHeaders['Authorization'] = `Bearer ${adminToken}`;
+      }
+
       const [resData, resLogs] = await Promise.all([
-        fetch(`/api/registrations?${params.toString()}`, { cache: 'no-store' }),
-        fetch(`/api/admin/logs?_t=${now}`, { cache: 'no-store' })
+        fetch(`/api/registrations?${params.toString()}`, { cache: 'no-store', headers: reqHeaders }),
+        fetch(`/api/admin/logs?_t=${now}`, { cache: 'no-store', headers: reqHeaders })
       ]);
 
       if (resData.ok) {
@@ -97,6 +104,7 @@ export default function AdminPage() {
         }
       } else if (resData.status === 401) {
         setIsAuthenticated(false);
+        setAdminToken('');
         setApiError('Admin session expired or unauthenticated. Please log in again.');
       } else if (resData.status === 403) {
         setApiError('You do not have permission to access registration data.');
@@ -114,7 +122,7 @@ export default function AdminPage() {
       console.error('Error fetching admin data:', err);
       setApiError(`Network connection error: ${err.message || 'Failed to reach API'}`);
     }
-  }, [isAuthenticated, search, categoryFilter, statusFilter, page]);
+  }, [isAuthenticated, adminToken, search, categoryFilter, statusFilter, page]);
 
   // Initial fetch and 3-second live auto-polling interval
   useEffect(() => {
@@ -141,6 +149,9 @@ export default function AdminPage() {
 
       const json = await res.json();
       if (res.ok && json.success) {
+        if (json.token) {
+          setAdminToken(json.token);
+        }
         setIsAuthenticated(true);
         setApiError(null);
       } else {
@@ -160,6 +171,7 @@ export default function AdminPage() {
       console.error('Logout error:', err);
     }
     setIsAuthenticated(false);
+    setAdminToken('');
     setUsername('');
     setPassword('');
     setData([]);

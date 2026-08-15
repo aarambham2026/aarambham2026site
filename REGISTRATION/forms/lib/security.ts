@@ -42,8 +42,15 @@ export function verifyAdminToken(token: string | undefined | null): boolean {
   return timingSafeCompare(hmac, expectedHmac);
 }
 
-export async function isRequestAuthorized(): Promise<boolean> {
+export async function isRequestAuthorized(req?: Request): Promise<boolean> {
   try {
+    if (req && typeof req.headers?.get === 'function') {
+      const authHeader = req.headers.get('authorization') || req.headers.get('x-admin-token');
+      if (authHeader) {
+        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+        if (verifyAdminToken(token)) return true;
+      }
+    }
     const cookieStore = await cookies();
     const token = cookieStore.get('admin_session')?.value || cookieStore.get('aarambham_admin_session')?.value;
     return verifyAdminToken(token);

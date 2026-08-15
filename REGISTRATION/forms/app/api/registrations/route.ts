@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export async function GET(req: Request) {
   try {
-    const authorized = await isRequestAuthorized();
+    const authorized = await isRequestAuthorized(req);
     if (!authorized) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized admin access. Session expired or missing.' },
