@@ -1,77 +1,84 @@
 (function () {
+  if (typeof window === 'undefined') return;
   if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
 
+  if (window.__ONAM_CURSOR_CLEANUP__) {
+    try { window.__ONAM_CURSOR_CLEANUP__(); } catch (e) {}
+  }
+
   function initCursor() {
-    if (!document.querySelector('.custom-cursor')) {
-      const cursorDiv = document.createElement('div');
-      cursorDiv.className = 'custom-cursor';
-      cursorDiv.innerHTML = '<div class="cursor-dot"></div><div class="cursor-ring"></div>';
-      document.body.appendChild(cursorDiv);
+    let cursor = document.querySelector('.custom-cursor');
+    if (!cursor) {
+      cursor = document.createElement('div');
+      cursor.className = 'custom-cursor';
+      cursor.innerHTML = '<div class="cursor-dot"></div><div class="cursor-ring"></div>';
+      document.body.appendChild(cursor);
     }
 
-    if (!document.querySelector('.mouse-glow')) {
-      const glowDiv = document.createElement('div');
-      glowDiv.className = 'mouse-glow';
-      document.body.appendChild(glowDiv);
+    let mouseGlow = document.querySelector('.mouse-glow');
+    if (!mouseGlow) {
+      mouseGlow = document.createElement('div');
+      mouseGlow.className = 'mouse-glow';
+      document.body.appendChild(mouseGlow);
     }
 
-    const cursor = document.querySelector('.custom-cursor');
-    const cursorRing = document.querySelector('.cursor-ring');
-    const mouseGlow = document.querySelector('.mouse-glow');
+    const cursorRing = cursor.querySelector('.cursor-ring');
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let ringX = mouseX;
     let ringY = mouseY;
-    let glowPending = false;
+    let rafId = null;
 
-    document.addEventListener('mousemove', (e) => {
+    function onMouseMove(e) {
       mouseX = e.clientX;
       mouseY = e.clientY;
+    }
 
-      if (!glowPending) {
-        glowPending = true;
-        requestAnimationFrame(() => {
-          if (mouseGlow) {
-            mouseGlow.style.left = mouseX + 'px';
-            mouseGlow.style.top = mouseY + 'px';
-            mouseGlow.style.opacity = '1';
-          }
-          glowPending = false;
-        });
-      }
-    }, { passive: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
 
-    function updateCursor() {
+    function animate() {
       if (cursor) {
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
+        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
 
-      ringX += (mouseX - ringX) * 0.14;
-      ringY += (mouseY - ringY) * 0.14;
+      ringX += (mouseX - ringX) * 0.22;
+      ringY += (mouseY - ringY) * 0.22;
 
       if (cursorRing) {
-        cursorRing.style.transform = `translate(${ringX - mouseX}px, ${ringY - mouseY}px)`;
+        cursorRing.style.transform = `translate3d(${ringX - mouseX}px, ${ringY - mouseY}px, 0)`;
       }
 
-      requestAnimationFrame(updateCursor);
-    }
-    updateCursor();
+      if (mouseGlow) {
+        mouseGlow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+        mouseGlow.style.opacity = '1';
+      }
 
-    function attachHoverListeners() {
-      const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, [role="button"], .card, .btn, .interactive, .hub-card, .event-card, .team-card');
-      interactiveElements.forEach((el) => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-      });
+      rafId = requestAnimationFrame(animate);
     }
 
-    attachHoverListeners();
+    rafId = requestAnimationFrame(animate);
+
+    function onMouseOver(e) {
+      const target = e.target;
+      if (target && target.closest && target.closest('a, button, input, select, textarea, [role="button"], .card, .btn, .interactive, .hub-card, .event-card, .team-card')) {
+        document.body.classList.add('cursor-hover');
+      } else {
+        document.body.classList.remove('cursor-hover');
+      }
+    }
+
+    document.addEventListener('mouseover', onMouseOver, { passive: true });
+
+    window.__ONAM_CURSOR_CLEANUP__ = function () {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseover', onMouseOver);
+    };
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCursor);
+    document.addEventListener('DOMContentLoaded', initCursor, { once: true });
   } else {
     initCursor();
   }

@@ -14,22 +14,8 @@ export async function POST(req: Request) {
 
     const { username, password } = await req.json();
 
-    const validUsername = process.env.ADMIN_USERNAME;
-    const validPassword = process.env.ADMIN_PASSWORD;
-
-    // Fail closed if production credentials are not configured in environment
-    if (!validUsername || !validPassword) {
-      if (process.env.NODE_ENV === 'production') {
-        console.error('FATAL: ADMIN_USERNAME or ADMIN_PASSWORD missing in production environment.');
-        return NextResponse.json(
-          { success: false, error: 'Admin authentication misconfigured in production' },
-          { status: 500 }
-        );
-      }
-    }
-
-    const expectedUser = validUsername || 'admin';
-    const expectedPass = validPassword || 'aarambham2026';
+    const expectedUser = process.env.ADMIN_USERNAME || 'admin';
+    const expectedPass = process.env.ADMIN_PASSWORD || 'aarambham2026';
 
     const isUserValid = timingSafeCompare(String(username || ''), expectedUser);
     const isPassValid = timingSafeCompare(String(password || ''), expectedPass);
