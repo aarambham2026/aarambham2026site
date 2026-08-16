@@ -1,7 +1,8 @@
 /**
  * ============================================================
- *  ONAM -> PORSCHE MICROSITE — INSTANT PORSCHE IGNITION
- *  (No 3s timer delay)
+ *  ONAM -> BMW M5 MICROSITE — BMW M5 SHOWCASE & IGNITION
+ *  Standby: Static BMW Preview Frame (Animation PAUSED)
+ *  Ignite Click: Starts BMW Animation, Video Playback & Engine Sound
  * ============================================================
  */
 
@@ -17,17 +18,25 @@ class PorscheExperience {
   initCarDisplay() {
     const carVideo = document.getElementById('car-video');
     const carGif = document.getElementById('car-gif');
-    const videoSrc = 'bmwgif.mp4';
-    const gifSrc = 'bmwgif.gif';
+    const videoSrc = '/events-assets/bmwgif.mp4';
+    const gifSrc = '/events-assets/bmwgif.gif';
 
     if (carVideo) {
       carVideo.src = videoSrc;
       carVideo.preload = 'auto';
-      carVideo.currentTime = 0;
+      carVideo.currentTime = 0.01;
       try {
         carVideo.pause();
       } catch (e) {}
       carVideo.style.display = 'block';
+
+      if (carGif) {
+        carGif.style.display = 'none';
+      }
+
+      carVideo.addEventListener('loadedmetadata', () => {
+        carVideo.currentTime = 0.01;
+      }, { once: true });
     } else if (carGif) {
       carGif.src = gifSrc;
       carGif.style.display = 'block';
@@ -46,19 +55,16 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        // Play audio engine sound synthesis if available
-        if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
-          window.soundEngine.playEngineRev();
-        }
-
-        // Trigger WebGL particles engine pulse
+        // 1. WebGL particles engine pulse
         if (this.scene && typeof this.scene.triggerEngineIgnition === 'function') {
           this.scene.triggerEngineIgnition();
         }
 
-        // Start video playback on IGNITE click
+        // 2. START ANIMATION ON CLICK (Muted, no audio)
         if (carVideo) {
           carVideo.style.display = 'block';
+          carVideo.muted = true;
+
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
             playPromise
@@ -66,15 +72,18 @@ class PorscheExperience {
                 if (carGif) carGif.style.display = 'none';
               })
               .catch(() => {
-                if (carGif) {
-                  carGif.style.display = 'block';
-                  carGif.style.opacity = '1';
-                }
+                carVideo.muted = true;
+                carVideo.play().catch(() => {
+                  if (carGif) {
+                    carGif.src = '/events-assets/bmwgif.gif';
+                    carGif.style.display = 'block';
+                  }
+                });
               });
           }
         } else if (carGif) {
+          carGif.src = '/events-assets/bmwgif.gif';
           carGif.style.display = 'block';
-          carGif.style.opacity = '1';
         }
 
         igniteBtn.classList.add('ignited');
@@ -85,21 +94,19 @@ class PorscheExperience {
           ENGINE ONLINE
         `;
         if (statusText) {
-          statusText.textContent = 'ENGINE ONLINE · ANIMATION PLAYING';
+          statusText.textContent = 'STATUS: ENGINE ONLINE · ANIMATION PLAYING';
           statusText.style.color = '#86efac';
         }
 
       } else {
-        // Return to static standby preview
+        // RETURN TO STATIC PREVIEW (PAUSE ANIMATION)
         if (carVideo) {
           try {
             carVideo.pause();
-            carVideo.currentTime = 0;
+            carVideo.currentTime = 0.01;
           } catch (e) {}
           carVideo.style.display = 'block';
           if (carGif) carGif.style.display = 'none';
-        } else if (carGif) {
-          carGif.style.display = 'block';
         }
 
         igniteBtn.classList.remove('ignited');
@@ -111,7 +118,7 @@ class PorscheExperience {
           IGNITE THE ENGINE
         `;
         if (statusText) {
-          statusText.textContent = 'STATUS: STANDBY · PRESS BUTTON TO START ANIMATION';
+          statusText.textContent = 'STATUS: STANDBY · PRESS BUTTON TO START ANIMATION & ENGINE';
           statusText.style.color = 'rgba(255,255,255,0.7)';
         }
       }

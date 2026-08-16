@@ -55,20 +55,15 @@ class PorscheExperience {
       this.isIgnited = !this.isIgnited;
 
       if (this.isIgnited) {
-        // 1. Play audio engine sound synthesis
-        if (window.soundEngine && typeof window.soundEngine.playEngineRev === 'function') {
-          window.soundEngine.playEngineRev();
-        }
-
-        // 2. WebGL particles engine pulse
+        // 1. WebGL particles engine pulse
         if (this.scene && typeof this.scene.triggerEngineIgnition === 'function') {
           this.scene.triggerEngineIgnition();
         }
 
-        // 3. START ANIMATION ON CLICK
+        // 2. START ANIMATION ON CLICK (Muted, no audio)
         if (carVideo) {
           carVideo.style.display = 'block';
-          carVideo.muted = false;
+          carVideo.muted = true;
 
           const playPromise = carVideo.play();
           if (playPromise !== undefined) {
@@ -77,7 +72,6 @@ class PorscheExperience {
                 if (carGif) carGif.style.display = 'none';
               })
               .catch(() => {
-                // If browser policy requires muted playback
                 carVideo.muted = true;
                 carVideo.play().catch(() => {
                   if (carGif) {
