@@ -198,4 +198,76 @@
     if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
     if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
   })();
+
+  // Custom Cursor controller
+  (function initCustomCursor() {
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+
+    if (!document.querySelector('.custom-cursor')) {
+      var cursorDiv = document.createElement('div');
+      cursorDiv.className = 'custom-cursor';
+      cursorDiv.innerHTML = '<div class="cursor-dot"></div><div class="cursor-ring"></div>';
+      document.body.appendChild(cursorDiv);
+    }
+
+    if (!document.querySelector('.mouse-glow')) {
+      var glowDiv = document.createElement('div');
+      glowDiv.className = 'mouse-glow';
+      document.body.appendChild(glowDiv);
+    }
+
+    var cursor = document.querySelector('.custom-cursor');
+    var cursorRing = document.querySelector('.cursor-ring');
+    var mouseGlow = document.querySelector('.mouse-glow');
+
+    var mouseX = window.innerWidth / 2;
+    var mouseY = window.innerHeight / 2;
+    var ringX = mouseX;
+    var ringY = mouseY;
+    var glowPending = false;
+
+    document.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!glowPending) {
+        glowPending = true;
+        requestAnimationFrame(function () {
+          if (mouseGlow) {
+            mouseGlow.style.left = mouseX + 'px';
+            mouseGlow.style.top = mouseY + 'px';
+            mouseGlow.style.opacity = '1';
+          }
+          glowPending = false;
+        });
+      }
+    }, { passive: true });
+
+    function updateCursor() {
+      if (cursor) {
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+      }
+
+      ringX += (mouseX - ringX) * 0.14;
+      ringY += (mouseY - ringY) * 0.14;
+
+      if (cursorRing) {
+        cursorRing.style.transform = 'translate(' + (ringX - mouseX) + 'px, ' + (ringY - mouseY) + 'px)';
+      }
+
+      requestAnimationFrame(updateCursor);
+    }
+    updateCursor();
+
+    function attachHoverListeners() {
+      var interactiveElements = document.querySelectorAll('a, button, input, select, textarea, [role="button"], .card, .btn, .interactive, .unit');
+      interactiveElements.forEach(function (el) {
+        el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
+        el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
+      });
+    }
+
+    attachHoverListeners();
+  })();
 })();
