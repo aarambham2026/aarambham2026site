@@ -10,33 +10,33 @@ const eventDataLineup = [
     category: 'Cultural Showcase',
     name: 'DANCE SPECTACLE',
     shortDesc: 'Graceful Thiruvathira, classical Kathakali & energetic fusion showcases.',
-    fullDesc: 'Experience the rhythmic soul of Kerala! Featuring classical Kathakali story-dances, Mohiniyattam, and electrifying group Thiruvathira performances by university departments.',
+    fullDesc: 'Experience the rhythmic soul of Kerala! Featuring classical Kathakali story-dances and electrifying group Thiruvathira performances by university departments.',
     date: 'August 22, 2026',
     time: '10:00 AM - 01:00 PM',
-    venue: 'Main Open Air Stage',
-    rules: ['Group size: 6 - 12 members', 'Traditional or fusion attire permitted', 'Time limit: 8 minutes max'],
+    venue: 'Civil Hall Auditorium',
+    rules: [],
   },
   {
     id: 'music',
     category: 'Live Performances',
     name: 'MUSIC & RHYTHMS',
-    shortDesc: 'Live campus orchestral fusion, Chenda Melam & musical night.',
-    fullDesc: 'Feel the thunderous beats of Shinkari Melam combined with modern electric guitar riffs and classical carnatic fusion vocals.',
+    shortDesc: 'Live campus orchestral fusion, Chenda Melam & DJ.',
+    fullDesc: 'Experience the vibrant energy of Shinkari Melam, soulful Carnatic fusion vocals, and an electrifying celebration of tradition and modern spirit.',
     date: 'August 22, 2026',
     time: '02:00 PM - 05:00 PM',
-    venue: 'Auditorium Quad',
-    rules: ['Instrumental or vocal fusion', 'Backing tracks allowed', 'Judging based on harmony & stage presence'],
+    venue: 'Civil Block Auditorium',
+    rules: [],
   },
   {
     id: 'games',
     category: 'Interactive Competitions',
     name: 'ONAM GAMES & ARENA',
-    shortDesc: 'Traditional Tug-of-War (Vadamvali), Uriyadi & Onam sports.',
-    fullDesc: 'Brace yourself for high-energy campus sports! Test your team muscle in Vadamvali (Tug of War), blindfolded pot breaking (Uriyadi), and traditional Kerala athletics.',
+    shortDesc: 'Traditional Tug-of-War (Vadamvali), Uriyadi & Onam games.',
+    fullDesc: 'Brace yourself for high-energy campus sports! Test your team muscle in Vadamvali (Tug of War), blindfolded pot breaking (Uriyadi), and traditional Kerala Games.',
     date: 'August 22, 2026',
     time: '11:30 AM - 03:00 PM',
-    venue: 'University Turf Grounds',
-    rules: ['Teams of 8 for Vadamvali', 'Sports attire required', 'Prizes awarded on the spot'],
+    venue: 'Playground',
+    rules: [],
   },
   {
     id: 'cultural',
@@ -46,8 +46,8 @@ const eventDataLineup = [
     fullDesc: 'Watch the campus courtyard transform into a kaleidoscope of fresh flower petals in the annual Inter-Department Pookalam Championship.',
     date: 'August 22, 2026',
     time: '08:00 AM - 12:00 PM',
-    venue: 'Central Portico Courtyard',
-    rules: ['Natural flowers & leaves only', 'Circle diameter: 6 feet', 'Time limit: 3 hours'],
+    venue: 'School of Computing and Civil Block',
+    rules: [],
   },
 ];
 
@@ -172,10 +172,12 @@ class EventSystem {
         <p style="font-size: 0.85rem; color: #fff;"><strong>VENUE:</strong> ${ev.venue}</p>
       </div>
 
-      <h4 style="font-family: var(--font-tech); font-size: 0.8rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.7); margin-bottom: 0.75rem; text-transform: uppercase;">Guidelines & Rules</h4>
-      <ul style="list-style: disc; padding-left: 1.2rem; color: rgba(255,255,255,0.75); font-size: 0.88rem; margin-bottom: 2rem;">
-        ${ev.rules.map((rule) => `<li style="margin-bottom: 0.35rem;">${rule}</li>`).join('')}
-      </ul>
+      ${ev.rules && ev.rules.length > 0 ? `
+        <h4 style="font-family: var(--font-tech); font-size: 0.8rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.7); margin-bottom: 0.75rem; text-transform: uppercase;">Guidelines & Rules</h4>
+        <ul style="list-style: disc; padding-left: 1.2rem; color: rgba(255,255,255,0.75); font-size: 0.88rem; margin-bottom: 2rem;">
+          ${ev.rules.map((rule) => `<li style="margin-bottom: 0.35rem;">${rule}</li>`).join('')}
+        </ul>
+      ` : ''}
 
       <button id="modal-register-btn" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #7a1520, #d95338); color: #fff; border: none; border-radius: 8px; font-family: var(--font-tech); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; cursor: pointer; box-shadow: 0 0 20px rgba(217, 83, 56, 0.4);">
         REGISTER FOR THIS EVENT
@@ -186,7 +188,7 @@ class EventSystem {
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.closeModal());
     document.getElementById('modal-register-btn')?.addEventListener('click', () => {
-      window.location.href = '../REGISTRATION/index.html';
+      window.location.href = '/registration';
     });
   }
 
