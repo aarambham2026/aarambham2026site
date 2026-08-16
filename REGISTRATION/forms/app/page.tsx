@@ -63,8 +63,7 @@ export default function HomePage() {
           <button id="sidebar-close" className="sidebar-close" aria-label="Close menu">✕</button>
 
           <div className="sidebar-brand">
-            <div className="sidebar-brand-name">ONAM 2026</div>
-            <div className="sidebar-brand-sub">University Cultural Festival</div>
+            <div className="sidebar-brand-name">THAKRITHI'26</div>
           </div>
 
           <ul className="sidebar-nav" role="list">
@@ -95,7 +94,7 @@ export default function HomePage() {
           </ul>
 
           <div className="sidebar-footer">
-            <p className="sidebar-footer-text">Onam 2026 · August 22</p>
+            <p className="sidebar-footer-text">Thakrithi'26 · August 22</p>
           </div>
         </aside>
 
