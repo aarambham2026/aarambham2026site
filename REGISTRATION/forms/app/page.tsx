@@ -80,20 +80,14 @@ export default function HomePage() {
               </a>
             </li>
             <li>
-              <a href="/registration">
+              <a href="/upcoming_registration">
                 <span className="sidebar-nav-num">03</span>
                 Registration
               </a>
             </li>
             <li>
-              <a href="/upcoming_registration">
-                <span className="sidebar-nav-num">04</span>
-                Upcoming Registration
-              </a>
-            </li>
-            <li>
               <a href="/coordinators">
-                <span className="sidebar-nav-num">05</span>
+                <span className="sidebar-nav-num">04</span>
                 Meet The Coordinators
               </a>
             </li>
@@ -114,8 +108,7 @@ export default function HomePage() {
             <ul className="header-nav" role="list">
               <li><a href="/">Home</a></li>
               <li><a href="/events">Upcoming Events</a></li>
-              <li><a href="/registration">Registration</a></li>
-              <li><a href="/upcoming_registration">Upcoming Registration</a></li>
+              <li><a href="/upcoming_registration">Registration</a></li>
               <li><a href="/coordinators">Meet The Coordinators</a></li>
             </ul>
           </nav>
@@ -315,8 +308,7 @@ export default function HomePage() {
           <nav className="footer-links" aria-label="Footer navigation">
             <a href="/">Home</a>
             <a href="/events">Upcoming Events</a>
-            <a href="/registration">Registration</a>
-            <a href="/upcoming_registration">Upcoming Registration</a>
+            <a href="/upcoming_registration">Registration</a>
             <a href="/coordinators">Meet the Coordinators</a>
           </nav>
         </footer>
