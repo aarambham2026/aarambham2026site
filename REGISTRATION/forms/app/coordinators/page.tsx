@@ -185,7 +185,6 @@ export default function CoordinatorsPage() {
         <nav className="top-nav-links">
           <a href="/">Home</a>
           <a href="/events">Upcoming Events</a>
-          <a href="/registration">Registration</a>
           <a href="/coordinators" className="active">Meet the Coordinators</a>
         </nav>
       </header>
