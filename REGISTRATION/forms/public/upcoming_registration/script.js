@@ -17,8 +17,8 @@
   var TARGET_YEAR = 2026;
   var TARGET_MONTH = 8;   // August (1-indexed)
   var TARGET_DAY = 18;
-  var TARGET_HOUR = 21;   // 9:00 PM, 24h clock
-  var TARGET_MINUTE = 0;
+  var TARGET_HOUR = 21;   // 9:30 PM, 24h clock
+  var TARGET_MINUTE = 30;
   var TARGET_SECOND = 0;
 
   /**
