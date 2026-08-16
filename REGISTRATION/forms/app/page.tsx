@@ -80,14 +80,8 @@ export default function HomePage() {
               </a>
             </li>
             <li>
-              <a href="/registration">
-                <span className="sidebar-nav-num">03</span>
-                Registration
-              </a>
-            </li>
-            <li>
               <a href="/coordinators">
-                <span className="sidebar-nav-num">04</span>
+                <span className="sidebar-nav-num">03</span>
                 Meet The Coordinators
               </a>
             </li>
@@ -108,7 +102,6 @@ export default function HomePage() {
             <ul className="header-nav" role="list">
               <li><a href="/">Home</a></li>
               <li><a href="/events">Upcoming Events</a></li>
-              <li><a href="/registration">Registration</a></li>
               <li><a href="/coordinators">Meet The Coordinators</a></li>
             </ul>
           </nav>
@@ -308,7 +301,6 @@ export default function HomePage() {
           <nav className="footer-links" aria-label="Footer navigation">
             <a href="/">Home</a>
             <a href="/events">Upcoming Events</a>
-            <a href="/registration">Registration</a>
             <a href="/coordinators">Meet the Coordinators</a>
           </nav>
         </footer>
