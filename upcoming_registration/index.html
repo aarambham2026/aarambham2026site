@@ -7,19 +7,99 @@
 <meta name="description" content="Registrations for Thakrithi'26 open on 18 August 2026, 9:00 PM IST. Countdown to launch." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&family=Playfair+Display:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/upcoming_registration/style.css" />
 </head>
 <body>
 
+  <!-- UNIFIED THEYAM PRELOADER -->
+  <div id="loading-screen" class="unified-preloader" role="status" aria-label="Loading Onam Cultural Fest Portal">
+    <div class="loader-container">
+      <div class="loader-art-card">
+        <img src="/events-assets/Theyyam stick.gif" alt="Onam Cultural Fest Mascot" class="loader-art-img" />
+      </div>
+      <div class="loader-university-title">AMRITA VISHWA VIDYAPEETHAM</div>
+      <div class="loader-status-wrap">
+        <span class="loader-spinner"></span>
+        <span class="loader-status-text">LOADING ONAM CULTURAL FEST PORTAL...</span>
+      </div>
+      <div class="loader-progress-bar">
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+        <span class="bar-segment"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR OVERLAY & MENU -->
+  <div id="sidebar-overlay"></div>
+  <aside id="sidebar" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button id="sidebar-close" class="sidebar-close" aria-label="Close menu">✕</button>
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">THAKRITHI'26</div>
+    </div>
+    <ul class="sidebar-nav" role="list">
+      <li>
+        <a href="/">
+          <span class="sidebar-nav-num">01</span>
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="/events">
+          <span class="sidebar-nav-num">02</span>
+          Upcoming Events
+        </a>
+      </li>
+      <li>
+        <a href="/upcoming_registration" class="active">
+          <span class="sidebar-nav-num">03</span>
+          Registration
+        </a>
+      </li>
+      <li>
+        <a href="/coordinators">
+          <span class="sidebar-nav-num">04</span>
+          Meet The Coordinators
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <p class="sidebar-footer-text">Thakrithi'26 · August 22</p>
+    </div>
+  </aside>
+
+  <!-- AMBIENT GLOW & GRAIN -->
   <div class="glow glow-top-left" aria-hidden="true"></div>
   <div class="glow glow-top-right" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <div class="logo">THAKRITHI<span class="logo-mark">'26</span></div>
+  <!-- HEADER NAVBAR -->
+  <header id="header" class="site-header" role="banner">
+    <a href="/" class="header-logo" style="text-decoration: none;">
+      THAKRITHI'26
+    </a>
+
+    <nav aria-label="Primary navigation">
+      <ul class="header-nav" role="list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/events">Upcoming Events</a></li>
+        <li><a href="/upcoming_registration" class="active">Registration</a></li>
+        <li><a href="/coordinators">Meet The Coordinators</a></li>
+      </ul>
+    </nav>
+
+    <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </header>
 
+  <!-- MAIN HERO SECTION -->
   <main class="hero">
     <p class="eyebrow">AMRITA VISHWA VIDYAPEETHAM &nbsp;·&nbsp; CULTURAL FESTIVAL 2026</p>
 
