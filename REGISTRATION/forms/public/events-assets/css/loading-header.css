@@ -300,6 +300,7 @@
 #sidebar.open .sidebar-nav li:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.1s; }
 #sidebar.open .sidebar-nav li:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.18s; }
 #sidebar.open .sidebar-nav li:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.26s; }
+#sidebar.open .sidebar-nav li:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.34s; }
 
 .sidebar-nav a {
   display: flex;
