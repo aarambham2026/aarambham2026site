@@ -89,7 +89,7 @@ export default function HomePage() {
             <li>
               <a href="/coordinators">
                 <span className="sidebar-nav-num">04</span>
-                Meet the Coordinators
+                Meet The Coordinators
               </a>
             </li>
           </ul>
@@ -110,7 +110,7 @@ export default function HomePage() {
               <li><a href="/">Home</a></li>
               <li><a href="/events">Upcoming Events</a></li>
               <li><a href="/registration">Registration</a></li>
-              <li><a href="/coordinators">Meet the Coordinators</a></li>
+              <li><a href="/coordinators">Meet The Coordinators</a></li>
             </ul>
           </nav>
 
@@ -161,7 +161,7 @@ export default function HomePage() {
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                University Grounds
+                Amrita Vishwa Vidyapeetham, Nagercoil
               </span>
               <div className="hero-sub-dot" aria-hidden="true"></div>
               <span className="hero-sub-item">
