@@ -20,8 +20,18 @@ const registerSchema = z.object({
   membersList: z.string().max(1000).optional()
 });
 
+const REGISTRATION_OPENING_TIMESTAMP_MS = new Date('2026-08-18T21:25:00+05:30').getTime();
+
 export async function POST(req: Request) {
   try {
+    // Enforce server-side time lock before opening instant
+    if (Date.now() < REGISTRATION_OPENING_TIMESTAMP_MS) {
+      return NextResponse.json(
+        { success: false, error: 'Registrations are temporarily unavailable.' },
+        { status: 403 }
+      );
+    }
+
     const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'anonymous_ip';
     const rateCheck = checkRateLimit(clientIp, 10, 15 * 60 * 1000);
     if (!rateCheck.allowed) {
