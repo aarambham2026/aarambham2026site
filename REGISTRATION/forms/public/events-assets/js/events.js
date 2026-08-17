@@ -178,18 +178,11 @@ class EventSystem {
           ${ev.rules.map((rule) => `<li style="margin-bottom: 0.35rem;">${rule}</li>`).join('')}
         </ul>
       ` : ''}
-
-      <button id="modal-register-btn" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #7a1520, #d95338); color: #fff; border: none; border-radius: 8px; font-family: var(--font-tech); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; cursor: pointer; box-shadow: 0 0 20px rgba(217, 83, 56, 0.4);">
-        REGISTER FOR THIS EVENT
-      </button>
     `;
 
     this.modalOverlay.classList.add('active');
 
     document.getElementById('modal-close-btn')?.addEventListener('click', () => this.closeModal());
-    document.getElementById('modal-register-btn')?.addEventListener('click', () => {
-      window.location.href = '/registration';
-    });
   }
 
   closeModal() {
