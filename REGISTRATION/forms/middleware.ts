@@ -14,7 +14,23 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const normalizedPath = pathname.toLowerCase().replace(/\/+$/, '') || '/';
 
-  // Only protect /registration and /registrations
+  // 1. Explicitly BLOCK legacy /registration/admin and /admin URLs with HTTP 404
+  if (
+    normalizedPath === '/registration/admin' ||
+    normalizedPath === '/admin' ||
+    normalizedPath.startsWith('/registration/admin/') ||
+    normalizedPath.startsWith('/admin/')
+  ) {
+    return new NextResponse('This page could not be found.', {
+      status: 404,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+      },
+    });
+  }
+
+  // 2. Protect /registration and /registrations before 18 Aug 2026 9:25 PM IST
   if (normalizedPath === '/registration' || normalizedPath === '/registrations') {
     const currentServerTimeMs = Date.now();
 
@@ -40,5 +56,9 @@ export const config = {
     '/registration/',
     '/registrations',
     '/registrations/',
+    '/registration/admin',
+    '/registration/admin/:path*',
+    '/admin',
+    '/admin/:path*',
   ],
 };
