@@ -84,7 +84,7 @@ export default function EventsPage() {
         <nav className="nav-links-wrap">
           <a href="/">Home</a>
           <a href="/events" className="active">Upcoming Events</a>
-          <a href="/upcoming_registration">Registration</a>
+          <a href="/loading">Registration</a>
           <a href="/coordinators">Meet the Coordinators</a>
         </nav>
       </header>
