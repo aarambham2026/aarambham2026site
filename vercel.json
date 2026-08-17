@@ -2,8 +2,8 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
-    { "source": "/REGISTRATION/admin", "destination": "/admin" },
-    { "source": "/REGISTRATION/admin/", "destination": "/admin" },
+    { "source": "/REGISTRATION/why_not", "destination": "/registration/why_not" },
+    { "source": "/REGISTRATION/why_not/", "destination": "/registration/why_not" },
     { "source": "/upcoming-events", "destination": "/UPCOMIG EVENTS/index.html" },
     { "source": "/coordinators", "destination": "/MEET THE CORRDINATES/index.html" }
   ]

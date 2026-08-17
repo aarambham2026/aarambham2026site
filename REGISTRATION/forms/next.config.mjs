@@ -12,8 +12,8 @@ const nextConfig = {
       { source: '/UPCOMIG EVENTS/index.html', destination: '/events' },
       { source: '/MEET%20THE%20CORRDINATES/index.html', destination: '/coordinators' },
       { source: '/MEET THE CORRDINATES/index.html', destination: '/coordinators' },
-      { source: '/REGISTRATION/admin', destination: '/admin' },
-      { source: '/REGISTRATION/admin/', destination: '/admin' }
+      { source: '/REGISTRATION/why_not', destination: '/registration/why_not' },
+      { source: '/REGISTRATION/why_not/', destination: '/registration/why_not' }
     ];
   },
   async headers() {
