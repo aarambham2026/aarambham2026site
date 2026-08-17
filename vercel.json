@@ -2,8 +2,12 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
+    { "source": "/registration/why_not", "destination": "/registration/why_not" },
+    { "source": "/registration/why_not/", "destination": "/registration/why_not" },
     { "source": "/REGISTRATION/why_not", "destination": "/registration/why_not" },
     { "source": "/REGISTRATION/why_not/", "destination": "/registration/why_not" },
+    { "source": "/why_not", "destination": "/registration/why_not" },
+    { "source": "/why_not/", "destination": "/registration/why_not" },
     { "source": "/upcoming-events", "destination": "/UPCOMIG EVENTS/index.html" },
     { "source": "/coordinators", "destination": "/MEET THE CORRDINATES/index.html" }
   ]

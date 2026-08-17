@@ -13,7 +13,11 @@ const nextConfig = {
       { source: '/MEET%20THE%20CORRDINATES/index.html', destination: '/coordinators' },
       { source: '/MEET THE CORRDINATES/index.html', destination: '/coordinators' },
       { source: '/REGISTRATION/why_not', destination: '/registration/why_not' },
-      { source: '/REGISTRATION/why_not/', destination: '/registration/why_not' }
+      { source: '/REGISTRATION/why_not/', destination: '/registration/why_not' },
+      { source: '/why_not', destination: '/registration/why_not' },
+      { source: '/why_not/', destination: '/registration/why_not' },
+      { source: '/why-not', destination: '/registration/why_not' },
+      { source: '/why-not/', destination: '/registration/why_not' }
     ];
   },
   async headers() {
