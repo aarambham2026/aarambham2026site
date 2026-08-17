@@ -176,7 +176,7 @@ export default function EventsPage() {
       <Script src="/events-assets/js/audio.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/three-scene.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/slider.js" strategy="afterInteractive" />
-      <Script src="/events-assets/js/events.js" strategy="afterInteractive" />
+      <Script src="/events-assets/js/events.js?v=3" strategy="afterInteractive" />
       <Script src="/events-assets/js/porsche-experience.js" strategy="afterInteractive" />
       <Script src="/events-assets/js/preloader.js" strategy="afterInteractive" />
     </>

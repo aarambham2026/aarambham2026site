@@ -679,3 +679,7 @@ html, body {
     height: 160px;
   }
 }
+
+#modal-register-btn {
+  display: none !important;
+}
