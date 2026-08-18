@@ -21,24 +21,8 @@ const registerSchema = z.object({
 });
 
 function isRegistrationAllowed(nowMs: number = Date.now()): boolean {
-  const istDateStr = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    hour12: false,
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric'
-  }).format(new Date(nowMs));
-
-  const parts = istDateStr.split(':').map(Number);
-  const hour = parts[0];
-  const minute = parts[1];
-  const second = parts[2];
-
-  const secondsInDay = hour * 3600 + minute * 60 + second;
-  const startSecondsInDay = 13 * 3600 + 30 * 60; // 13:30:00 IST (1:30 PM IST)
-  const endSecondsInDay = 16 * 3600;            // 16:00:00 IST (4:00 PM IST)
-
-  return secondsInDay >= startSecondsInDay && secondsInDay < endSecondsInDay;
+  const openingInstantMs = new Date('2026-08-18T21:00:00+05:30').getTime();
+  return nowMs >= openingInstantMs;
 }
 
 export async function POST(req: Request) {

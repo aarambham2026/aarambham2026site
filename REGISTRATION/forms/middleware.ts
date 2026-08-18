@@ -4,29 +4,14 @@ import type { NextRequest } from 'next/server';
 /**
  * Server-Side Access Protection & Time Window Enforcement for /registration & /registrations routes
  *
- * Registration Window (Asia/Kolkata / IST / UTC+05:30):
- * - ALLOWED: 1:30 PM IST (13:30:00) to 3:59:59 PM IST (15:59:59)
- * - BLOCKED: Before 1:30 PM IST or at/after 4:00 PM IST (16:00:00)
+ * Registration Opening Instant (Asia/Kolkata / IST / UTC+05:30):
+ * - OPENING TIME: 18 August 2026, 9:00 PM IST (2026-08-18T21:00:00+05:30)
+ * - BLOCKED: Before 2026-08-18 21:00:00 IST
+ * - OPEN: At and after 2026-08-18 21:00:00 IST
  */
 function isRegistrationAllowed(nowMs: number = Date.now()): boolean {
-  const istDateStr = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    hour12: false,
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric'
-  }).format(new Date(nowMs));
-
-  const parts = istDateStr.split(':').map(Number);
-  const hour = parts[0];
-  const minute = parts[1];
-  const second = parts[2];
-
-  const secondsInDay = hour * 3600 + minute * 60 + second;
-  const startSecondsInDay = 13 * 3600 + 30 * 60; // 13:30:00 IST (1:30 PM IST)
-  const endSecondsInDay = 16 * 3600;            // 16:00:00 IST (4:00 PM IST)
-
-  return secondsInDay >= startSecondsInDay && secondsInDay < endSecondsInDay;
+  const openingInstantMs = new Date('2026-08-18T21:00:00+05:30').getTime();
+  return nowMs >= openingInstantMs;
 }
 
 export function middleware(request: NextRequest) {
