@@ -203,3 +203,16 @@ class EventSystem {
     });
   }
 }
+
+if (typeof window !== 'undefined') {
+  const initEventSystem = () => {
+    if (!window.__eventSystemInstance) {
+      window.__eventSystemInstance = new EventSystem();
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEventSystem);
+  } else {
+    initEventSystem();
+  }
+}

@@ -102,7 +102,42 @@ export default function EventsPage() {
 
             <h2 className="section-divider">FEATURED EVENT LINEUP</h2>
             <div className="events-grid" id="events-grid">
-              {/* Populated by events.js */}
+              <div className="event-card" data-id="dance">
+                <span className="event-tag">Cultural Showcase</span>
+                <h3 className="event-name">DANCE SPECTACLE</h3>
+                <p className="event-desc">Graceful Thiruvathira, classical Kathakali & energetic fusion showcases.</p>
+                <div className="event-meta">
+                  <span>August 22, 2026</span>
+                  <span className="event-action">EXPLORE &rarr;</span>
+                </div>
+              </div>
+              <div className="event-card" data-id="music">
+                <span className="event-tag">Live Performances</span>
+                <h3 className="event-name">MUSIC & RHYTHMS</h3>
+                <p className="event-desc">Live campus orchestral fusion, Chenda Melam & DJ.</p>
+                <div className="event-meta">
+                  <span>August 22, 2026</span>
+                  <span className="event-action">EXPLORE &rarr;</span>
+                </div>
+              </div>
+              <div className="event-card" data-id="games">
+                <span className="event-tag">Interactive Competitions</span>
+                <h3 className="event-name">ONAM GAMES & ARENA</h3>
+                <p className="event-desc">Traditional Tug-of-War (Vadamvali), Uriyadi & Onam games.</p>
+                <div className="event-meta">
+                  <span>August 22, 2026</span>
+                  <span className="event-action">EXPLORE &rarr;</span>
+                </div>
+              </div>
+              <div className="event-card" data-id="cultural">
+                <span className="event-tag">Arts & Heritage</span>
+                <h3 className="event-name">POOKALAM & ARTS</h3>
+                <p className="event-desc">Floral art design competitions & traditional craft exhibits.</p>
+                <div className="event-meta">
+                  <span>August 22, 2026</span>
+                  <span className="event-action">EXPLORE &rarr;</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
