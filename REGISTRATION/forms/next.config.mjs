@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Force Vercel rebuild & CDN purge: 2026-08-18T20:04:15
 const nextConfig = {
   serverExternalPackages: ['pdf-lib', 'qrcode'],
   devIndicators: false,
