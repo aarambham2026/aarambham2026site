@@ -2,8 +2,12 @@ import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { prisma } from './db';
 
-function getAuthSecret(): string {
-  return process.env.ADMIN_JWT_SECRET || 'aarambham_2026_production_secret_fallback_key';
+function getAuthSecret(): string | null {
+  const secret = process.env.ADMIN_JWT_SECRET;
+  if (!secret || secret.trim().length === 0) {
+    return null;
+  }
+  return secret;
 }
 
 export function createAdminToken(): string | null {

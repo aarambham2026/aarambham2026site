@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { isRequestAuthorized } = await import('@/lib/security');
+    const authorized = await isRequestAuthorized(req);
+
     const { id } = await params;
     const registration = await prisma.registration.findFirst({
       where: {
@@ -20,7 +23,24 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Registration not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: registration });
+    if (authorized) {
+      return NextResponse.json({ success: true, data: registration });
+    }
+
+    // Public / unauthenticated requester: return minimal non-sensitive ticket fields only
+    return NextResponse.json({
+      success: true,
+      data: {
+        registrationId: registration.registrationId,
+        teamLeaderName: registration.teamLeaderName,
+        numberOfMembers: registration.numberOfMembers,
+        eventCategory: registration.eventCategory,
+        performanceName: registration.performanceName,
+        slotStartTime: registration.slotStartTime,
+        slotEndTime: registration.slotEndTime,
+        status: registration.status
+      }
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

@@ -17,16 +17,20 @@ export async function POST(req: Request) {
 }
 
 async function handleSchedulerExecution(req: Request) {
-  const authHeader = req.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || cronSecret.trim().length === 0) {
+    return NextResponse.json({ success: false, error: 'CRON_SECRET is not configured on server' }, { status: 500 });
+  }
 
-  // Verify secret if CRON_SECRET is configured
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    const url = new URL(req.url);
-    const querySecret = url.searchParams.get('secret');
-    if (querySecret !== cronSecret) {
-      return NextResponse.json({ error: 'Unauthorized scheduler trigger' }, { status: 401 });
-    }
+  const authHeader = req.headers.get('authorization');
+  const url = new URL(req.url);
+  const querySecret = url.searchParams.get('secret');
+
+  const isHeaderValid = authHeader === `Bearer ${cronSecret}`;
+  const isQueryValid = querySecret === cronSecret;
+
+  if (!isHeaderValid && !isQueryValid) {
+    return NextResponse.json({ success: false, error: 'Unauthorized scheduler trigger' }, { status: 401 });
   }
 
   let acquiredLock = false;

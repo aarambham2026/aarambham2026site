@@ -7,6 +7,12 @@ export const revalidate = 0;
 
 export async function GET(req: Request) {
   try {
+    const { isRequestAuthorized } = await import('@/lib/security');
+    const authorized = await isRequestAuthorized(req);
+    if (!authorized) {
+      return NextResponse.json({ success: false, error: 'Unauthorized admin access' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category')?.trim().toUpperCase() || '';
     const status = searchParams.get('status')?.trim().toUpperCase() || '';

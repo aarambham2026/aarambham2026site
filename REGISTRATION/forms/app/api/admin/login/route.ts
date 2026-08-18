@@ -14,8 +14,15 @@ export async function POST(req: Request) {
 
     const { username, password } = await req.json();
 
-    const expectedUser = process.env.ADMIN_USERNAME || 'admin';
-    const expectedPass = process.env.ADMIN_PASSWORD || 'aarambham2026';
+    const expectedUser = process.env.ADMIN_USERNAME;
+    const expectedPass = process.env.ADMIN_PASSWORD;
+
+    if (!expectedUser || !expectedPass || expectedUser.trim() === '' || expectedPass.trim() === '') {
+      return NextResponse.json(
+        { success: false, error: 'Admin credentials are not configured on the server.' },
+        { status: 500 }
+      );
+    }
 
     const isUserValid = timingSafeCompare(String(username || ''), expectedUser);
     const isPassValid = timingSafeCompare(String(password || ''), expectedPass);
