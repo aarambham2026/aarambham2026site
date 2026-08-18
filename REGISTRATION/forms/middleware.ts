@@ -2,13 +2,32 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Server-Side Access Protection for /registration & /registrations routes
+ * Server-Side Access Protection & Time Window Enforcement for /registration & /registrations routes
  *
- * Target Opening Instant: 18 August 2026 at 9:25 PM IST (Asia/Kolkata / UTC+05:30)
- * ISO 8601 String: 2026-08-18T21:25:00+05:30
- * Unix Epoch Timestamp: 1787068500000 ms UTC
+ * Registration Window (Asia/Kolkata / IST / UTC+05:30):
+ * - ALLOWED: 1:30 PM IST (13:30:00) to 3:59:59 PM IST (15:59:59)
+ * - BLOCKED: Before 1:30 PM IST or at/after 4:00 PM IST (16:00:00)
  */
-const REGISTRATION_OPENING_TIMESTAMP_MS = new Date('2026-08-18T21:25:00+05:30').getTime();
+function isRegistrationAllowed(nowMs: number = Date.now()): boolean {
+  const istDateStr = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    hour12: false,
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  }).format(new Date(nowMs));
+
+  const parts = istDateStr.split(':').map(Number);
+  const hour = parts[0];
+  const minute = parts[1];
+  const second = parts[2];
+
+  const secondsInDay = hour * 3600 + minute * 60 + second;
+  const startSecondsInDay = 13 * 3600 + 30 * 60; // 13:30:00 IST (1:30 PM IST)
+  const endSecondsInDay = 16 * 3600;            // 16:00:00 IST (4:00 PM IST)
+
+  return secondsInDay >= startSecondsInDay && secondsInDay < endSecondsInDay;
+}
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -30,12 +49,9 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // 2. Protect /registration and /registrations before 18 Aug 2026 9:25 PM IST
+  // 2. Protect /registration and /registrations with IST 1:30 PM -> 4:00 PM window gate
   if (normalizedPath === '/registration' || normalizedPath === '/registrations') {
-    const currentServerTimeMs = Date.now();
-
-    // BEFORE 18 Aug 2026, 9:25 PM IST -> Return HTTP 403 Forbidden
-    if (currentServerTimeMs < REGISTRATION_OPENING_TIMESTAMP_MS) {
+    if (!isRegistrationAllowed()) {
       return new NextResponse('Registrations are temporarily unavailable.', {
         status: 403,
         headers: {
@@ -46,7 +62,6 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // AT or AFTER 18 Aug 2026, 9:25 PM IST (or any other route) -> Proceed normally
   return NextResponse.next();
 }
 

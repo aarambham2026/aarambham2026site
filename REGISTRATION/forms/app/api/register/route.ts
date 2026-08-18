@@ -20,12 +20,31 @@ const registerSchema = z.object({
   membersList: z.string().max(1000).optional()
 });
 
-const REGISTRATION_OPENING_TIMESTAMP_MS = new Date('2026-08-18T21:25:00+05:30').getTime();
+function isRegistrationAllowed(nowMs: number = Date.now()): boolean {
+  const istDateStr = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    hour12: false,
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  }).format(new Date(nowMs));
+
+  const parts = istDateStr.split(':').map(Number);
+  const hour = parts[0];
+  const minute = parts[1];
+  const second = parts[2];
+
+  const secondsInDay = hour * 3600 + minute * 60 + second;
+  const startSecondsInDay = 13 * 3600 + 30 * 60; // 13:30:00 IST (1:30 PM IST)
+  const endSecondsInDay = 16 * 3600;            // 16:00:00 IST (4:00 PM IST)
+
+  return secondsInDay >= startSecondsInDay && secondsInDay < endSecondsInDay;
+}
 
 export async function POST(req: Request) {
   try {
-    // Enforce server-side time lock before opening instant
-    if (Date.now() < REGISTRATION_OPENING_TIMESTAMP_MS) {
+    // Enforce server-side IST registration window (1:30 PM to 4:00 PM IST)
+    if (!isRegistrationAllowed()) {
       return NextResponse.json(
         { success: false, error: 'Registrations are temporarily unavailable.' },
         { status: 403 }

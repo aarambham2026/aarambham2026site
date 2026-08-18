@@ -24,7 +24,7 @@ export async function GET() {
       settings = await prisma.eventSettings.create({
         data: {
           id: 'default',
-          eventStartTime: '14:00',
+          eventStartTime: '13:30',
           musicDuration: 10,
           danceDuration: 10,
           setupGap: 2
