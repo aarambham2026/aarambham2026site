@@ -244,8 +244,7 @@ html, body {
   inset: 0;
   z-index: 10;
   background: radial-gradient(ellipse at 50% 30%, #3e0c18 0%, #761822 45%, #b43026 80%, #d84e37 100%);
-  clip-path: inset(0 calc(100% - var(--split-pos)) 0 0);
-  will-change: clip-path;
+  clip-path: none;
   transform: translate3d(0, 0, 0);
   overflow-y: auto;
   pointer-events: auto;

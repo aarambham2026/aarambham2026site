@@ -60,21 +60,10 @@
     </nav>
   </header>
 
-  <!-- SPLIT PORTAL CONTAINER -->
+  <!-- ONAM FESTIVAL PORTAL CONTAINER -->
   <div class="portal-container">
 
-    <!-- DRAGGABLE SPLIT SLIDER HANDLE -->
-    <div class="portal-slider-bar" id="portal-slider-bar">
-      <div class="portal-slider-handle" id="portal-slider-handle">
-        ⤞ ⤝
-      </div>
-      <div class="slider-mode-tags">
-        <span class="tag-left">◀ ONAM FEST</span>
-        <span class="tag-right">BMW M5 WORLD ▶</span>
-      </div>
-    </div>
-
-    <!-- WORLD 1: ONAM FESTIVAL (Left Side of Split) -->
+    <!-- WORLD 1: ONAM FESTIVAL -->
     <section class="world-layer onam-world" id="onam-world">
       <div class="onam-viewport">
         <p class="onam-hero-tag">Amrita Vishwa Vidyapeetham · Cultural Festival 2026</p>
@@ -90,44 +79,6 @@
       </div>
     </section>
 
-    <!-- WORLD 2: BMW M5 EXPERIENCE (Right Side of Split) -->
-    <section class="world-layer porsche-world" id="porsche-world">
-      <div class="porsche-viewport">
-        <div class="upside-down-badge">Ignite the onam with M5 👀</div>
-        <h1 class="porsche-main-title">BMW M5</h1>
-        <p class="porsche-tagline">ONAM MEETS PERFORMANCE — EXPERIENCE THE MACHINE.</p>
-
-        <!-- CAR ANIMATION HERO DISPLAY & IGNITE BUTTON -->
-        <div class="car-display-container">
-          <div class="car-media-wrap">
-            <video
-              id="car-video"
-              class="car-gif-img"
-              src="bmwgif.mp4"
-              loop
-              muted
-              playsinline
-              preload="auto"
-              style="display: block; width: 100%; height: 100%; object-fit: cover;"
-            ></video>
-          </div>
-          <div class="car-display-overlay">
-            <button class="ignite-engine-btn" id="ignite-engine-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              </svg>
-              IGNITE THE ENGINE
-            </button>
-            <p class="engine-status-text" id="engine-status-text">
-              STATUS: STANDBY · PRESS BUTTON TO START ANIMATION & ENGINE
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
   </div>
 
   <!-- MODAL OVERLAY -->
@@ -140,9 +91,7 @@
   <!-- SCRIPTS -->
   <script src="js/audio.js"></script>
   <script src="js/three-scene.js"></script>
-  <script src="js/slider.js"></script>
   <script src="js/events.js"></script>
-  <script src="js/porsche-experience.js"></script>
   <script src="js/preloader.js"></script>
 
   <script>
@@ -150,18 +99,10 @@
       // 1. Initialize Ambient WebGL Scene
       const scene3D = new DualWorldScene('webgl-canvas');
 
-      // 2. Initialize Portal Split Slider
-      const slider = new ExperienceSlider((splitVal) => {
-        scene3D.setProgress(splitVal);
-      });
-
-      // 3. Initialize Events System
+      // 2. Initialize Events System
       const eventSys = new EventSystem();
 
-      // 4. Initialize Porsche System
-      const porscheSys = new PorscheExperience(scene3D);
-
-      // 5. Initialize Preloader
+      // 3. Initialize Preloader
       const preloader = new PreloaderController();
     });
   </script>
