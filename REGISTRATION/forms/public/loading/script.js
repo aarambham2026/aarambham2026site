@@ -104,6 +104,7 @@
   }
 
   function render(remainingMs) {
+    if (!elDays || !elHours || !elMinutes || !elSeconds) return;
     var totalSeconds = Math.floor(remainingMs / 1000);
     var days = Math.floor(totalSeconds / 86400);
     var hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -121,8 +122,8 @@
       clearInterval(timerId);
       timerId = null;
     }
-    elCountdown.hidden = true;
-    elOpenMessage.hidden = false;
+    if (elCountdown) elCountdown.hidden = true;
+    if (elOpenMessage) elOpenMessage.hidden = false;
   }
 
   function tick() {
